@@ -1,0 +1,61 @@
+### --- LARAVEL & PHP DEPENDENCIES (app/) ---
+# Ignorar las dependencias de Composer (se instalan vía Docker/Podman)
+app/vendor/
+app/node_modules/
+
+# Ignorar configuraciones de entorno locales con credenciales sensibles
+app/.env
+app/.env.backup
+app/.env.production
+
+# Ignorar archivos del sistema y llaves de seguridad generadas
+app/storage/*.key
+app/oauth-private.key
+app/oauth-public.key
+
+# Ignorar caché, sesiones y logs temporales de Laravel
+app/bootstrap/cache/*
+!app/bootstrap/cache/.gitignore
+
+app/storage/framework/cache/data/*
+!app/storage/framework/cache/data/.gitignore
+
+app/storage/framework/sessions/*
+!app/storage/framework/sessions/.gitignore
+
+app/storage/framework/testing/*
+!app/storage/framework/testing/.gitignore
+
+app/storage/framework/views/*
+!app/storage/framework/views/.gitignore
+
+app/storage/logs/*
+!app/storage/logs/.gitignore
+
+### --- INFRASTRUCTURE & CONTENERS (postgres/, nginx/) ---
+# IMPORTANTE: Ignorar los datos crudos de PostgreSQL si los guardas localmente
+# (Ajusta la ruta si tu docker-compose mapea el volumen de postgres a otra carpeta)
+postgres/data/
+postgres/pgdata/
+
+# Ignorar logs locales de Nginx si los mapeas fuera del contenedor
+nginx/logs/
+
+### --- SYSTEM & SHELL OVERHEAD ---
+# Historiales de terminal y dumps
+.ash_history
+.bash_history
+*.log
+*.sql
+*.gz
+
+### --- IDEs & EDITORS (Host) ---
+# Configuraciones de editores locales en tu HP Victus
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.netrwhist

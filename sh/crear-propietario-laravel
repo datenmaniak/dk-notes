@@ -1,0 +1,3 @@
+sudo groupadd -g 82 www-data
+sudo useradd -u 82 -g www-data -s /usr/sbin/nologin -M www-data
+

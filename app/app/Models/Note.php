@@ -6,6 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Note extends Model
 {
+
+
+    protected $fillable = [
+    'title',
+    'slug',
+    'content_markdown',
+    'content_html',
+    'file_path',
+    'checksum',
+    'category_id',
+    'user_id',
+    'created_at',
+    'updated_at',
+    ];
+
+
     // Relación con Category (muchos a uno)
     public function category()
     {

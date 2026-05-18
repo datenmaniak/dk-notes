@@ -2,10 +2,17 @@
 
 namespace App\Console\Commands;
 
+use Illuminate\Support\Str;
+use App\Models\Category;
+use App\Models\Note;
+use App\Models\User;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File as FacadesFile;
+use Illuminate\Support\Facades\File;
+// as FacadesFile;
+
+
 use Parsedown;
 
 #[Signature('notes:import')]
@@ -60,29 +67,104 @@ class ImportNotesCommand extends Command
     //       composer require erusev/parsedown
     //
     $parsedown = new Parsedown();
+
+    // Obtener el usuario administrador (el primero creado)
+    $usuario = User::first();
+    if (!$usuario) {
+        $this->error("❌ No hay usuarios en el sistema. Crea un usuario primero.");
+        return 1;
+    }
+
+    // TODO: remover todo el bloque foreach
+    // BEGIN
+    // foreach ($archivos as $archivo) {
+    //     $contador++;
+    //     $this->line("[$contador/$totalArchivos] Procesando: " . basename($archivo));
+
+    //     // Obtener la categoría basada en el subdirectorio
+    //     $categoria = $this->obtenerCategoria($archivo, $directorioNotas);
+    //     $this->line("   📂 Categoría: " . ($categoria ?: 'sin categoría'));
+
+    //     // Leer el contenido del archivo
+    //     $contenido = FacadesFile::get($archivo);
+    //     // $contenido = File::get($archivo);
+
+    //     // Convertir Markdown a HTML
+    //     $html = $parsedown->text($contenido);
+
+    //     // Extraer título (primera línea que empiece con #)
+    //     $titulo = $this->extraerTitulo($contenido, basename($archivo));
+    //     $this->line("   📝 Título: " . $titulo);
+
+    //     // Aquí después guardaremos en la base de datos
+    //     $this->line("");
+    // }
+    // END
+
+    // Reemplazar el Contenido del foreach, para proseguir con el procesador
+    // de contenido markdown a HTML
     foreach ($archivos as $archivo) {
         $contador++;
-        $this->line("[$contador/$totalArchivos] Procesando: " . basename($archivo));
-
-        // Obtener la categoría basada en el subdirectorio
-        $categoria = $this->obtenerCategoria($archivo, $directorioNotas);
-        $this->line("   📂 Categoría: " . ($categoria ?: 'sin categoría'));
-
-        // Leer el contenido del archivo
-        $contenido = FacadesFile::get($archivo);
-        // $contenido = File::get($archivo);
-
-        // Convertir Markdown a HTML
+        $this->info("[$contador/$totalArchivos] Procesando: " . basename($archivo));
+        
+        // 1. Obtener o crear la categoría
+        $nombreCategoria = $this->obtenerCategoria($archivo, $directorioNotas);
+        $categoriaId = null;
+        
+        if ($nombreCategoria) {
+            $categoria = Category::firstOrCreate(
+                ['name' => $nombreCategoria],
+                ['slug' => Str::slug($nombreCategoria)]
+            );
+            $categoriaId = $categoria->id;
+            $this->line("   📂 Categoría: " . $nombreCategoria . " (ID: " . $categoriaId . ")");
+        } else {
+            $this->line("   📂 Sin categoría");
+        }
+        
+        // 2. Leer el contenido del archivo
+        $contenido = File::get($archivo);
+        
+        // 3. Convertir Markdown a HTML
         $html = $parsedown->text($contenido);
 
-        // Extraer título (primera línea que empiece con #)
+        // Normalizar rutas de imágenes (AGREGAR ESTAS LÍNEAS)
+        $html = $this->normalizarRutasImagenes($html);
+        
+        // 4. Extraer título
         $titulo = $this->extraerTitulo($contenido, basename($archivo));
         $this->line("   📝 Título: " . $titulo);
-
-        // Aquí después guardaremos en la base de datos
+        
+        // 5. Calcular checksum (hash del contenido)
+        $checksum = md5($contenido);
+        
+        // 6. Verificar si la nota ya existe (por file_path o checksum)
+        $notaExistente = Note::where('file_path', $archivo)->first();
+        
+        if ($notaExistente && $notaExistente->checksum === $checksum) {
+            $this->line("   ⏭️ Sin cambios, omitida");
+            continue;
+        }
+        
+        // 7. Crear o actualizar la nota
+        $nota = Note::updateOrCreate(
+            ['file_path' => $archivo],
+            [
+                'title' => $titulo,
+                'slug' => Str::slug($titulo) . '-' . uniqid(), // Asegura slugs únicos
+                'content_markdown' => $contenido,
+                'content_html' => $html,
+                'checksum' => $checksum,
+                'category_id' => $categoriaId,
+                'user_id' => $usuario->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        
+        $this->line("   ✅ Nota guardada (ID: " . $nota->id . ")");
         $this->line("");
     }
-    $this->info("✅ Importación completada");
 
     return 0;
 }
@@ -144,8 +226,26 @@ class ImportNotesCommand extends Command
         return pathinfo($nombreArchivo, PATHINFO_FILENAME);
     }
 
+        /**
+     * Normaliza rutas de imágenes en el HTML generado
+     */
+    private function normalizarRutasImagenes(string $html): string
+    {
+        // Patrón 1: Ruta absoluta de Linux en formato Markdown
+        // Busca: ![texto](/home/datenmaniak/notes/images/archivo.png)
+        // Reemplaza: ![texto](/images/archivo.png)
+        $html = preg_replace(
+            '/src="\/home\/datenmaniak\/notes\/images\//',
+            'src="/images/',
+            $html
+        );
+        
+        // Retornar el HTML con las rutas normalizadas
+        return $html;
+    }
+
     // 5. Mostrar mensajes de progreso en la terminal
     // 6. Al final, mostrar un resumen (cuántas notas se importaron)
 
 
-    }
+}

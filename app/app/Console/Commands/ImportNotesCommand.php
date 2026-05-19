@@ -29,7 +29,8 @@ class ImportNotesCommand extends Command
     {
 
     // 1. Definir la ruta del directorio de notas
-    $directorioNotas = 'notes';
+    // $directorioNotas = 'notes'; // REMOVE
+    $directorioNotas = base_path('notes');
 
     // 1.1. Convertir ~ a la ruta del home del usuario
     if (str_starts_with($directorioNotas, '~/')) {
@@ -75,32 +76,6 @@ class ImportNotesCommand extends Command
         return 1;
     }
 
-    // TODO: remover todo el bloque foreach
-    // BEGIN
-    // foreach ($archivos as $archivo) {
-    //     $contador++;
-    //     $this->line("[$contador/$totalArchivos] Procesando: " . basename($archivo));
-
-    //     // Obtener la categoría basada en el subdirectorio
-    //     $categoria = $this->obtenerCategoria($archivo, $directorioNotas);
-    //     $this->line("   📂 Categoría: " . ($categoria ?: 'sin categoría'));
-
-    //     // Leer el contenido del archivo
-    //     $contenido = FacadesFile::get($archivo);
-    //     // $contenido = File::get($archivo);
-
-    //     // Convertir Markdown a HTML
-    //     $html = $parsedown->text($contenido);
-
-    //     // Extraer título (primera línea que empiece con #)
-    //     $titulo = $this->extraerTitulo($contenido, basename($archivo));
-    //     $this->line("   📝 Título: " . $titulo);
-
-    //     // Aquí después guardaremos en la base de datos
-    //     $this->line("");
-    // }
-    // END
-
     // Reemplazar el Contenido del foreach, para proseguir con el procesador
     // de contenido markdown a HTML
     foreach ($archivos as $archivo) {
@@ -112,10 +87,16 @@ class ImportNotesCommand extends Command
         $categoriaId = null;
         
         if ($nombreCategoria) {
+            // Explicación: Primero busca por slug (que es único).
+            //  Si existe, usa esa categoría. Si no, la crea con el nombre actual.
+
+            $slug = Str::slug($nombreCategoria);
+
             $categoria = Category::firstOrCreate(
-                ['name' => $nombreCategoria],
-                ['slug' => Str::slug($nombreCategoria)]
+                ['slug' => $slug],
+                ['name' => $nombreCategoria]
             );
+
             $categoriaId = $categoria->id;
             $this->line("   📂 Categoría: " . $nombreCategoria . " (ID: " . $categoriaId . ")");
         } else {

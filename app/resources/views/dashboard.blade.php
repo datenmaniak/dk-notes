@@ -10,8 +10,19 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     {{ __("You're logged in!") }}
+
+                     <!-- Botón de logout - AGREGAR ESTO -->
+                    <form method="POST" action="{{ route('logout') }}" class="mt-4">
+                        @csrf
+                        <button type="submit" class="text-red-600 hover:text-red-800">
+                            {{ __('Cerrar sesión') }}
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </x-app-layout>
+
+
+

@@ -1,0 +1,76 @@
+=== CATEGORÍAS EN BD ===
+1: Alpine (slug: alpine)
+2: Containers (slug: containers)
+3: Automatizacion (slug: automatizacion)
+4: Prueba-Nota-con-imagen (slug: prueba-nota-con-imagen)
+5: VSCodium (slug: vscodium)
+6: Redimensionar imagenes (slug: redimensionar-imagenes)
+11: Hola (slug: hola)
+12: Contenedores (slug: contenedores)
+13: Arch-Linux (slug: arch-linux)
+14: Ansible (slug: ansible)
+15: A (slug: a)
+16: B (slug: b)
+17: Hola Mundo (slug: hola-mundo)
+18: images (slug: images)
+20: Web Development (slug: web-development)
+
+=== NOTAS Y SUS CATEGORÍAS ===
+Nota: how can i install it:  The "intl" PHP extension is required to use the [format] method. | Categoría ID: 1 | Nombre: Alpine
+Nota: Automatizar el inicio de las VMs en Proxmox, con notificación por email. | Categoría ID: 3 | Nombre: Automatizacion
+Nota: Primeros intentos con Laravel | Categoría ID: 2 | Nombre: Containers
+Nota: Primeros intentos con Laravel | Categoría ID: 12 | Nombre: Contenedores
+Nota: Permisos en Volumen (Bind Mount) | Categoría ID: 12 | Nombre: Contenedores
+Nota: Usamos PHP 8.3 FPM sobre Alpine para mínima huella de seguridad y tamaño | Categoría ID: 12 | Nombre: Contenedores
+Nota: Establecer variables de entorno por defecto (pueden sobrescribirse en docker-compose) | Categoría ID: 12 | Nombre: Contenedores
+Nota: Usamos la imagen oficial de Nginx sobre Alpine | Categoría ID: 12 | Nombre: Contenedores
+Nota: Permisos para múltiple contenedores | Categoría ID: 12 | Nombre: Contenedores
+Nota: que extension es necesario instalar en VSCodium para PHP | Categoría ID: 5 | Nombre: VSCodium
+Nota: Mejor alternativo de un script para ejecutar en consola | Categoría ID: 6 | Nombre: Redimensionar imagenes
+Nota: Nota con imagen | Categoría ID: 4 | Nombre: Prueba-Nota-con-imagen
+Nota: unable to start container - Permisos en Bind Mount | Categoría ID: 12 | Nombre: Contenedores
+Nota: Establecer variables de entorno por defecto (pueden sobrescribirse en docker-compose) | Categoría ID: 12 | Nombre: Contenedores
+Nota: Usamos la imagen oficial de Nginx sobre Alpine | Categoría ID: 12 | Nombre: Contenedores
+Nota: Usamos PHP 8.3 FPM sobre Alpine para mínima huella de seguridad y tamaño | Categoría ID: 12 | Nombre: Contenedores
+Nota: Primeros intentos con Laravel | Categoría ID: 12 | Nombre: Contenedores
+Nota: Primeros intentos con Laravel | Categoría ID: 12 | Nombre: Contenedores
+Nota: Nota rápida | Categoría ID: 15 | Nombre: A
+Nota: Nota rápida | Categoría ID: 16 | Nombre: B
+Nota: Ansible - Getting Started | Categoría ID: 14 | Nombre: Ansible
+Nota: Nota rápida | Categoría ID: 17 | Nombre: Hola Mundo
+Nota: Segundo archivo con imagen embedida | Categoría ID: 4 | Nombre: Prueba-Nota-con-imagen
+Nota: Primeros intentos con Laravel | Categoría ID: 2 | Nombre: Containers
+Nota: Dockerfile template - Primero ensayo y modelo | Categoría ID: 12 | Nombre: Contenedores
+Nota: Permisos para múltiple contenedores | Categoría ID: 12 | Nombre: Contenedores
+Nota: unable to start container - Permisos en Bind Mount | Categoría ID: 12 | Nombre: Contenedores
+Nota: Establecer variables de entorno por defecto (pueden sobrescribirse en docker-compose) | Categoría ID: 12 | Nombre: Contenedores
+Nota: Usamos la imagen oficial de Nginx sobre Alpine | Categoría ID: 12 | Nombre: Contenedores
+Nota: Usamos PHP 8.3 FPM sobre Alpine para mínima huella de seguridad y tamaño | Categoría ID: 12 | Nombre: Contenedores
+Nota: Primeros intentos con Laravel | Categoría ID: 12 | Nombre: Contenedores
+Nota: Permitir Acceso SSH en Arch Linux | Categoría ID: 11 | Nombre: Hola
+Nota: Primero ensayo Dockerfile template | Categoría ID: 12 | Nombre: Contenedores
+Nota: para permtir ssh en arch | Categoría ID: 1 | Nombre: Alpine
+Nota: para permtir ssh en arch | Categoría ID: 1 | Nombre: Alpine
+Nota: Permitir Acceso SSH en Arch Linux | Categoría ID: 13 | Nombre: Arch-Linux
+Nota: Ansible - Getting Started | Categoría ID: 14 | Nombre: Ansible
+Nota: Nota rápida | Categoría ID: 15 | Nombre: A
+Nota: Nota rápida | Categoría ID: 16 | Nombre: B
+Nota: Nota rápida | Categoría ID: 17 | Nombre: Hola Mundo
+Nota: how can i install it:  The "intl" PHP extension is required to use the [format] method. | Categoría ID: 1 | Nombre: Alpine
+Nota: Automatizar el inicio de las VMs en Proxmox, con notificación por email. | Categoría ID: 3 | Nombre: Automatizacion
+Nota: Nota con imagen | Categoría ID: 4 | Nombre: Prueba-Nota-con-imagen
+Nota: Segundo archivo con imagen embedida | Categoría ID: 4 | Nombre: Prueba-Nota-con-imagen
+Nota: que extension es necesario instalar en VSCodium para PHP | Categoría ID: 5 | Nombre: VSCodium
+Nota: Mejor alternativo de un script para ejecutar en consola | Categoría ID: 6 | Nombre: Redimensionar imagenes
+Nota: para permtir ssh en arch | Categoría ID: 13 | Nombre: Arch-Linux
+Nota: Permitir Acceso SSH en Arch Linux | Categoría ID: 13 | Nombre: Arch-Linux
+Nota: Dockerfile template - Primero ensayo y modelo | Categoría ID: 12 | Nombre: Contenedores
+Nota: Permisos para múltiple contenedores | Categoría ID: 12 | Nombre: Contenedores
+Nota: Permitir Acceso SSH en Arch Linux | Categoría ID: 15 | Nombre: A
+
+=== USUARIO ACTUAL ===
+ID: null
+Nombre: no autenticado
+
+=== NOTAS DEL USUARIO ===
+No hay usuario autenticado. Ejecuta: Auth::loginUsingId(1)

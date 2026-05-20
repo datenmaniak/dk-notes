@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Str;
 use App\Models\Category;
 use App\Models\Note;
 use App\Models\User;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Artisan;
 // use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Parsedown;
 
 class NoteController extends Controller
 {
@@ -311,4 +313,37 @@ class NoteController extends Controller
         
         return redirect()->route('notes.index')->with('success', "Se han reasignado {$total} notas a tu usuario.");
     }   
+
+    public function create()
+    {
+        $categorias = Category::all();
+        return view('notes.create', compact('categorias'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content_markdown' => 'required|string',
+            'category_id' => 'nullable|exists:categories,id'
+        ]);
+        
+        $slug = Str::slug($request->title) . '-' . uniqid();
+        $html = Parsedown::instance()->text($request->content_markdown);
+        $checksum = md5($request->content_markdown);
+        
+        $note = Note::create([
+            'title' => $request->title,
+            'slug' => $slug,
+            'content_markdown' => $request->content_markdown,
+            'content_html' => $html,
+            'checksum' => $checksum,
+            'category_id' => $request->category_id,
+            'user_id' => Auth::id(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        
+        return redirect()->route('notes.show', $note)->with('success', 'Nota creada correctamente.');
+    }
 }

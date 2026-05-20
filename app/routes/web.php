@@ -21,6 +21,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/notes/filter/{category?}', [App\Http\Controllers\NoteController::class, 'filter'])->name('notes.filter');
     Route::post('/notes/take-ownership', [App\Http\Controllers\NoteController::class, 'takeOwnership'])->name('notes.take-ownership');
 
+    // new note
+    Route::get('/notes/create', [App\Http\Controllers\NoteController::class, 'create'])->name('notes.create');
+    Route::post('/notes', [App\Http\Controllers\NoteController::class, 'store'])->name('notes.store');
     
     Route::post('/notes/sync', [App\Http\Controllers\NoteController::class, 'sync'])->name('notes.sync');
     Route::get('/notes/{note}/edit', [App\Http\Controllers\NoteController::class, 'edit'])->name('notes.edit');

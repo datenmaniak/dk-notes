@@ -30,21 +30,27 @@
             <button id="filterBtn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition flex items-center gap-2">
                 🔍 Filtrar
             </button>
+           
             <form method="POST" action="{{ route('notes.sync') }}" class="inline">
                 @csrf
                 <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition flex items-center gap-2">
                     🔄 Sincronizar
                 </button>
             </form>
-
+            
+            <a href="{{ route('notes.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-700  rounded-lg transition flex items-center gap-2">
+                📝 Nueva nota
+            </a>
+            
             {{-- NUEVO BOTÓN --}}
             <form method="POST" action="{{ route('categories.recalculate') }}" class="inline"
-                onsubmit="return confirm('¿Recalcular categorías? Esto detectará directorios nuevos y huérfanos. ¿Continuar?')">
-                @csrf
-                <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition flex items-center gap-2">
-                    📂 Recalcular Categorías
-                </button>
-            </form>
+            onsubmit="return confirm('¿Recalcular categorías? Esto detectará directorios nuevos y huérfanos. ¿Continuar?')">
+            @csrf
+            <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition flex items-center gap-2">
+                📂 Recalcular Categorías
+            </button>
+        </form>
+        
         </div>
 
         {{-- Notes List --}}
@@ -112,7 +118,8 @@
 
             {{-- Paginador --}}
             @if($notes->hasPages())
-                <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                {{-- <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4"> --}}
+                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
                     <div class="flex items-center gap-2">
                         <span class="text-sm text-gray-600">notas por página</span>
                         {{-- <span class="text-sm text-gray-600">Mostrar:</span> --}}
@@ -120,11 +127,12 @@
                             <option value="5" {{ request()->get('per_page', 5) == 5 ? 'selected' : '' }}>5</option>
                             <option value="10" {{ request()->get('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
                             <option value="20" {{ request()->get('per_page', 20) == 20 ? 'selected' : '' }}>20</option>
+                              
                         </select>
                     </div>
                     
                      {{-- Paginador automático de Laravel --}}
-                    <div>
+                    <div class="flex items-center gap-1">
                         {{ $notes->appends(request()->query())->links() }}
                     </div>
                     

@@ -8,13 +8,13 @@
     {{-- // para resaltado de sintaxis  --}}
     <!-- Para vs (claro con contraste) -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        hljs.highlightAll();
-    });
-</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            hljs.highlightAll();
+        });
+    </script>
     {{-- //  Es resaltado de sintaxis (Syntax Highlighting) para bloques --}}
     {{-- //  de código en Markdown. --}}
 
@@ -94,7 +94,7 @@
                 {{-- Selector de categorías --}}
                 <div class="px-4 pb-4">
                     <h3 class="text-xs font-semibold text-purple-200 uppercase tracking-wider mb-2">Filtrar por categoría</h3>
-                    <select id="categorySelect" class="w-full px-3 py-2 rounded-lg bg-purple-700 text-gray-900 border-none focus:ring-2 focus:ring-purple-300">
+                    <select id="categorySelect" class="w-full px-3 py-2 rounded-lg text-gray-900 border-none focus:ring-2 focus:ring-purple-300">
                         <option value="{{ route('notes.index') }}"  class="text-gray-900" >📋 Todas las notas</option>
                         @php
                             use App\Models\Category;
@@ -148,7 +148,7 @@
 
         {{-- Main Content --}}
         {{-- <main class="lg:ml-64 min-h-screen"> // before apply (100vh) --}}
-            <main class="flex-1 lg:ml-64 overflow-y-auto">
+            <main class="flex-1 overflow-y-auto">
             @if(session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded m-4">
                     {{ session('success') }}

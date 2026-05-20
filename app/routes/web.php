@@ -19,6 +19,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/categories/{category}', [App\Http\Controllers\CategoryController::class, 'destroy'])->name('categories.destroy');
 
     Route::get('/notes/filter/{category?}', [App\Http\Controllers\NoteController::class, 'filter'])->name('notes.filter');
+    Route::post('/notes/take-ownership', [App\Http\Controllers\NoteController::class, 'takeOwnership'])->name('notes.take-ownership');
+
+    
     Route::post('/notes/sync', [App\Http\Controllers\NoteController::class, 'sync'])->name('notes.sync');
     Route::get('/notes/{note}/edit', [App\Http\Controllers\NoteController::class, 'edit'])->name('notes.edit');
     Route::put('/notes/{note}', [App\Http\Controllers\NoteController::class, 'update'])->name('notes.update');

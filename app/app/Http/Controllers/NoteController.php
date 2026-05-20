@@ -28,8 +28,39 @@ class NoteController extends Controller
         // $notes = Note::where('user_id', Auth::id())->with('category')->get();
 
         // Alternativa 4: Obtener usuario primero
-        $user = User::find(Auth::id());
-        $notes = $user->notes()->with('category')->get();
+        // $user = User::find(Auth::id());
+        // if (Auth::user()->is_admin) {
+        //     // $notes = $user->notes()->with('category')->get();
+
+        //     $notes = Note::with('category')->get(); // Todas las notas
+        // } else {
+        //     // $notes = Auth::user();
+        //     $notes = $user->notes()->with('category')->get();
+
+        //     // $note->with('category')->get(); // Solo sus notas
+        // }
+
+        // Filtrar las notas por rol
+        // remove 
+        // $user = User::find(Auth::id());
+        // if (Auth::user()->is_admin) {
+        //     $notes = Note::with('category')->get(); // Todas las notas
+        // } else {
+            // $notes = $user->notes()->with('category')->get(); // Solo sus notas
+        // }
+        // remove HASTA AQUI
+
+        // Filtrar las notas por rol
+        if (Auth::user()->is_admin) {
+            // Administrador: ve todas las notas
+            $notes = Note::with('category')->get();
+        } else {
+            // Usuario normal: solo sus notas
+            // $notes = Auth::user()->notes()->with('category')->get();
+            $notes = Auth::user();
+            $notes()->with('category')->get();
+        }
+
 
         // Conteo de notas para mostrar en el widget
         $totalNotas = $notes->count();
@@ -47,8 +78,6 @@ class NoteController extends Controller
         // Retornar vista con las notas
         #return view('notes.index', compact('notes'));
         return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias','categoriasConNotas'));
-
-        
 
     }
 
@@ -83,6 +112,17 @@ class NoteController extends Controller
         // Verificar que la nota pertenece al usuario autenticado
         if ($note->user_id !== Auth::id()) {
             abort(403, 'No autorizado');
+        }
+
+        // Filtrar las notas por rol
+        if (Auth::user()->is_admin) {
+            // Administrador: ve todas las notas
+            $notes = Note::with('category')->get();
+        } else {
+            // Usuario normal: solo sus notas
+            // $notes = Auth::user()->notes()->with('category')->get();
+            $notes = Auth::user();
+            $notes()->with('category')->get();
         }
 
         // Conteo de notas por categorias
@@ -176,6 +216,17 @@ class NoteController extends Controller
         if ($note->user_id !== Auth::id()) {
             abort(403);
         }
+
+        // Filtrar las notas por rol
+        if (Auth::user()->is_admin) {
+            // Administrador: ve todas las notas
+            $notes = Note::with('category')->get();
+        } else {
+            // Usuario normal: solo sus notas
+            // $notes = Auth::user()->notes()->with('category')->get();
+            $notes = Auth::user();
+            $notes()->with('category')->get();
+        }
         
         $note->delete();
         return redirect()->route('notes.index')->with('success', 'Nota eliminada.');
@@ -185,6 +236,17 @@ class NoteController extends Controller
     {
         if ($note->user_id !== Auth::id()) {
             abort(403);
+        }
+
+        // Filtrar las notas por rol
+        if (Auth::user()->is_admin) {
+            // Administrador: ve todas las notas
+            $notes = Note::with('category')->get();
+        } else {
+            // Usuario normal: solo sus notas
+            // $notes = Auth::user()->notes()->with('category')->get();
+            $notes = Auth::user();
+            $notes()->with('category')->get();
         }
         
         $categoriasConNotas = Category::withCount('notes')->get();
@@ -198,7 +260,18 @@ class NoteController extends Controller
     if ($note->user_id !== Auth::id()) {
         abort(403);
     }
-    
+
+    // Filtrar las notas por rol
+    if (Auth::user()->is_admin) {
+        // Administrador: ve todas las notas
+        $notes = Note::with('category')->get();
+    } else {
+        // Usuario normal: solo sus notas
+        // $notes = Auth::user()->notes()->with('category')->get();
+        $notes = Auth::user();
+        $notes()->with('category')->get();
+    }
+
     $request->validate([
         'title' => 'required|string|max:255',
         'content_markdown' => 'required|string',
@@ -243,4 +316,18 @@ class NoteController extends Controller
         
         return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias','categoriasConNotas'));
     }
+
+
+    public function takeOwnership()
+    {
+        // Verificar que es administrador
+        if (!Auth::user()->is_admin) {
+            abort(403, 'No autorizado');
+        }
+        
+        // Reasignar todas las notas al usuario actual
+        $total = Note::query()->update(['user_id' => Auth::id()]);
+        
+        return redirect()->route('notes.index')->with('success', "Se han reasignado {$total} notas a tu usuario.");
+    }   
 }

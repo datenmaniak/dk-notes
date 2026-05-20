@@ -40,7 +40,7 @@
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
 
         {{-- Sidebar --}}
-        <aside id="sidebar" class="fixed lg:relative inset-y-0 left-0 w-64 bg-[#7700F0] text-white transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 flex-shrink-0 h-full overflow-y-auto lg:block">
+        <aside id="sidebar" class="fixed lg:relative inset-y-0 left-0 w-80 lg:w-80 bg-[#7700F0] text-white transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 flex-shrink-0 h-screen overflow-y-auto lg:block">
             <div class="h-full flex flex-col">
                 {{-- User Info --}}
                 <div class="p-6 border-b border-purple-400">
@@ -94,15 +94,16 @@
                 {{-- Selector de categorías --}}
                 <div class="px-4 pb-4">
                     <h3 class="text-xs font-semibold text-purple-200 uppercase tracking-wider mb-2">Filtrar por categoría</h3>
-                    <select id="categorySelect" class="w-full px-3 py-2 rounded-lg bg-purple-700 text-white border-none focus:ring-2 focus:ring-purple-300">
-                        <option value="{{ route('notes.index') }}">📋 Todas las notas</option>
+                    <select id="categorySelect" class="w-full px-3 py-2 rounded-lg bg-purple-700 text-gray-900 border-none focus:ring-2 focus:ring-purple-300">
+                        <option value="{{ route('notes.index') }}"  class="text-gray-900" >📋 Todas las notas</option>
                         @php
                             use App\Models\Category;
                             $categoriasSelect = Category::withCount('notes')->get();
                         @endphp
                         @foreach($categoriasSelect as $cat)
                             <option value="{{ route('notes.filter', $cat->slug) }}" 
-                                    {{ request()->route('categorySlug') == $cat->slug ? 'selected' : '' }}>
+                                class="text-gray-900"
+                                {{ request()->route('categorySlug') == $cat->slug ? 'selected' : '' }}>
                                 📁 {{ $cat->name }} ({{ $cat->notes_count }})
                             </option>
                         @endforeach

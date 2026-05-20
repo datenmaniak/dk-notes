@@ -19,35 +19,7 @@ class NoteController extends Controller
      */
     public function index()
     {
-        // ---  Obtener notas del usuario actual ---
-        // Alternativa 1: Relación directa (la actual, debe funcionar)
-        // $notes = Auth::user()->notes()->with('category')->get();
-
-        // Alternativa 2: Query manual por user_id
-        // $notes = Note::where('user_id', Auth::id())->with('category')->get();
-
-        // Alternativa 4: Obtener usuario primero
-        // $user = User::find(Auth::id());
-        // if (Auth::user()->is_admin) {
-        //     // $notes = $user->notes()->with('category')->get();
-
-        //     $notes = Note::with('category')->get(); // Todas las notas
-        // } else {
-        //     // $notes = Auth::user();
-        //     $notes = $user->notes()->with('category')->get();
-
-        //     // $note->with('category')->get(); // Solo sus notas
-        // }
-
-        // Filtrar las notas por rol
-        // remove 
-        // $user = User::find(Auth::id());
-        // if (Auth::user()->is_admin) {
-        //     $notes = Note::with('category')->get(); // Todas las notas
-        // } else {
-            // $notes = $user->notes()->with('category')->get(); // Solo sus notas
-        // }
-        // remove HASTA AQUI
+      
 
         // paginador  // Ajustar el digito para limitar la cantidad de notas a mostrar
         $perPage = request()->input('per_page', 5); 
@@ -57,17 +29,16 @@ class NoteController extends Controller
             // Administrador: ve todas las notas
             // $notes = Note::with('category')->get(); // reemplazado, al usar paginacion
             $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
+            $totalNotas = Note::count(); // Todas las notas
         } else {
             // Usuario normal: solo sus notas
             // $notes = Auth::user()->notes()->with('category')->get();
             $notes = Auth::user();
-            // $notes()->with('category')->get();
+            $totalNotas = Note::count(); // Solo sus notas
             $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
         }
 
 
-        // Conteo de notas para mostrar en el widget
-        $totalNotas = $notes->count();
         // total categorias
         $totalCategorias = Category::count();
 
@@ -312,16 +283,17 @@ class NoteController extends Controller
         
         if ($categorySlug) {
             $category = Category::where('slug', $categorySlug)->firstOrFail();
+            $totalNotas = $user->notes()->where('category_id', $category->id)->count();
             // $notes = $user->notes()->where('category_id', $category->id)->with('category')->get();
             $notes = $user->notes()->where('category_id', $category->id)->with('category')->paginate($perPage);  // ✅ Correcto
         } else {
-            $notes = $user->notes()->with('category')->get();
+            $totalNotas = $user->notes()->count();
+            // $notes = $user->notes()->with('category')->get();
+            $notes = $user->notes()->with('category')->paginate($perPage);
         }
         
-        $totalNotas = $user->notes()->count();
         $totalCategorias = Category::count();
         $categoriasConNotas = Category::withCount('notes')->get();
-
         
         return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias','categoriasConNotas'));
     }

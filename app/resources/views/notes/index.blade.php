@@ -120,6 +120,8 @@
             @if($notes->hasPages())
                 {{-- <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4"> --}}
                     <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+
+                    {{-- remove ya que se define desde la BD     --}}
                     <div class="flex items-center gap-2">
                         <span class="text-sm text-gray-600">notas por página</span>
                         {{-- <span class="text-sm text-gray-600">Mostrar:</span> --}}
@@ -130,6 +132,7 @@
                               
                         </select>
                     </div>
+                    {{-- remove --}}
                     
                      {{-- Paginador automático de Laravel --}}
                     <div class="flex items-center gap-1">
@@ -141,42 +144,6 @@
 
         </div>
 
-
-
-    {{-- Filter Modal (Simple) --}}
-    {{-- <div id="filterModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div class="p-6">
-                <h3 class="text-lg font-semibold mb-4">Filtrar por categoría</h3>
-                <div class="space-y-2">
-                    <a href="{{ route('notes.filter') }}" class="block px-4 py-2 hover:bg-gray-100 rounded">📋 Todas las notas</a>
-                    @foreach(\App\Models\Category::all() as $category)
-                        <a href="{{ route('notes.filter', $category->slug) }}" class="block px-4 py-2 hover:bg-gray-100 rounded">
-                            📂 {{ $category->name }}
-                        </a>
-                    @endforeach
-                </div>
-
-                @foreach(\App\Models\Category::all() as $category)
-                <div class="flex items-center justify-between">
-                    <a href="{{ route('notes.filter', $category->slug) }}" class="block px-4 py-2 hover:bg-gray-100 rounded flex-1">
-                        📂 {{ $category->name }}
-                    </a>
-                    <form method="POST" action="{{ route('categories.destroy', $category) }}" 
-                        onsubmit="return confirm('¿Eliminar categoría \"{{ $category->name }}\"? Solo si no tiene notas.')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-500 hover:text-red-700 px-2" title="Eliminar categoría">🗑️</button>
-                    </form>
-                </div>
-                @endforeach
-
-                <div class="mt-4 text-right">
-                    <button onclick="closeModal()" class="px-4 py-2 bg-gray-200 rounded">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 
         <div id="filterModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
             <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">

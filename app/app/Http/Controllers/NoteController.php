@@ -20,7 +20,6 @@ class NoteController extends Controller
     public function index()
     {
         // ---  Obtener notas del usuario actual ---
-
         // Alternativa 1: Relación directa (la actual, debe funcionar)
         // $notes = Auth::user()->notes()->with('category')->get();
 
@@ -50,15 +49,20 @@ class NoteController extends Controller
         // }
         // remove HASTA AQUI
 
+        // paginador  // Ajustar el digito para limitar la cantidad de notas a mostrar
+        $perPage = request()->input('per_page', 5); 
+
         // Filtrar las notas por rol
         if (Auth::user()->is_admin) {
             // Administrador: ve todas las notas
-            $notes = Note::with('category')->get();
+            // $notes = Note::with('category')->get(); // reemplazado, al usar paginacion
+            $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
         } else {
             // Usuario normal: solo sus notas
             // $notes = Auth::user()->notes()->with('category')->get();
             $notes = Auth::user();
-            $notes()->with('category')->get();
+            // $notes()->with('category')->get();
+            $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
         }
 
 
@@ -300,11 +304,16 @@ class NoteController extends Controller
 
     public function filter($categorySlug = null)
     {
+
+        // paginador
+        $perPage = request()->input('per_page', 5);
+
         $user = \App\Models\User::find(Auth::id());
         
         if ($categorySlug) {
             $category = Category::where('slug', $categorySlug)->firstOrFail();
-            $notes = $user->notes()->where('category_id', $category->id)->with('category')->get();
+            // $notes = $user->notes()->where('category_id', $category->id)->with('category')->get();
+            $notes = $user->notes()->where('category_id', $category->id)->with('category')->paginate($perPage);  // ✅ Correcto
         } else {
             $notes = $user->notes()->with('category')->get();
         }

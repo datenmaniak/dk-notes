@@ -107,11 +107,55 @@
                         </div>
                     </li>
                 @endforeach
-
                 </ul>
             @endif
+
+            {{-- Paginador --}}
+            @if($notes->lastPage() > 1)
+                <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600">Mostrar:</span>
+                        <select id="perPageSelect" class="px-2 py-1 border rounded-lg text-sm">
+                            <option value="5" {{ request()->get('per_page', 10) == 5 ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ request()->get('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
+                            <option value="20" {{ request()->get('per_page', 10) == 20 ? 'selected' : '' }}>20</option>
+                        </select>
+                        <span class="text-sm text-gray-600">notas por página</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-1">
+                        {{-- Botón anterior --}}
+                        @if($notes->onFirstPage())
+                            <span class="px-3 py-1 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed">« Anterior</span>
+                        @else
+                            <a href="{{ $notes->previousPageUrl() }}&per_page={{ request()->input('per_page', 5) }}" 
+                            class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200">« Anterior</a>
+                        @endif
+                        
+                        {{-- Números de página --}}
+                        @foreach(range(1, $notes->lastPage()) as $page)
+                            @if($page == $notes->currentPage())
+                                <span class="px-3 py-1 rounded-lg bg-[#7700F0] text-white">{{ $page }}</span>
+                            @else
+                                <a href="{{ $notes->url($page) }}&per_page={{ request()->input('per_page', 5) }}" 
+                                class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200">{{ $page }}</a>
+                            @endif
+                        @endforeach
+                        
+                        {{-- Botón siguiente --}}
+                        @if($notes->hasMorePages())
+                            <a href="{{ $notes->nextPageUrl() }}&per_page={{ request()->input('per_page', 5) }}" 
+                            class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200">Siguiente »</a>
+                        @else
+                            <span class="px-3 py-1 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed">Siguiente »</span>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
         </div>
-    </div>
+
+
 
     {{-- Filter Modal (Simple) --}}
     {{-- <div id="filterModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">

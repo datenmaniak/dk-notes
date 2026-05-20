@@ -27,7 +27,8 @@
 
    
     {{-- Contenedor padre --}}
-    <div class="min-h-screen bg-gray-100 flex flex-col lg:flex-row">
+    {{-- <div class="min-h-screen bg-gray-100 flex flex-col lg:flex-row"> // before altura automatica (100vh) --}}
+        <div class="h-screen bg-gray-100 flex flex-col lg:flex-row overflow-hidden">
         {{-- Botón hamburguesa para móvil --}}
         <button id="menuToggle" class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-[#7700F0] text-white shadow-lg">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,8 +63,9 @@
                     </a>
                 </nav>
 
+                {{-- remove  --}}
                 {{-- Categorías con contador --}}
-                <div class="px-4 pb-4">
+                {{-- <div class="px-4 pb-4">
                     <h3 class="text-xs font-semibold text-purple-200 uppercase tracking-wider mb-2">Categorías</h3>
                     <div class="space-y-1">
                         @php
@@ -85,7 +87,33 @@
                             </div>
                         @endforelse
                     </div>
+                </div> --}}
+                {{-- remove hasta aqui --}}
+
+                {{-- BEGIN selector de categorias tipo selector  --}}
+                {{-- Selector de categorías --}}
+                <div class="px-4 pb-4">
+                    <h3 class="text-xs font-semibold text-purple-200 uppercase tracking-wider mb-2">Filtrar por categoría</h3>
+                    <select id="categorySelect" class="w-full px-3 py-2 rounded-lg bg-purple-700 text-white border-none focus:ring-2 focus:ring-purple-300">
+                        <option value="{{ route('notes.index') }}">📋 Todas las notas</option>
+                        @php
+                            use App\Models\Category;
+                            $categoriasSelect = Category::withCount('notes')->get();
+                        @endphp
+                        @foreach($categoriasSelect as $cat)
+                            <option value="{{ route('notes.filter', $cat->slug) }}" 
+                                    {{ request()->route('categorySlug') == $cat->slug ? 'selected' : '' }}>
+                                📁 {{ $cat->name }} ({{ $cat->notes_count }})
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
+
+                <script>
+                    document.getElementById('categorySelect')?.addEventListener('change', function() {
+                        window.location.href = this.value;
+                    });
+                </script>
 
                 {{-- Administración (solo para admin) --}}
                 @if(Auth::check() && Auth::user()->is_admin)
@@ -118,7 +146,8 @@
         </aside>
 
         {{-- Main Content --}}
-        <main class="lg:ml-64 min-h-screen">
+        {{-- <main class="lg:ml-64 min-h-screen"> // before apply (100vh) --}}
+            <main class="flex-1 lg:ml-64 overflow-y-auto">
             @if(session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded m-4">
                     {{ session('success') }}

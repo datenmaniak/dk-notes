@@ -112,7 +112,13 @@ class ImportNotesCommand extends Command
             $categoriaId = $categoria->id;
             $this->line("   📂 Categoría: " . $nombreCategoria . " (ID: " . $categoriaId . ")");
         } else {
-            $this->line("   📂 Sin categoría");
+            // Sin categoría -> asignar "General"
+            $categoria = Category::firstOrCreate(
+                ['slug' => 'general'],
+                ['name' => 'General']
+            );
+             $categoriaId = $categoria->id;
+            $this->line("   📂 Categoría: " . $nombreCategoria . " (ID: " . $categoriaId . ")");
         }
         
         // 2. Leer el contenido del archivo
@@ -126,6 +132,11 @@ class ImportNotesCommand extends Command
         
         // 4. Extraer título
         $titulo = $this->extraerTitulo($contenido, basename($archivo));
+        // Truncar a 250 caracteres máximo
+        if (strlen($titulo) > 250) {
+            $titulo = substr($titulo, 0, 247) . '...';
+        }
+
         $this->line("   📝 Título: " . $titulo);
         
         // 5. Calcular checksum (hash del contenido)

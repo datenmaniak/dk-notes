@@ -39,8 +39,8 @@ services:
     userns_mode: "keep-id"
     volumes:
       - ./app:/var/www/html
-      - ~/notes:/var/www/html/notes   # Directorio de notas 
-      - ~/notes/images:/var/www/html/public/images   # Directorio de imagenes de las notas
+      # - ~/notes:/var/www/html/notes   # Directorio de notas 
+      # - ~/notes/images:/var/www/html/public/images   # Directorio de imagenes de las notas
     networks:
       - dk-network
     ports:

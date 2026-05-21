@@ -345,6 +345,16 @@ class NoteController extends Controller
             'content_markdown' => 'required|string',
             'category_id' => 'nullable|exists:categories,id'
         ]);
+
+         // Procesar categoría: asignar "General" por defecto si no hay
+        $categoryId = $request->category_id;
+        if (empty($categoryId)) {
+            $defaultCategory = Category::firstOrCreate(
+                ['slug' => 'general'],
+                ['name' => 'General']
+            );
+            $categoryId = $defaultCategory->id;
+        }
         
         $slug = Str::slug($request->title) . '-' . uniqid();
         $html = Parsedown::instance()->text($request->content_markdown);
@@ -356,7 +366,8 @@ class NoteController extends Controller
             'content_markdown' => $request->content_markdown,
             'content_html' => $html,
             'checksum' => $checksum,
-            'category_id' => $request->category_id,
+            // 'category_id' => $request->category_id,
+            'category_id' => $categoryId,
             'user_id' => Auth::id(),
             'created_at' => now(),
             'updated_at' => now(),

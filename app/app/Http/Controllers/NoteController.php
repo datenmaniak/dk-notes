@@ -606,4 +606,24 @@ class NoteController extends Controller
         }
         return pathinfo($nombreArchivo, PATHINFO_FILENAME);
     }
+
+    // Elimina toda las notas 
+    public function deleteAll()
+    {
+        // Verificar que es administrador
+        if (!Auth::user()->is_admin) {
+            abort(403, 'No autorizado. Solo administradores pueden eliminar todas las notas.');
+        }
+        
+        // Contar notas antes de eliminar
+        $count = Note::count();
+        
+        // Eliminar todas las notas
+        Note::truncate();
+        
+        // Mensaje de éxito
+        $message = "Se han eliminado {$count} notas permanentemente.";
+        
+        return redirect()->route('settings.index')->with('success', $message);
+    }
 }

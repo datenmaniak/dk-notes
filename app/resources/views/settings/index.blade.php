@@ -79,7 +79,27 @@
                         💾 Guardar cambios
                     </button>
                 </div>
+
             </form>
+
+                {{-- Zona peligrosa - Solo visible para administrador --}}
+                @if(Auth::user()->is_admin)
+                    <div class="mt-6 p-4 border-2 border-red-300 bg-red-50 rounded-lg">
+                        <h3 class="text-lg font-semibold text-red-700 mb-2">⚠️ Zona peligrosa</h3>
+                        <p class="text-sm text-red-600 mb-3">
+                            Esta acción eliminará <strong>TODAS las notas</strong> permanentemente.<br>
+                            Las categorías, usuarios y configuraciones no se verán afectadas.
+                        </p>
+                        <form method="POST" action="{{ route('notes.delete-all') }}" 
+                            onsubmit="return confirm('¿Eliminar TODAS las notas? Esta acción no se puede deshacer.')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition flex items-center gap-2">
+                                🗑️ Eliminar todas las notas
+                            </button>
+                        </form>
+                    </div>
+                @endif
         </div>
     </div>
 </x-app-layout>

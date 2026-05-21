@@ -15,7 +15,8 @@ class SettingsController extends Controller
         $settings = [
             'notas_por_pagina' => UserSetting::getValue($userId, 'notas_por_pagina', '5'),
             'tema' => UserSetting::getValue($userId, 'tema', 'auto'),
-            'directorio_notas' => UserSetting::getValue($userId, 'directorio_notas', base_path('notes')),
+            'directorio_notas' => UserSetting::getValue($userId, 'directorio_notas', base_path('public/notes')),
+            // 'directorio_notas' => UserSetting::getValue($userId, 'directorio_notas', base_path('notes')),
         ];
         
         return view('settings.index', compact('settings'));

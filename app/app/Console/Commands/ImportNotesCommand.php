@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\File;
 
 
 use Parsedown;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 #[Signature('notes:import')]
 #[Description('Importa notas Markdown desde un directorio')]
@@ -36,7 +38,11 @@ class ImportNotesCommand extends Command
         $this->error("❌ No hay usuarios en el sistema.");
     return 1;
 }
-    $directorioNotas = UserSetting::getValue($usuario->id, 'directorio_notas', base_path('notes'));
+    // ruta por defecto: /var/www/html/public/notes
+    // en caso que el propietario/usuario no especifique otra ruta
+    $directorioNotas = UserSetting::getValue($usuario->id, 'directorio_notas', base_path('public/notes'));
+    // $directorioNotas = UserSetting::getValue($usuario->id, 'directorio_notas', base_path('notes'));
+    // en la seccion de Configuracion
 
     // 1.1. Convertir ~ a la ruta del home del usuario
     if (str_starts_with($directorioNotas, '~/')) {
@@ -163,8 +169,8 @@ class ImportNotesCommand extends Command
     {
         $archivos = [];
 
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directorio, \RecursiveDirectoryIterator::SKIP_DOTS)
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directorio, RecursiveDirectoryIterator::SKIP_DOTS)
         );
 
         foreach ($iterator as $archivo) {

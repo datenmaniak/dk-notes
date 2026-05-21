@@ -72,7 +72,7 @@
         <aside id="sidebar" class="fixed lg:relative inset-y-0 left-0 w-80 lg:w-80 bg-[#7700F0] text-white transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 flex-shrink-0 h-screen overflow-y-auto lg:block">
             <div class="h-full flex flex-col">
                 {{-- User Info --}}
-                <div class="p-6 border-b border-purple-400">
+                <div class="p-6 border-b border-purple-400">http://localhost/notes/
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 rounded-full bg-purple-300 flex items-center justify-center text-purple-800 font-bold">
                             {{ substr(Auth::user()->name, 0, 1) }}

@@ -6,11 +6,13 @@ use Illuminate\Support\Str;
 use App\Models\Category;
 use App\Models\Note;
 use App\Models\User;
+use App\Models\UserSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 // use Illuminate\Container\Attributes\Auth;
 // use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Parsedown;
 
@@ -24,7 +26,8 @@ class NoteController extends Controller
       
 
         // paginador  // Ajustar el digito para limitar la cantidad de notas a mostrar
-        $perPage = request()->input('per_page', 5); 
+        // $perPage = request()->input('per_page', 5); // reemplazado por config desde la BD
+        $perPage = UserSetting::getValue(Auth::id(), 'notas_por_pagina', 5);
 
         // Filtrar las notas por rol
         if (Auth::user()->is_admin) {
@@ -35,8 +38,14 @@ class NoteController extends Controller
         } else {
             // Usuario normal: solo sus notas
             // $notes = Auth::user()->notes()->with('category')->get();
-            $notes = Auth::user();
+            // $notes = Auth::user()->$notes()->with('category')->paginate($perPage);
+
+            
+            $notes = Note::where('user_id', Auth::id())->with('category')->paginate($perPage);
+
             $totalNotas = Note::count(); // Solo sus notas
+
+            $notes = Auth::user();
             $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
         }
 
@@ -87,20 +96,22 @@ class NoteController extends Controller
     public function show(Note $note)
     {
         // Verificar que la nota pertenece al usuario autenticado
-        if ($note->user_id !== Auth::id()) {
+        if ($note->user_id !== Auth::id() && !Auth::user()->is_admin) {
             abort(403, 'No autorizado');
         }
 
+        // remove este bloque
         // Filtrar las notas por rol
-        if (Auth::user()->is_admin) {
-            // Administrador: ve todas las notas
-            $notes = Note::with('category')->get();
-        } else {
-            // Usuario normal: solo sus notas
-            // $notes = Auth::user()->notes()->with('category')->get();
-            $notes = Auth::user();
-            $notes()->with('category')->get();
-        }
+        // if (Auth::user()->is_admin) {
+        //     // Administrador: ve todas las notas
+        //     $notes = Note::with('category')->get();
+        // } else {
+        //     // Usuario normal: solo sus notas
+        //     // $notes = Auth::user()->notes()->with('category')->get();
+        //     $notes = Auth::user();
+        //     $notes()->with('category')->get();
+        // }
+        // remove 
 
         // Conteo de notas por categorias
         $categoriasConNotas = Category::withCount('notes')->get();
@@ -190,20 +201,22 @@ class NoteController extends Controller
 
     public function destroy(Note $note)
     {
-        if ($note->user_id !== Auth::id()) {
+        if ($note->user_id !== Auth::id() && !Auth::user()->is_admin) {
             abort(403);
         }
 
-        // Filtrar las notas por rol
-        if (Auth::user()->is_admin) {
-            // Administrador: ve todas las notas
-            $notes = Note::with('category')->get();
-        } else {
-            // Usuario normal: solo sus notas
-            // $notes = Auth::user()->notes()->with('category')->get();
-            $notes = Auth::user();
-            $notes()->with('category')->get();
-        }
+        // remove este bloque 
+        // // Filtrar las notas por rol
+        // if (Auth::user()->is_admin) {
+        //     // Administrador: ve todas las notas
+        //     $notes = Note::with('category')->get();
+        // } else {
+        //     // Usuario normal: solo sus notas
+        //     // $notes = Auth::user()->notes()->with('category')->get();
+        //     $notes = Auth::user();
+        //     $notes()->with('category')->get();
+        // }
+        // remove hasta aqui 
         
         $note->delete();
         return redirect()->route('notes.index')->with('success', 'Nota eliminada.');
@@ -211,20 +224,22 @@ class NoteController extends Controller
 
      public function edit(Note $note)
     {
-        if ($note->user_id !== Auth::id()) {
+        if ($note->user_id !== Auth::id() && !Auth::user()->is_admin) {
             abort(403);
         }
 
+        // remove este bloque 
         // Filtrar las notas por rol
-        if (Auth::user()->is_admin) {
-            // Administrador: ve todas las notas
-            $notes = Note::with('category')->get();
-        } else {
-            // Usuario normal: solo sus notas
-            // $notes = Auth::user()->notes()->with('category')->get();
-            $notes = Auth::user();
-            $notes()->with('category')->get();
-        }
+        // if (Auth::user()->is_admin) {
+        //     // Administrador: ve todas las notas
+        //     $notes = Note::with('category')->get();
+        // } else {
+        //     // Usuario normal: solo sus notas
+        //     // $notes = Auth::user()->notes()->with('category')->get();
+        //     $notes = Auth::user();
+        //     $notes()->with('category')->get();
+        // }
+        // remove hasta aqui
         
         $categoriasConNotas = Category::withCount('notes')->get();
 
@@ -233,53 +248,56 @@ class NoteController extends Controller
 
 
     public function update(Request $request, Note $note)
-{
-    if ($note->user_id !== Auth::id()) {
-        abort(403);
-    }
+    {
+        if ($note->user_id !== Auth::id() && !Auth::user()->is_admin) {
+            abort(403);
+        }
 
-    // Filtrar las notas por rol
-    if (Auth::user()->is_admin) {
-        // Administrador: ve todas las notas
-        $notes = Note::with('category')->get();
-    } else {
-        // Usuario normal: solo sus notas
-        // $notes = Auth::user()->notes()->with('category')->get();
-        $notes = Auth::user();
-        $notes()->with('category')->get();
-    }
+        // remove este bloque 
+        // Filtrar las notas por rol
+        // if (Auth::user()->is_admin) {
+        //     // Administrador: ve todas las notas
+        //     $notes = Note::with('category')->get();
+        // } else {
+        //     // Usuario normal: solo sus notas
+        //     // $notes = Auth::user()->notes()->with('category')->get();
+        //     $notes = Auth::user();
+        //     $notes()->with('category')->get();
+        // }
+        // remove hasta aqui 
 
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'content_markdown' => 'required|string',
-        'category_id' => 'nullable|exists:categories,id'
-    ]);
-    
-    // Calcular nuevo checksum del contenido
-    $newChecksum = md5($request->content_markdown);
-    
-    $note->update([
-        'title' => $request->title,
-        'content_markdown' => $request->content_markdown,
-        'content_html' => \Parsedown::instance()->text($request->content_markdown),
-        'category_id' => $request->category_id,
-        'checksum' => $newChecksum,
-        'updated_at' => now(),
-    ]);
-    
-    // Si la nota tiene file_path, actualizar el archivo original (opcional)
-    if ($note->file_path && file_exists(dirname($note->file_path))) {
-        file_put_contents($note->file_path, $request->content_markdown);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content_markdown' => 'required|string',
+            'category_id' => 'nullable|exists:categories,id'
+        ]);
+        
+        // Calcular nuevo checksum del contenido
+        $newChecksum = md5($request->content_markdown);
+        
+        $note->update([
+            'title' => $request->title,
+            'content_markdown' => $request->content_markdown,
+            'content_html' => \Parsedown::instance()->text($request->content_markdown),
+            'category_id' => $request->category_id,
+            'checksum' => $newChecksum,
+            'updated_at' => now(),
+        ]);
+        
+        // Si la nota tiene file_path, actualizar el archivo original (opcional)
+        if ($note->file_path && file_exists(dirname($note->file_path))) {
+            file_put_contents($note->file_path, $request->content_markdown);
+        }
+        
+            return redirect()->route('notes.show', $note)->with('success', 'Nota actualizada.');
     }
-    
-    return redirect()->route('notes.show', $note)->with('success', 'Nota actualizada.');
-}
 
     public function filter($categorySlug = null)
     {
 
         // paginador
-        $perPage = request()->input('per_page', 5);
+        // $perPage = request()->input('per_page', 5); // Configurable desde la BD
+        $perPage = UserSetting::getValue(Auth::id(), 'notas_por_pagina', 5);
 
         $user = \App\Models\User::find(Auth::id());
         
@@ -345,5 +363,236 @@ class NoteController extends Controller
         ]);
         
         return redirect()->route('notes.show', $note)->with('success', 'Nota creada correctamente.');
+    }
+
+    // BEGIN 
+    // public function upload(Request $request)
+    // {
+
+    //     //  dd($request->all()); // ← Agrega esta línea al principio
+
+    //     $request->validate([
+    //         'file' => 'required|file|mimes:md,markdown|max:2048', // máx 2MB
+    //         'category_id' => 'nullable|string',
+    //         'new_category' => 'nullable|string|max:100'
+    //     ]);
+
+    //      dd('1. Validación pasó'); // ← Punto 1
+
+    //     // AGREGAR LOGS AQUÍ
+    //     Log::info('=== SUBIR NOTA ===');
+    //     Log::info('Category ID recibido: ' . $request->category_id);
+    //     Log::info('New category: ' . $request->new_category);
+    
+    //     // Procesar categoría
+    //     $categoryId = null;
+
+
+    //     if ($request->category_id == 'new' && $request->new_category) {
+    //         // Crear nueva categoría
+    //         Log::info('Creando nueva categoría: ' . $request->new_category);
+    //         $slug = Str::slug($request->new_category);
+    //         $category = Category::firstOrCreate(
+    //             ['slug' => $slug],
+    //             ['name' => $request->new_category]
+    //         );
+    //         $categoryId = $category->id;
+    //         Log::info('Categoría creada con ID: ' . $categoryId);
+    //     } elseif (is_numeric($request->category_id) && $request->category_id > 0) {
+    //         // Usar categoría existente
+    //         Log::info('Usando categoría existente ID: ' . $categoryId);
+    //         $categoryId = (int) $request->category_id;
+    //     }
+
+    //     //   dd('2. Categoría procesada: ' . $categoryId); // ← Punto 2
+        
+    //     Log::info('Category ID final: ' . $categoryId);
+
+    //     // Leer el archivo subido
+    //     $file = $request->file('file');
+    //     $contenido = File::get($file->getPathname());
+    //     $nombreArchivo = $file->getClientOriginalName();
+        
+    //     //    dd('3. Archivo leído: ' . strlen($contenido) . ' bytes'); // ← Punto 3
+
+    //     // Extraer título
+    //     $titulo = $this->extraerTitulo($contenido, $nombreArchivo);
+        
+    //     // Convertir Markdown a HTML
+    //     $parsedown = new Parsedown();
+    //     $html = $parsedown->text($contenido);
+        
+    //     // Calcular checksum
+    //     $checksum = md5($contenido);
+        
+    //     // Verificar duplicado por checksum
+    //     $existente = Note::where('checksum', $checksum)->first();
+    //     if ($existente) {
+    //         return redirect()->route('notes.index')->with('warning', 'La nota ya existe: ' . $existente->title);
+    //     }
+        
+    //     // Crear slug único
+    //     $slug = Str::slug($titulo) . '-' . uniqid();
+        
+    //     // Guardar nota
+    //     $note = Note::create([
+    //         'title' => $titulo,
+    //         'slug' => $slug,
+    //         'content_markdown' => $contenido,
+    //         'content_html' => $html,
+    //         'checksum' => $checksum,
+    //         'category_id' => $categoryId ?: null,
+    //         'user_id' => Auth::id(),
+    //         'created_at' => now(),
+    //         'updated_at' => now(),
+    //     ]);
+
+    //     Log::info('Nota guardada con ID: ' . ($note->id ?? 'no creada'));
+        
+    //     return redirect()->route('notes.show', $note)->with('success', 'Nota subida correctamente.');
+    // }
+    // END  
+
+    public function upload(Request $request)
+{
+    try {
+
+        // // ✅ AGREGAR ESTO AL PRINCIPIO
+        // $file = $request->file('file');
+        // dd([
+        // 'nombre' => $file->getClientOriginalName(),
+        // 'extension' => $file->getClientOriginalExtension(),
+        // 'mime' => $file->getMimeType(),
+        // 'tamaño' => $file->getSize(),
+        // ]);
+
+        // Punto 1: Validación del archivo .md a subir
+        $request->validate([
+            'file' => 'required|file|max:20480',
+            'category_id' => 'nullable|string',
+            'new_category' => 'nullable|string|max:100'
+            ]);
+            
+            // 'file' => 'required|file|mimes:md,markdown,txt,text/plain|max:2048',
+        // 'file' => 'required|file|mimes:md,markdown|max:2048',
+
+
+        // Punto 2: Procesar categoría
+        $categoryId = null;
+        
+        // begin bloque a remover 
+        // if ($request->category_id == 'new' && $request->new_category) {
+        //     $slug = Str::slug($request->new_category);
+        //     $category = Category::firstOrCreate(
+        //         ['slug' => $slug],
+        //         ['name' => $request->new_category]
+        //     );
+        //     $categoryId = $category->id;
+        // } elseif (is_numeric($request->category_id) && $request->category_id > 0) {
+        //     $categoryId = (int) $request->category_id;
+        // }
+        // END remove si funciona 
+        // Procesar categoría
+        // $categoryId = null;
+
+        // remove desde aqui
+        // Si se proporcionó una nueva categoría (texto), úsala primero
+        // if ($request->new_category && trim($request->new_category) !== '') {
+        //     $slug = \Str::slug($request->new_category);
+        //     $category = Category::firstOrCreate(
+        //         ['slug' => $slug],
+        //         ['name' => $request->new_category]
+        //     );
+        //     $categoryId = $category->id;
+        // } 
+        // // Si no, usar la categoría seleccionada en el select (si es numérica)
+        // elseif (is_numeric($request->category_id) && $request->category_id > 0) {
+        //     $categoryId = (int) $request->category_id;
+        // }
+        // remover 
+      
+        // 1. Si se escribió nueva categoría (texto)
+        if ($request->new_category && trim($request->new_category) !== '') {
+            $slug = Str::slug($request->new_category);
+            $category = Category::firstOrCreate(
+                ['slug' => $slug],
+                ['name' => trim($request->new_category)]
+            );
+            $categoryId = $category->id;
+        } 
+        // 2. Si se seleccionó una categoría existente (ID numérico)
+        elseif (is_numeric($request->category_id) && $request->category_id > 0) {
+            $categoryId = (int) $request->category_id;
+        }
+        // 3. Si no hay categoría, asignar "General" por defecto
+        else {
+            $defaultCategory = Category::firstOrCreate(
+                ['slug' => 'general'],
+                ['name' => 'General']
+            );
+            $categoryId = $defaultCategory->id;
+        }
+        
+        // Punto 3: Leer archivo
+        $file = $request->file('file');
+        $contenido = File::get($file->getPathname());
+        $nombreArchivo = $file->getClientOriginalName();
+        
+        // Punto 4: Extraer título
+        $titulo = $this->extraerTitulo($contenido, $nombreArchivo);
+
+        // Limitar a 255 caracteres
+        $titulo = substr($titulo, 0, 250);
+        
+        // Punto 5: Convertir Markdown a HTML
+        $parsedown = new Parsedown();
+        $html = $parsedown->text($contenido);
+        
+        // Punto 6: Calcular checksum
+        $checksum = md5($contenido);
+        
+        // Punto 7: Verificar duplicado
+        $existente = Note::where('checksum', $checksum)->first();
+        if ($existente) {
+            return redirect()->route('notes.index')->with('error', 'La nota ya existe: ' . $existente->title);
+        }
+        
+        // Punto 8: Crear slug
+        $slug = Str::slug($titulo) . '-' . uniqid();
+        
+        // Punto 9: Guardar nota
+        $note = Note::create([
+            'title' => $titulo,
+            'slug' => $slug,
+            'content_markdown' => $contenido,
+            'content_html' => $html,
+            'checksum' => $checksum,
+            'category_id' => $categoryId,
+            'user_id' => Auth::id(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        
+        return redirect()->route('notes.show', $note)->with('success', '✅ Nota subida correctamente. ID: ' . $note->id);
+        
+    } catch (\Exception $e) {
+        // Capturar cualquier error y mostrarlo en la página de notas
+        return redirect()->route('notes.index')->with('error', '❌ Error al subir: ' . $e->getMessage() . ' - Línea: ' . $e->getLine());
+    }
+}
+
+    // Reutilizar el método extraerTitulo (si no existe, créalo)
+    private function extraerTitulo(string $contenido, string $nombreArchivo): string
+    {
+
+        //   dd('4. Título: ' . $titulo); // ← Punto 4
+
+        $lineas = explode("\n", $contenido);
+        foreach ($lineas as $linea) {
+            if (str_starts_with(trim($linea), '# ')) {
+                return trim(substr(trim($linea), 2));
+            }
+        }
+        return pathinfo($nombreArchivo, PATHINFO_FILENAME);
     }
 }

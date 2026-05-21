@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use App\Models\Category;
 use App\Models\Note;
 use App\Models\User;
+use App\Models\UserSetting;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -29,8 +30,13 @@ class ImportNotesCommand extends Command
     {
 
     // 1. Definir la ruta del directorio de notas
-    // $directorioNotas = 'notes'; // REMOVE
-    $directorioNotas = base_path('notes');
+    // $directorioNotas = base_path('notes'); // configurable desde la BD
+    $usuario = User::first();
+    if (!$usuario) {
+        $this->error("❌ No hay usuarios en el sistema.");
+    return 1;
+}
+    $directorioNotas = UserSetting::getValue($usuario->id, 'directorio_notas', base_path('notes'));
 
     // 1.1. Convertir ~ a la ruta del home del usuario
     if (str_starts_with($directorioNotas, '~/')) {

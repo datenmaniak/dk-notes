@@ -22,6 +22,35 @@
     <title>{{ config('app.name', 'DKNotes') }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Aplica preferencias del usuario para el tema claro/oscuro--}}
+    @php
+    use App\Models\UserSetting;
+    $tema = UserSetting::getValue(Auth::id(), 'tema', 'auto');
+    @endphp
+
+    @if($tema == 'dark')
+        <style>
+            body { background-color: #1a1a2e; color: #eee; }
+            .bg-white { background-color: #16213e !important; }
+            .text-gray-900 { color: #eee !important; }
+            .border-gray-200 { border-color: #2c3e50 !important; }
+            .bg-gray-100 { background-color: #0f3460 !important; }
+            .bg-gray-50 { background-color: #0f3460 !important; }
+        </style>
+    @elseif($tema == 'auto')
+        <style>
+            @media (prefers-color-scheme: dark) {
+                body { background-color: #1a1a2e; color: #eee; }
+                .bg-white { background-color: #16213e !important; }
+                .text-gray-900 { color: #eee !important; }
+                .border-gray-200 { border-color: #2c3e50 !important; }
+                .bg-gray-100 { background-color: #0f3460 !important; }
+                .bg-gray-50 { background-color: #0f3460 !important; }
+            }
+        </style>
+    @endif
+
 </head>
 <body class="font-sans antialiased">
 
@@ -61,6 +90,14 @@
                         <span>📋</span>
                         <span>Mis Notas</span>
                     </a>
+
+                    {{-- NUEVO: Configuración --}}
+                 {{-- Preferencias del usuario --}}
+
+                    <a href="{{ route('settings.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-700 transition">
+                    <span>⚙️</span>
+                    <span>Configuración</span>
+                    </a>
                 </nav>
 
                 {{-- remove  --}}
@@ -89,6 +126,8 @@
                     </div>
                 </div> --}}
                 {{-- remove hasta aqui --}}
+
+           
 
                 {{-- BEGIN selector de categorias tipo selector  --}}
                 {{-- Selector de categorías --}}

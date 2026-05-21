@@ -1,8 +1,6 @@
 <x-app-layout>
     <div class="p-6 pt-16 lg:pt-6">
-        {{-- ============================================ --}}
-        {{-- TARJETAS DE ESTADÍSTICAS --}}
-        {{-- ============================================ --}}
+        {{-- Stats Cards --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center justify-between">
@@ -24,9 +22,7 @@
             </div>
         </div>
 
-        {{-- ============================================ --}}
-        {{-- BOTONES DE ACCIÓN --}}
-        {{-- ============================================ --}}
+        {{-- Action Buttons --}}
         <div class="bg-white rounded-lg shadow p-4 mb-6 flex flex-wrap gap-3">
             <a href="{{ route('notes.index') }}" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition flex items-center gap-2">
                 📋 Listar todas
@@ -34,18 +30,22 @@
             <button id="filterBtn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition flex items-center gap-2">
                 🔍 Filtrar
             </button>
+
             <button id="uploadNoteBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition flex items-center gap-2">
                 📤 Subir nota
             </button>
+           
             <form method="POST" action="{{ route('notes.sync') }}" class="inline">
                 @csrf
                 <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition flex items-center gap-2">
                     🔄 Sincronizar
                 </button>
             </form>
+            
             <a href="{{ route('notes.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition flex items-center gap-2">
                 📝 Nueva nota
             </a>
+            
             <form method="POST" action="{{ route('categories.recalculate') }}" class="inline"
                 onsubmit="return confirm('¿Recalcular categorías? Esto detectará directorios nuevos y huérfanos. ¿Continuar?')">
                 @csrf
@@ -55,9 +55,7 @@
             </form>
         </div>
 
-        {{-- ============================================ --}}
-        {{-- LISTADO DE NOTAS --}}
-        {{-- ============================================ --}}
+        {{-- Notes List --}}
         <div class="bg-white rounded-lg shadow overflow-hidden">
             @if($notes->isEmpty())
                 <div class="p-12 text-center text-gray-500">
@@ -129,9 +127,7 @@
             @endif
         </div>
 
-        {{-- ============================================ --}}
-        {{-- MODAL: FILTRAR POR CATEGORÍA --}}
-        {{-- ============================================ --}}
+        {{-- Modal Filtrar --}}
         <div id="filterModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
             <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
                 <div class="p-6">
@@ -163,9 +159,7 @@
             </div>
         </div>
 
-        {{-- ============================================ --}}
-        {{-- MODAL: SUBIR NOTA --}}
-        {{-- ============================================ --}}
+        {{-- Modal Subir Nota --}}
         <div id="uploadModal" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
             <div class="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
                 <div class="p-6">
@@ -174,7 +168,6 @@
                     <form id="uploadForm" method="POST" action="{{ route('notes.upload') }}" enctype="multipart/form-data">
                         @csrf
                         
-                        {{-- Selección de archivo --}}
                         <div class="mb-4">
                             <label class="block text-gray-700 font-medium mb-2">Archivo Markdown (.md)</label>
                             <input type="file" name="file" accept=".md" required
@@ -182,28 +175,44 @@
                             <p class="text-xs text-gray-500 mt-1">Selecciona un archivo .md de tu computadora</p>
                         </div>
                         
-                        {{-- Categorías existentes (opcional) --}}
                         <div class="mb-4">
-                            <label class="block text-gray-700 font-medium mb-2">Categoría existente (opcional)</label>
-                            <select name="category_id" class="w-full border-gray-300 rounded-lg">
-                                <option value="">-- Ninguna, usar "General" o la nueva --</option>
+                            <label class="block text-gray-700 font-medium mb-2">Categoría</label>
+                            <select name="category_id" id="categorySelect" class="w-full border-gray-300 rounded-lg">
+                                <option value="">-- Por defecto: General --</option>
                                 @foreach(\App\Models\Category::all() as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                 @endforeach
+                                {{-- <option value="new">+ Crear nueva categoría</option> --}}
                             </select>
+                            {{-- remove this block  --}}
+                            {{-- <select name="category_id" id="categorySelect" class="w-full border-gray-300 rounded-lg">
+                                <option value="">-- Seleccionar categoría --</option>
+                                @foreach(\App\Models\Category::all() as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                @endforeach
+                                <option value="new">+ Crear nueva categoría</option>
+                            </select> --}}
+                            {{-- remove block until here --}}
                         </div>
                         
-                        {{-- Nueva categoría (opcional) --}}
+                        {{-- <div class="mb-4 hidden" id="newCategoryDiv">
+                            <label class="block text-gray-700 font-medium mb-2">Nueva categoría</label>
+                            <input type="text" name="new_category" class="w-full border-gray-300 rounded-lg" placeholder="Ej: Laravel">
+                        </div>
+                         --}}
+
+                        {{-- <div class="mb-4" id="newCategoryDiv">
+                            <label class="block text-gray-700 font-medium mb-2">O crear nueva categoría</label>
+                            <input type="text" name="new_category" class="w-full border-gray-300 rounded-lg" placeholder="Escribe el nombre de una nueva categoría (opcional)">
+                            <p class="text-xs text-gray-500 mt-1">Si escribes una nueva categoría, se creará automáticamente</p>
+                        </div> --}}
+                        
                         <div class="mb-4">
                             <label class="block text-gray-700 font-medium mb-2">Nueva categoría (opcional)</label>
-                            <input type="text" name="new_category" class="w-full border-gray-300 rounded-lg" 
-                                placeholder="Ej: Laravel, Docker, PHP">
-                            <p class="text-xs text-gray-500 mt-1">
-                                Si escribes una nueva categoría, se creará automáticamente. 
-                                Si seleccionas una existente, se usará esa.
-                            </p>
+                            <input type="text" name="new_category" class="w-full border-gray-300 rounded-lg" placeholder="Escribe una nueva categoría. Si la escribes, se creará automáticamente.">
+                            <p class="text-xs text-gray-500 mt-1">Deja en blanco si no quieres crear una nueva categoría.</p>
                         </div>
-                        
+
                         <div class="flex justify-end gap-3">
                             <button type="button" onclick="closeUploadModal()" class="px-4 py-2 bg-gray-300 rounded-lg">Cancelar</button>
                             <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg">
@@ -211,22 +220,89 @@
                             </button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
-    </div>
-
-    {{-- ============================================ --}}
-    {{-- SCRIPTS --}}
-    {{-- ============================================ --}}
     <script>
-        /**
-         * DKNOTES - Funciones de interfaz
-         * Controla los modales de "Subir nota" y "Filtrar"
-         */
+    // Función para inicializar el comportamiento del select
+    function initCategorySelect() {
+        var select = document.getElementById('categorySelect');
+        var div = document.getElementById('newCategoryDiv');
         
-        (function() {
-            // Esperar a que el DOM esté cargado
+        if (select && div) {
+            // Remover eventos previos para evitar duplicados
+            var newSelect = select.cloneNode(true);
+            select.parentNode.replaceChild(newSelect, select);
+            
+            // Actualizar referencia
+            var finalSelect = document.getElementById('categorySelect');
+            
+            // Agregar evento change
+            finalSelect.addEventListener('change', function() {
+                if (this.value === 'new') {
+                    div.classList.remove('hidden');
+                } else {
+                    div.classList.add('hidden');
+                }
+            });
+            
+            // Verificar estado inicial
+            if (finalSelect.value === 'new') {
+                div.classList.remove('hidden');
+            } else {
+                div.classList.add('hidden');
+            }
+        }
+    }
+    
+    // Inicializar cuando el DOM cargue
+    document.addEventListener('DOMContentLoaded', initCategorySelect);
+    
+    // También inicializar cuando se abra el modal (por si acaso)
+    var uploadModal = document.getElementById('uploadModal');
+    var uploadBtn = document.getElementById('uploadNoteBtn');
+    
+    if (uploadBtn && uploadModal) {
+        uploadBtn.onclick = function(e) {
+            e.preventDefault();
+            uploadModal.style.display = 'flex';
+            // Reinicializar el select cuando se abre el modal
+            setTimeout(initCategorySelect, 50);
+        };
+    }
+    
+    // Función para cerrar modal
+    window.closeUploadModal = function() {
+        var modal = document.getElementById('uploadModal');
+        if (modal) modal.style.display = 'none';
+        var form = document.getElementById('uploadForm');
+        if (form) form.reset();
+        var div = document.getElementById('newCategoryDiv');
+        if (div) div.classList.add('hidden');
+    };
+    
+    // Cerrar modal al hacer clic fuera
+    if (uploadModal) {
+        uploadModal.onclick = function(e) {
+            if (e.target === uploadModal) window.closeUploadModal();
+        };
+    }
+    </script>
+        <script>
+            /**
+             * ============================================================
+             * DKNOTES - Funciones de interfaz
+             * ============================================================
+             * Este archivo controla:
+             * - Apertura/cierre del modal "Subir nota"
+             * - Apertura/cierre del modal "Filtrar"
+             * - Mostrar/ocultar campo de "Nueva categoría"
+             * - Comportamiento responsivo de los modales
+             * ============================================================
+             */
+
+            // Esperar a que el DOM esté completamente cargado
             document.addEventListener('DOMContentLoaded', function() {
                 
                 // ============================================
@@ -234,19 +310,25 @@
                 // ============================================
                 var uploadBtn = document.getElementById('uploadNoteBtn');
                 var uploadModal = document.getElementById('uploadModal');
+                var closeUploadModalBtn = document.getElementById('closeUploadModalBtn');
                 
+                // Abrir modal
                 if (uploadBtn && uploadModal) {
                     uploadBtn.onclick = function(e) {
                         e.preventDefault();
                         uploadModal.style.display = 'flex';
+                        console.log('Modal subir nota abierto');
                     };
                 }
                 
-                // Función global para cerrar modal de subida
+                // Función global para cerrar modal
                 window.closeUploadModal = function() {
                     if (uploadModal) uploadModal.style.display = 'none';
                     var form = document.getElementById('uploadForm');
                     if (form) form.reset();
+                    var newCatDiv = document.getElementById('newCategoryDiv');
+                    if (newCatDiv) newCatDiv.classList.add('hidden');
+                    console.log('Modal subir nota cerrado');
                 };
                 
                 // Cerrar al hacer clic fuera del modal
@@ -257,7 +339,25 @@
                 }
                 
                 // ============================================
-                // MODAL: Filtrar
+                // CAMPO: Nueva categoría (mostrar/ocultar)
+                // ============================================
+                var categorySelect = document.getElementById('categorySelect');
+                var newCategoryDiv = document.getElementById('newCategoryDiv');
+                
+                if (categorySelect && newCategoryDiv) {
+                    categorySelect.onchange = function() {
+                        if (this.value === 'new') {
+                            newCategoryDiv.classList.remove('hidden');
+                            console.log('Campo nueva categoría visible');
+                        } else {
+                            newCategoryDiv.classList.add('hidden');
+                            console.log('Campo nueva categoría oculto');
+                        }
+                    };
+                }
+                
+                // ============================================
+                // MODAL: Filtrar por categoría
                 // ============================================
                 var filterBtn = document.getElementById('filterBtn');
                 var filterModal = document.getElementById('filterModal');
@@ -265,11 +365,13 @@
                 if (filterBtn && filterModal) {
                     filterBtn.onclick = function() {
                         filterModal.classList.remove('hidden');
+                        console.log('Modal filtrar abierto');
                     };
                 }
                 
                 window.closeModal = function() {
                     if (filterModal) filterModal.classList.add('hidden');
+                    console.log('Modal filtrar cerrado');
                 };
                 
                 if (filterModal) {
@@ -278,7 +380,56 @@
                     };
                 }
                 
+                console.log('✅ DKNOTES: Todos los scripts cargados correctamente');
             });
-        })();
-    </script>
+        </script>
+
+        <script>
+    // Función para activar el select de categoría
+    function activarSelectCategoria() {
+        var select = document.getElementById('categorySelect');
+        var div = document.getElementById('newCategoryDiv');
+        
+        if (select && div) {
+            // Remover evento anterior (si existe)
+            var nuevoSelect = select.cloneNode(true);
+            select.parentNode.replaceChild(nuevoSelect, select);
+            
+            // Agregar evento al nuevo select
+            nuevoSelect.addEventListener('change', function() {
+                if (this.value === 'new') {
+                    div.classList.remove('hidden');
+                    console.log('✅ Campo nueva categoría visible');
+                } else {
+                    div.classList.add('hidden');
+                    console.log('❌ Campo nueva categoría oculto');
+                }
+            });
+            
+            // Verificar estado actual
+            if (nuevoSelect.value === 'new') {
+                div.classList.remove('hidden');
+            } else {
+                div.classList.add('hidden');
+            }
+        } else {
+            console.log('⚠️ Select o div no encontrado');
+        }
+    }
+    
+    // Inicializar cuando el DOM cargue
+    document.addEventListener('DOMContentLoaded', activarSelectCategoria);
+    
+    // Reinicializar cuando se abre el modal
+    var uploadBtn = document.getElementById('uploadNoteBtn');
+    var uploadModal = document.getElementById('uploadModal');
+    
+    if (uploadBtn && uploadModal) {
+        uploadBtn.addEventListener('click', function() {
+            uploadModal.style.display = 'flex';
+            setTimeout(activarSelectCategoria, 50);
+        });
+    }
+</script>
+
 </x-app-layout>

@@ -1,8 +1,6 @@
 <x-app-layout>
     <div class="p-6 pt-16 lg:pt-6">
-        {{-- ============================================ --}}
-        {{-- TARJETAS DE ESTADÍSTICAS --}}
-        {{-- ============================================ --}}
+        {{-- Stats Cards --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow p-6">
                 <div class="flex items-center justify-between">
@@ -24,9 +22,7 @@
             </div>
         </div>
 
-        {{-- ============================================ --}}
-        {{-- BOTONES DE ACCIÓN --}}
-        {{-- ============================================ --}}
+        {{-- Action Buttons --}}
         <div class="bg-white rounded-lg shadow p-4 mb-6 flex flex-wrap gap-3">
             <a href="{{ route('notes.index') }}" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition flex items-center gap-2">
                 📋 Listar todas
@@ -34,18 +30,22 @@
             <button id="filterBtn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition flex items-center gap-2">
                 🔍 Filtrar
             </button>
+
             <button id="uploadNoteBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition flex items-center gap-2">
                 📤 Subir nota
             </button>
+           
             <form method="POST" action="{{ route('notes.sync') }}" class="inline">
                 @csrf
                 <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition flex items-center gap-2">
                     🔄 Sincronizar
                 </button>
             </form>
+            
             <a href="{{ route('notes.create') }}" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition flex items-center gap-2">
                 📝 Nueva nota
             </a>
+            
             <form method="POST" action="{{ route('categories.recalculate') }}" class="inline"
                 onsubmit="return confirm('¿Recalcular categorías? Esto detectará directorios nuevos y huérfanos. ¿Continuar?')">
                 @csrf
@@ -55,9 +55,7 @@
             </form>
         </div>
 
-        {{-- ============================================ --}}
-        {{-- LISTADO DE NOTAS --}}
-        {{-- ============================================ --}}
+        {{-- Notes List --}}
         <div class="bg-white rounded-lg shadow overflow-hidden">
             @if($notes->isEmpty())
                 <div class="p-12 text-center text-gray-500">
@@ -129,9 +127,7 @@
             @endif
         </div>
 
-        {{-- ============================================ --}}
-        {{-- MODAL: FILTRAR POR CATEGORÍA --}}
-        {{-- ============================================ --}}
+        {{-- Modal Filtrar --}}
         <div id="filterModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
             <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
                 <div class="p-6">
@@ -163,9 +159,8 @@
             </div>
         </div>
 
-        {{-- ============================================ --}}
-        {{-- MODAL: SUBIR NOTA --}}
-        {{-- ============================================ --}}
+        {{-- remove desde aqui --}}
+        {{-- Modal Subir Nota
         <div id="uploadModal" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
             <div class="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
                 <div class="p-6">
@@ -174,7 +169,6 @@
                     <form id="uploadForm" method="POST" action="{{ route('notes.upload') }}" enctype="multipart/form-data">
                         @csrf
                         
-                        {{-- Selección de archivo --}}
                         <div class="mb-4">
                             <label class="block text-gray-700 font-medium mb-2">Archivo Markdown (.md)</label>
                             <input type="file" name="file" accept=".md" required
@@ -182,26 +176,65 @@
                             <p class="text-xs text-gray-500 mt-1">Selecciona un archivo .md de tu computadora</p>
                         </div>
                         
-                        {{-- Categorías existentes (opcional) --}}
                         <div class="mb-4">
-                            <label class="block text-gray-700 font-medium mb-2">Categoría existente (opcional)</label>
-                            <select name="category_id" class="w-full border-gray-300 rounded-lg">
-                                <option value="">-- Ninguna, usar "General" o la nueva --</option>
+                            <label class="block text-gray-700 font-medium mb-2">Categoría</label>
+                            <select name="category_id" id="categorySelect" class="w-full border-gray-300 rounded-lg">
+                                <option value="">-- Seleccionar categoría --</option>
                                 @foreach(\App\Models\Category::all() as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                 @endforeach
+                                <option value="new">+ Crear nueva categoría</option>
                             </select>
                         </div>
                         
-                        {{-- Nueva categoría (opcional) --}}
+                        <div class="mb-4 hidden" id="newCategoryDiv">
+                            <label class="block text-gray-700 font-medium mb-2">Nueva categoría</label>
+                            <input type="text" name="new_category" class="w-full border-gray-300 rounded-lg" placeholder="Ej: Laravel">
+                        </div>
+                        
+                        <div class="flex justify-end gap-3">
+                            <button type="button" onclick="closeUploadModal()" class="px-4 py-2 bg-gray-300 rounded-lg">Cancelar</button>
+                            <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg">
+                                Subir nota
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div> --}}
+        {{-- remove hasta aqui --}}
+
+        {{-- Modal Subir Nota --}}
+        <div id="uploadModal" style="display: none;" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div class="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold mb-4">📤 Subir nota</h3>
+                    
+                    <form id="uploadForm" method="POST" action="{{ route('notes.upload') }}" enctype="multipart/form-data">
+                        @csrf
+                        
                         <div class="mb-4">
-                            <label class="block text-gray-700 font-medium mb-2">Nueva categoría (opcional)</label>
-                            <input type="text" name="new_category" class="w-full border-gray-300 rounded-lg" 
-                                placeholder="Ej: Laravel, Docker, PHP">
-                            <p class="text-xs text-gray-500 mt-1">
-                                Si escribes una nueva categoría, se creará automáticamente. 
-                                Si seleccionas una existente, se usará esa.
-                            </p>
+                            <label class="block text-gray-700 font-medium mb-2">Archivo Markdown (.md)</label>
+                            <input type="file" name="file" accept=".md,.markdown" required
+                                class="w-full border-gray-300 rounded-lg">
+                            <p class="text-xs text-gray-500 mt-1">Selecciona un archivo .md de tu computadora</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 font-medium mb-2">Categoría</label>
+                            <select name="category_id" id="categorySelect" class="w-full border-gray-300 rounded-lg">
+                                <option value="">-- Seleccionar categoría --</option>
+                                @foreach(\App\Models\Category::all() as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                @endforeach
+                                <option value="new">+ Crear nueva categoría</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4 hidden" id="newCategoryDiv">
+                            <label class="block text-gray-700 font-medium mb-2">Nueva categoría</label>
+                            <input type="text" name="new_category" class="w-full border-gray-300 rounded-lg" placeholder="Ej: Laravel">
                         </div>
                         
                         <div class="flex justify-end gap-3">
@@ -214,71 +247,125 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            // Mostrar/ocultar campo de nueva categoría
+            var catSelect = document.getElementById('categorySelect');
+            var newCatDiv = document.getElementById('newCategoryDiv');
+            
+            if (catSelect && newCatDiv) {
+                catSelect.addEventListener('change', function() {
+                    if (this.value === 'new') {
+                        newCatDiv.classList.remove('hidden');
+                    } else {
+                        newCatDiv.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Función para cerrar modal
+            window.closeUploadModal = function() {
+                var modal = document.getElementById('uploadModal');
+                if (modal) modal.style.display = 'none';
+                var form = document.getElementById('uploadForm');
+                if (form) form.reset();
+                if (newCatDiv) newCatDiv.classList.add('hidden');
+            };
+        </script>
+
     </div>
 
-    {{-- ============================================ --}}
-    {{-- SCRIPTS --}}
-    {{-- ============================================ --}}
+    {{-- Scripts --}}
     <script>
-        /**
-         * DKNOTES - Funciones de interfaz
-         * Controla los modales de "Subir nota" y "Filtrar"
-         */
-        
+        // ============================================
+        // DEBUG: Verificar elementos
+        // ============================================
         (function() {
-            // Esperar a que el DOM esté cargado
-            document.addEventListener('DOMContentLoaded', function() {
-                
-                // ============================================
-                // MODAL: Subir nota
-                // ============================================
-                var uploadBtn = document.getElementById('uploadNoteBtn');
-                var uploadModal = document.getElementById('uploadModal');
-                
-                if (uploadBtn && uploadModal) {
-                    uploadBtn.onclick = function(e) {
-                        e.preventDefault();
-                        uploadModal.style.display = 'flex';
-                    };
-                }
-                
-                // Función global para cerrar modal de subida
-                window.closeUploadModal = function() {
-                    if (uploadModal) uploadModal.style.display = 'none';
-                    var form = document.getElementById('uploadForm');
-                    if (form) form.reset();
+            console.log('=== INICIO DEBUG ===');
+            var btn = document.getElementById('uploadNoteBtn');
+            var modal = document.getElementById('uploadModal');
+            console.log('Botón uploadNoteBtn:', btn);
+            console.log('Modal uploadModal:', modal);
+            
+            if (btn) {
+                console.log('✅ Botón encontrado');
+                btn.onclick = function(e) {
+                    e.preventDefault();
+                    console.log('🔘 Botón clickeado');
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        console.log('Modal abierto');
+                    } else {
+                        console.log('❌ Modal no encontrado');
+                    }
                 };
-                
-                // Cerrar al hacer clic fuera del modal
-                if (uploadModal) {
-                    uploadModal.onclick = function(e) {
-                        if (e.target === uploadModal) window.closeUploadModal();
-                    };
-                }
-                
-                // ============================================
-                // MODAL: Filtrar
-                // ============================================
-                var filterBtn = document.getElementById('filterBtn');
-                var filterModal = document.getElementById('filterModal');
-                
-                if (filterBtn && filterModal) {
-                    filterBtn.onclick = function() {
-                        filterModal.classList.remove('hidden');
-                    };
-                }
-                
-                window.closeModal = function() {
-                    if (filterModal) filterModal.classList.add('hidden');
-                };
-                
-                if (filterModal) {
-                    filterModal.onclick = function(e) {
-                        if (e.target === filterModal) window.closeModal();
-                    };
-                }
-                
-            });
+            } else {
+                console.log('❌ Botón NO encontrado');
+            }
         })();
+        
+        // ============================================
+        // Funciones globales
+        // ============================================
+        window.closeUploadModal = function() {
+            var modal = document.getElementById('uploadModal');
+            if (modal) {
+                modal.style.display = 'none';
+                console.log('Modal cerrado');
+            }
+            var form = document.getElementById('uploadForm');
+            if (form) form.reset();
+            var newCatDiv = document.getElementById('newCategoryDiv');
+            if (newCatDiv) newCatDiv.classList.add('hidden');
+        };
+        
+        // Cerrar modal al hacer clic fuera
+        var modal = document.getElementById('uploadModal');
+        if (modal) {
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    window.closeUploadModal();
+                }
+            };
+        }
+        
+        // Mostrar campo de nueva categoría
+        var catSelect = document.getElementById('categorySelect');
+        if (catSelect) {
+            catSelect.onchange = function() {
+                var newCatDiv = document.getElementById('newCategoryDiv');
+                if (this.value === 'new') {
+                    newCatDiv.classList.remove('hidden');
+                } else {
+                    newCatDiv.classList.add('hidden');
+                }
+            };
+        }
+        
+        // Modal de filtrar
+        var filterBtn = document.getElementById('filterBtn');
+        var filterModal = document.getElementById('filterModal');
+        
+        if (filterBtn && filterModal) {
+            filterBtn.onclick = function() {
+                filterModal.classList.remove('hidden');
+            };
+        }
+        
+        window.closeModal = function() {
+            if (filterModal) filterModal.classList.add('hidden');
+        };
+        
+        if (filterModal) {
+            filterModal.onclick = function(e) {
+                if (e.target === filterModal) closeModal();
+            };
+        }
+        
+        console.log('=== FIN DEBUG ===');
+
+        
+
+
     </script>
 </x-app-layout>

@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/notes/{note}', [App\Http\Controllers\NoteController::class, 'update'])->name('notes.update');
     Route::delete('/notes/{note}', [App\Http\Controllers\NoteController::class, 'destroy'])->name('notes.destroy');
 
+    // subir notas
+    Route::post('/notes/upload', [App\Http\Controllers\NoteController::class, 'upload'])->name('notes.upload');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -40,6 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/notes/{note}', [App\Http\Controllers\NoteController::class, 'show'])->name('notes.show');
     Route::get('/notes', [App\Http\Controllers\NoteController::class, 'index'])->name('notes.index');
 
+    // Preferencias del usuario
+    Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
 
     // Ruta genérica ÚLTIMA
 

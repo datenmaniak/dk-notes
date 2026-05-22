@@ -30,24 +30,36 @@ class NoteController extends Controller
         $perPage = UserSetting::getValue(Auth::id(), 'notas_por_pagina', 5);
 
         // Filtrar las notas por rol
-        if (Auth::user()->is_admin) {
-            // Administrador: ve todas las notas
-            // $notes = Note::with('category')->get(); // reemplazado, al usar paginacion
-            $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
-            $totalNotas = Note::count(); // Todas las notas
+         if (Auth::user()->is_admin) {
+        // Administrador: ve todas las notas
+        $notes = Note::with('category')->paginate($perPage);
+        $totalNotas = Note::count();
         } else {
             // Usuario normal: solo sus notas
-            // $notes = Auth::user()->notes()->with('category')->get();
-            // $notes = Auth::user()->$notes()->with('category')->paginate($perPage);
+            $notes = Note::where('user_id', Auth::id())->with('category')->paginate($perPage);
+            $totalNotas = Note::where('user_id', Auth::id())->count();
+        }
+
+        //  remove este bloque
+        // if (Auth::user()->is_admin) {
+        //     // Administrador: ve todas las notas
+        //     // $notes = Note::with('category')->get(); // reemplazado, al usar paginacion
+        //     $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
+        //     $totalNotas = Note::count(); // Todas las notas
+        // } else {
+        //     // Usuario normal: solo sus notas
+        //     // $notes = Auth::user()->notes()->with('category')->get();
+        //     // $notes = Auth::user()->$notes()->with('category')->paginate($perPage);
 
             
-            $notes = Note::where('user_id', Auth::id())->with('category')->paginate($perPage);
+        //     $notes = Note::where('user_id', Auth::id())->with('category')->paginate($perPage);
 
-            $totalNotas = Note::count(); // Solo sus notas
+        //     $totalNotas = Note::count(); // Solo sus notas
 
-            $notes = Auth::user();
-            $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
-        }
+        //     $notes = Auth::user();
+        //     $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
+        // }
+        // remove hasta aqui 
 
 
         // total categorias

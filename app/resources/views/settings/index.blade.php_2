@@ -11,12 +11,6 @@
                 </div>
             @endif
             
-            @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {{ session('error') }}
-                </div>
-            @endif
-            
             <form method="POST" action="{{ route('settings.update') }}">
                 @csrf
 
@@ -25,7 +19,7 @@
                         💾 Guardar cambios
                     </button>
                 </div>
-                
+
                 {{-- Notas por página --}}
                 <div class="mb-6 pb-6 border-b border-gray-200">
                     <h2 class="text-lg font-semibold mb-3">📄 Listado de notas</h2>
@@ -62,40 +56,47 @@
                     </div>
                 </div>
                 
-                {{-- Ruta personal --}}
-                <div class="mb-6 pb-6 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold mb-3">📂 Configuración de directorio personal</h2>
-                    
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-1">
-                            Ruta personal (5-16 letras minúsculas)
-                        </label>
-                        <input type="text" name="ruta_personal" value="{{ $settings['ruta_personal'] }}"
-                               class="w-full border-gray-300 rounded-lg focus:ring-[#7700F0] focus:border-[#7700F0]"
-                               placeholder="ej: proyectos, trabajo, diario">
-                        <p class="text-xs text-gray-500 mt-1">
-                            Solo letras minúsculas, entre 5 y 16 caracteres.<br>
-                        </p>
-                            <p class="text-md text-red-500 mt-1">
-                              Evita cambiarla después, para asegurar la sincronización.
-                            </p>
-                    </div>
-                    
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <p class="text-sm text-gray-600 mb-1">
-                            <span class="font-medium">📁 Ruta base (app):</span><br>
-                            <code class="text-xs bg-gray-200 px-1 py-0.5 rounded">{{ $settings['ruta_base'] }}</code>
-                        </p>
-                        <p class="text-sm text-gray-600">
-                            <span class="font-medium">📍 Tu ruta completa será:</span><br>
-                            <code class="text-xs bg-gray-200 px-1 py-0.5 rounded">{{ $settings['ruta_completa'] }}</code>
-                        </p>
-                    </div>
-                </div>
+          
+                
+                {{-- remove  --}}
+                {{-- <div class="flex justify-end">
+                    <button type="submit" class="px-4 py-2 bg-[#7700F0] hover:bg-purple-700 text-white rounded-lg">
+                        💾 Guardar cambios
+                    </button>
+                </div> --}}
+                {{-- remove --}}
+
+            </form>
 
                 {{-- Zona peligrosa - Solo visible para administrador --}}
-                {{-- @if(Auth::user()->is_admin)
-                    <div class="mt-6 p-4 border-2 border-red-700 bg-red-50 rounded-lg">
+                @if(Auth::user()->is_admin)
+               
+                    {{-- Subdirectorio de anotaciones --}}
+                    <div class="mb-6 pb-6 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold mb-3">📂 Importación</h2>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-1">Nombre del subdirectorio</label>
+                            <input type="text" name="subdirectorio" value="{{ $settings['subdirectorio'] }}"
+                                class="w-full border-gray-300 rounded-lg"
+                                placeholder="ej: proyectos, trabajo, diario">
+                            <p class="text-xs text-gray-500 mt-1">
+                                Solo letras minúsculas, entre 5 y 16 caracteres.<br>
+                                Dejar vacío para usar la raíz: /var/www/html/public/notes
+                            </p>
+                    </div>
+
+                    <div class="mb-2">
+                            <label class="block text-gray-700 mb-1">Ruta completa (solo lectura)</label>
+                            <input type="text" value="{{ $settings['directorio_notas'] }}" readonly
+                                class="w-full bg-gray-100 border-gray-300 rounded-lg font-mono text-sm">
+                            <p class="text-xs text-gray-500 mt-1">
+                                Ruta dentro del contenedor donde se esperan tus archivos .md
+                            </p>
+                    </div>
+                    {{-- Eliminacion total de las anotaciones --}}
+                    </div>
+                         <div class="mt-6 p-4 border-2 border-red-300 bg-red-50 rounded-lg">
                         <h3 class="text-lg font-semibold text-red-700 mb-2">⚠️ Zona peligrosa</h3>
                         <p class="text-sm text-red-600 mb-3">
                             Esta acción eliminará <strong>TODAS las notas</strong> permanentemente.<br>
@@ -110,38 +111,34 @@
                             </button>
                         </form>
                     </div>
-                @endif --}}
-                
-                {{-- Información del sistema --}}
-                <div class="mb-6 pb-6 border-b border-gray-400">
-                    <h2 class="text-lg font-semibold mb-3">💻 Información del sistema</h2>
-                    <div class="space-y-1 text-sm text-gray-600">
-                        <p>Laravel: {{ app()->version() }}</p>
-                        <p>PHP: {{ phpversion() }}</p>
-                        <p>Total notas: {{ \App\Models\Note::count() }}</p>
-                        <p>Total categorías: {{ \App\Models\Category::count() }}</p>
+                @else
+                    {{-- Usuario normal: solo ver --}}
+                    <div class="mb-6 pb-6 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold mb-3">📂 Directorio actual</h2>
+                        <div class="mb-2">
+                            <p class="text-sm text-gray-700 bg-gray-100 p-2 rounded-lg font-mono">
+                                {{ $settings['directorio_notas'] }}
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Solo los administradores pueden cambiar este directorio.
+                            </p>
+                        </div>
                     </div>
+
+                @endif
+            {{-- Información del sistema --}}
+            <div class="mb-6 pb-6 border-t border-gray-400">
+                <h2 class="text-lg font-semibold mb-3">💻 Información del sistema</h2>
+                <div class="space-y-1 text-sm text-gray-600">
+                    <p>Laravel: {{ app()->version() }}</p>
+                    <p>PHP: {{ phpversion() }}</p>
+                    <p>Total notas: {{ \App\Models\Note::count() }}</p>
+                    <p>Total categorías: {{ \App\Models\Category::count() }}</p>
                 </div>
-              
-            </form>
-            {{-- Zona peligrosa - Solo visible para administrador --}}
-            @if(Auth::user()->is_admin)
-                <div class="mt-8 p-4 border-2 border-red-300 bg-red-50 rounded-lg">
-                    <h3 class="text-lg font-semibold text-red-700 mb-2">⚠️ Zona peligrosa</h3>
-                    <p class="text-sm text-red-600 mb-3">
-                        Esta acción eliminará <strong>TODAS las notas</strong> permanentemente.<br>
-                        Las categorías, usuarios y configuraciones no se verán afectadas.
-                    </p>
-                    <form method="POST" action="{{ route('notes.delete-all') }}" 
-                        onsubmit="return confirm('¿Eliminar TODAS las notas? Esta acción no se puede deshacer.')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition flex items-center gap-2">
-                            🗑️ Eliminar todas las notas
-                        </button>
-                    </form>
-                </div>
-            @endif
+            </div>
+
+            
+
         </div>
     </div>
 </x-app-layout>

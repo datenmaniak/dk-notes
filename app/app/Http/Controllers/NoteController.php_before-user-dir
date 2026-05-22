@@ -132,82 +132,45 @@ class NoteController extends Controller
         return view('notes.show', compact('note','categoriasConNotas'));
     }
 
-
     // public function sync()
     // {
-    //     $usuario = Auth::id();
-    //     if (!$usuario) {
-    //         $this->error("❌ No hay usuarios en el sistema.");
-    //     return 1;
+    //     Artisan::call('notes:import');
+    //     return redirect()->route('notes.index')->with('success', 'Notas sincronizadas correctamente.');
+    // }
 
-    //     // // $directorioConfigurado = UserSetting::getValue($userId, 'directorio_notas', base_path('notes'));
-    //     // $directorioConfigurado = UserSetting::getValue($userId, 'directorio_notas', base_path('public/notes'));
-
-    //     // Obtener ruta personal y construir ruta completa
-    //     $rutaPersonal = UserSetting::getValue($usuario->id, 'ruta_personal', '');
-    //     $directorioBase = base_path('public/notes');
-
-    //     if ($rutaPersonal) {
-    //         $directorioConfigurado = $directorioBase . '/' . $rutaPersonal;
-    //     } else {
-    //         $directorioConfigurado = '';
-    //         $this->error("❌ El directorio directorio personal no ha sido configurado ");
-    //         return 1;
-    //     }
+    // BEGIN
+    // public function sync()
+    // {
+    //     // Ejecutar importación
+    //     Artisan::call('notes:import');
         
-    //        // Verificar que el directorio existe
-    //     if (!is_dir($directorioConfigurado)) {
-    //         $this->error("❌ El directorio personal no ha sido configurado " . $directorioNotas);
-    //         // $this->info("💡 Ejecuta: mkdir -p " . $directorioNotas);
-    //         $this->info("💡 Vaya a la sección de   Configuración  ⚙️");
-    //         return 1;
-    //     }
-
-
-    //     // Verificar si el directorio existe
-    //     if (!File::exists($directorioConfigurado)) {
-    //         // Intentar crear el directorio automáticamente
-    //         try {
-    //             File::makeDirectory($directorioConfigurado, 0755, true);
-    //             $mensaje = "📁 Directorio creado automáticamente: {$directorioConfigurado}\n\n";
-    //             $mensaje .= "Ahora debes copiar tus archivos .md a este directorio.\n\n";
-    //             $mensaje .= "Instrucciones:\n";
-    //             $mensaje .= "1. Abre otra terminal\n";
-    //             $mensaje .= "2. Ejecuta: podman cp ~/notes/. dk-app:{$directorioConfigurado}/\n";
-    //             $mensaje .= "     podman cp ~/notes/. dk-app:{$directorioConfigurado}/\n";
-    //             $mensaje .= "3. Luego vuelve a hacer clic en Sincronizar";
-                
-    //             return redirect()->route('notes.index')->with('warning', $mensaje);
-    //         } catch (\Exception $e) {
-    //             // No se pudo crear automáticamente, mostrar instrucciones manuales
-    //             $mensaje = "❌ El directorio no existe y no se pudo crear automáticamente.\n\n";
-    //             $mensaje .= "Configuración actual: {$directorioConfigurado}\n\n";
-    //             $mensaje .= "Para solucionar, ejecuta manualmente:\n";
-    //             $mensaje .= "docker exec -it dk-app mkdir -p {$directorioConfigurado}\n";
-    //             $mensaje .= "docker exec -it dk-app chmod 755 {$directorioConfigurado}\n\n";
-    //             $mensaje .= "Luego copia tus notas:\n";
-    //             $mensaje .= "docker cp ~/notes/. dk-app:{$directorioConfigurado}/\n\n";
-    //             $mensaje .= "Después vuelve a intentar Sincronizar";
-                
-    //             return redirect()->route('notes.index')->with('error', $mensaje);
+    //     // Actualizar checksums de notas que cambiaron en disco
+    //     $notes = Note::whereNotNull('file_path')->get();
+    //     $updated = 0;
+        
+    //     foreach ($notes as $note) {
+    //         if (file_exists($note->file_path)) {
+    //             $currentChecksum = md5(file_get_contents($note->file_path));
+    //             if ($currentChecksum !== $note->checksum) {
+    //                 $note->checksum = $currentChecksum;
+    //                 $note->save();
+    //                 $updated++;
+    //             }
     //         }
     //     }
         
-    //     // Verificar si el directorio está vacío
-    //     $archivos = File::allFiles($directorioConfigurado);
-    //     $archivosMd = array_filter($archivos, function($file) {
-    //         return in_array($file->getExtension(), ['md', 'markdown']);
-    //     });
-        
-    //     if (count($archivosMd) === 0) {
-    //         $mensaje = "⚠️ El directorio existe pero está vacío.\n\n";
-    //         $mensaje = "No se encontraron archivos .md en: {$directorioConfigurado}";
-    //         $mensaje .= "Copia tus notas al directorio y vuelve a intentar:\n";
-    //         $mensaje .= "docker cp ~/notes/. dk-app:{$directorioConfigurado}/";
-            
-    //         return redirect()->route('notes.index')->with('warning', $mensaje);
+    //     $message = "Notas sincronizadas correctamente.";
+    //     if ($updated > 0) {
+    //         $message .= " ($updated notas actualizadas por cambios en disco)";
     //     }
         
+    //     return redirect()->route('notes.index')->with('success', $message);
+    // }
+    // END  Comentado para DEBUG
+
+    // REMOVE FROM HERE
+    // public function sync()
+    // {
     //     // Log para verificar que se ejecuta el botón
     //     Log::info('=== INICIO Sincronización desde web ===');
         
@@ -238,36 +201,24 @@ class NoteController extends Controller
     //         }
     //     }
         
-    //     $message = "✅ Notas sincronizadas correctamente.";
+    //     $message = "Notas sincronizadas correctamente.";
     //     if ($updated > 0) {
     //         $message .= " ($updated notas actualizadas por cambios en disco)";
     //     }
-    //     $message .= "\n\n📁 Directorio: {$directorioConfigurado}";
         
     //     Log::info('=== FIN Sincronización ===');
         
     //     return redirect()->route('notes.index')->with('success', $message);
     // }
+    // REMOVE UNTIL HERE 
 
     public function sync()
     {
         $userId = Auth::id();
+        // $directorioConfigurado = UserSetting::getValue($userId, 'directorio_notas', base_path('notes'));
+        $directorioConfigurado = UserSetting::getValue($userId, 'directorio_notas', base_path('public/notes'));
         
-        if (!$userId) {
-            return redirect()->route('login')->with('error', 'Debes iniciar sesión.');
-        }
-        
-        // Obtener ruta personal y construir ruta completa
-        $rutaPersonal = UserSetting::getValue($userId, 'ruta_personal', '');
-        $directorioBase = base_path('public/notes');
-        
-        if (!$rutaPersonal) {
-            return redirect()->route('notes.index')->with('error', '❌ No has configurado tu ruta personal. Ve a Configuración ⚙️');
-        }
-        
-        $directorioConfigurado = $directorioBase . '/' . $rutaPersonal;
-        
-        // Verificar que el directorio existe
+        // Verificar si el directorio existe
         if (!File::exists($directorioConfigurado)) {
             // Intentar crear el directorio automáticamente
             try {
@@ -277,24 +228,26 @@ class NoteController extends Controller
                 $mensaje .= "Instrucciones:\n";
                 $mensaje .= "1. Abre otra terminal\n";
                 $mensaje .= "2. Ejecuta: podman cp ~/notes/. dk-app:{$directorioConfigurado}/\n";
+                $mensaje .= "     podman cp ~/notes/. dk-app:{$directorioConfigurado}/\n";
                 $mensaje .= "3. Luego vuelve a hacer clic en Sincronizar";
                 
                 return redirect()->route('notes.index')->with('warning', $mensaje);
             } catch (\Exception $e) {
+                // No se pudo crear automáticamente, mostrar instrucciones manuales
                 $mensaje = "❌ El directorio no existe y no se pudo crear automáticamente.\n\n";
-                $mensaje .= "Ruta esperada: {$directorioConfigurado}\n\n";
-                $mensaje .= "Ejecuta manualmente:\n";
-                $mensaje .= "podman exec -it dk-app mkdir -p {$directorioConfigurado}\n";
-                $mensaje .= "podman exec -it dk-app chmod 755 {$directorioConfigurado}\n\n";
+                $mensaje .= "Configuración actual: {$directorioConfigurado}\n\n";
+                $mensaje .= "Para solucionar, ejecuta manualmente:\n";
+                $mensaje .= "docker exec -it dk-app mkdir -p {$directorioConfigurado}\n";
+                $mensaje .= "docker exec -it dk-app chmod 755 {$directorioConfigurado}\n\n";
                 $mensaje .= "Luego copia tus notas:\n";
-                $mensaje .= "podman cp ~/notes/. dk-app:{$directorioConfigurado}/\n\n";
+                $mensaje .= "docker cp ~/notes/. dk-app:{$directorioConfigurado}/\n\n";
                 $mensaje .= "Después vuelve a intentar Sincronizar";
                 
                 return redirect()->route('notes.index')->with('error', $mensaje);
             }
         }
         
-        // Verificar si el directorio tiene archivos .md
+        // Verificar si el directorio está vacío
         $archivos = File::allFiles($directorioConfigurado);
         $archivosMd = array_filter($archivos, function($file) {
             return in_array($file->getExtension(), ['md', 'markdown']);
@@ -302,16 +255,15 @@ class NoteController extends Controller
         
         if (count($archivosMd) === 0) {
             $mensaje = "⚠️ El directorio existe pero está vacío.\n\n";
-            $mensaje .= "No se encontraron archivos .md en: {$directorioConfigurado}\n\n";
-            $mensaje .= "Copia tus notas al directorio:\n";
-            $mensaje .= "podman cp ~/notes/. dk-app:{$directorioConfigurado}/";
+            $mensaje = "No se encontraron archivos .md en: {$directorioConfigurado}\n\n";
+            $mensaje .= "Copia tus notas al directorio y vuelve a intentar:\n";
+            $mensaje .= "docker cp ~/notes/. dk-app:{$directorioConfigurado}/";
             
             return redirect()->route('notes.index')->with('warning', $mensaje);
         }
         
         // Log para verificar que se ejecuta el botón
         Log::info('=== INICIO Sincronización desde web ===');
-        Log::info('Directorio: ' . $directorioConfigurado);
         
         // Ejecutar importación
         Artisan::call('notes:import');
@@ -323,6 +275,8 @@ class NoteController extends Controller
         // Actualizar checksums de notas que cambiaron en disco
         $notes = Note::whereNotNull('file_path')->get();
         $updated = 0;
+        
+        Log::info('Notas con file_path: ' . $notes->count());
         
         foreach ($notes as $note) {
             if (file_exists($note->file_path)) {
@@ -348,6 +302,7 @@ class NoteController extends Controller
         
         return redirect()->route('notes.index')->with('success', $message);
     }
+
 
     public function destroy(Note $note)
     {

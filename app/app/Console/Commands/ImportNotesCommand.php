@@ -25,24 +25,42 @@ class ImportNotesCommand extends Command
     /**
      * Execute the console command.
      */
-    // ← El nombre que escribirás en terminal
-
 
     public function handle()
     {
 
-    // 1. Definir la ruta del directorio de notas
-    // $directorioNotas = base_path('notes'); // configurable desde la BD
     $usuario = User::first();
     if (!$usuario) {
         $this->error("❌ No hay usuarios en el sistema.");
     return 1;
 }
     // ruta por defecto: /var/www/html/public/notes
-    // en caso que el propietario/usuario no especifique otra ruta
-    $directorioNotas = UserSetting::getValue($usuario->id, 'directorio_notas', base_path('public/notes'));
-    // $directorioNotas = UserSetting::getValue($usuario->id, 'directorio_notas', base_path('notes'));
-    // en la seccion de Configuracion
+    
+    // Obtener ruta personal y construir ruta completa
+    $rutaPersonal = UserSetting::getValue($usuario->id, 'ruta_personal', '');
+    $directorioBase = base_path('public/notes');
+
+    $directorioNotas = '';
+    if ($rutaPersonal) {
+        $directorioNotas = $directorioBase . '/' . $rutaPersonal;
+    }
+    //  else {
+    //     // $directorioNotas = $directorioBase;
+    //     // $this->info("💡 Declare su Configuración de directorio personal ");
+    //     $this->error("❌ El directorio directorio personal no ha sido configurado ");
+
+    // }
+
+    // Verificar que el directorio existe
+    if (!is_dir($directorioNotas)) {
+        $this->error("❌ El directorio personal no ha sido configurado " . $directorioNotas);
+        // $this->info("💡 Ejecuta: mkdir -p " . $directorioNotas);
+        $this->info("💡 Vaya a la sección de   Configuración  ⚙️");
+         return 1;
+        //  ⚙️ Configuración
+    }
+
+    $this->info("✅ Directorio encontrado: " . $directorioNotas);
 
     // 1.1. Convertir ~ a la ruta del home del usuario
     if (str_starts_with($directorioNotas, '~/')) {
@@ -50,14 +68,14 @@ class ImportNotesCommand extends Command
         $directorioNotas = $home . substr($directorioNotas, 1);
     }
 
-    // 2. Verificar que el directorio existe
-    if (!is_dir($directorioNotas)) {
-        $this->error("El directorio no existe: " . $directorioNotas);
-        return 1;
-    }
+    // // 2. Verificar que el directorio existe
+    // if (!is_dir($directorioNotas)) {
+    //     $this->error("El directorio no existe: " . $directorioNotas);
+    //     return 1;
+    // }
 
-     // 2.1. Confirmar que encontramos el directorio
-    $this->info("✓ Directorio encontrado: " . $directorioNotas);
+    //  // 2.1. Confirmar que encontramos el directorio
+    // $this->info("✓ Directorio encontrado: " . $directorioNotas);
 
     // 3. Buscar todos los archivos .md (recursivamente)
     $this->info("Buscando archivos .md...");
@@ -82,11 +100,11 @@ class ImportNotesCommand extends Command
     $parsedown = new Parsedown();
 
     // Obtener el usuario administrador (el primero creado)
-    $usuario = User::first();
-    if (!$usuario) {
-        $this->error("❌ No hay usuarios en el sistema. Crea un usuario primero.");
-        return 1;
-    }
+    // $usuario = User::first();
+    // if (!$usuario) {
+    //     $this->error("❌ No hay usuarios en el sistema. Crea un usuario primero.");
+    //     return 1;
+    // }
 
     // Reemplazar el Contenido del foreach, para proseguir con el procesador
     // de contenido markdown a HTML

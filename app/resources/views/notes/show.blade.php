@@ -1,28 +1,71 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ $note->title }}
-        </h2>
+        <h1 class="text-3xl font-bold text-gray-800">{{ $note->title }}</h1>
     </x-slot>
 
     <div class="py-12">
-        {{-- <div class="max-w-4xl mx-auto sm:px-6 lg:px-8"> --}}
         <div class="p-6 pt-16 lg:pt-6 max-w-4xl mx-auto">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
+                    
                     <div class="mb-4">
                         <a href="{{ route('notes.index') }}" class="text-blue-600 hover:underline">← Volver a mis notas</a>
                     </div>
                     
-                    <div class="text-sm text-gray-500 mb-4">
-                        <span>Categoría: {{ $note->category?->name ?? 'Sin categoría' }}</span>
-                        <span class="mx-2">•</span>
-                        <span>Creada: {{ $note->created_at->format('d/m/Y') }}</span>
+                    {{-- Metadatos --}}
+                    <div class="flex flex-wrap gap-3 text-sm text-gray-500 mb-4 pb-4 border-b border-gray-200">
+                        {{-- Categoría --}}
+                        <div class="flex items-center gap-1">
+                            <span>📂</span>
+                            <span>Categoría:</span>
+                            <span class="text-gray-700">{{ $note->category?->name ?? 'Sin categoría' }}</span>
+                        </div>
+                        
+                        <span class="text-gray-300">|</span>
+                        
+                        {{-- Fecha de creación --}}
+                        <div class="flex items-center gap-1">
+                            <span>📅</span>
+                            <span>Creada:</span>
+                            <span class="text-gray-700">{{ $note->created_at->format('d/m/Y H:i') }}</span>
+                        </div>
+                        
+                        {{-- Fecha de actualización (si es diferente) --}}
+                        @if($note->created_at != $note->updated_at)
+                            <span class="text-gray-300">|</span>
+                            <div class="flex items-center gap-1">
+                                <span>✏️</span>
+                                <span>Actualizada:</span>
+                                <span class="text-gray-700">{{ $note->updated_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                        @endif
+                        
+                        <span class="text-gray-300">|</span>
+                        
+                        {{-- Etiquetas --}}
+                        <div class="flex items-center gap-1 flex-wrap">
+                            <span>🏷️</span>
+                            <span>Etiquetas:</span>
+                            @if($note->tags->count() > 0)
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($note->tags as $tag)
+                                        <span class="bg-gray-200 text-gray-800 px-2 py-0.5 rounded-full text-xs">
+                                        {{-- <span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-xs"> --}}
+                                            {{ $tag->name }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <span class="text-gray-400">Sin etiquetas</span>
+                            @endif
+                        </div>
                     </div>
                     
+                    {{-- Contenido de la nota --}}
                     <div class="prose max-w-none mt-6">
                         {!! $note->content_html !!}
                     </div>
+                    
                 </div>
             </div>
         </div>

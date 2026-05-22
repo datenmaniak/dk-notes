@@ -29,6 +29,8 @@
                         @endforeach
                     </select>
                 </div>
+
+
                 
                 <div class="mb-4">
                     <label class="block text-gray-700 font-medium mb-2">Contenido (Markdown)</label>
@@ -44,6 +46,96 @@
                         Cancelar
                     </a>
                 </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Etiquetas</label>
+                    <div id="noteTagsContainer" class="flex flex-wrap gap-2 mb-2">
+                        <!-- Las etiquetas se mostrarán aquí -->
+                    </div>
+                        <button type="button" onclick="openAssignTagsModal()" class="text-sm text-[#7700F0] hover:text-purple-700">
+                        + Asignar etiqueta
+                        </button>
+                    </div>
+
+                    {{-- Modal de asignación de etiquetas --}}
+                    <div id="assignTagsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+                            <div class="p-6">
+                                <h3 class="text-lg font-semibold mb-4">Asignar etiquetas</h3>
+                                <div id="allTagsList" class="space-y-2 max-h-64 overflow-y-auto">
+                                    <!-- Checkboxes se cargarán aquí -->
+                                </div>
+                                <div class="flex justify-end gap-3 mt-4">
+                                    <button onclick="closeAssignTagsModal()" class="px-4 py-2 bg-gray-300 rounded-lg">Cancelar</button>
+                                    <button onclick="saveAssignedTags()" class="px-4 py-2 bg-[#7700F0] text-white rounded-lg">Asignar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                <script>
+                    let currentNoteId = {{ $note->id }};
+                    let assignedTags = [];
+                    let allTags = [];
+                    
+                    function loadNoteTags() {
+                        fetch('{{ route("notes.tags.get", $note) }}')
+                            .then(response => response.json())
+                            .then(tags => {
+                                assignedTags = tags;
+                                updateTagsDisplay();
+                            });
+                    }
+                    
+                    function updateTagsDisplay() {
+                        const container = document.getElementById('noteTagsContainer');
+                        container.innerHTML = assignedTags.map(tag => 
+                            `<span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm">🏷️ ${tag.name}</span>`
+                        ).join('');
+                    }
+            
+                function openAssignTagsModal() {
+                    // Cargar todas las etiquetas
+                    fetch('{{ route("tags.index") }}')
+                        .then(response => response.json())
+                        .then(tags => {
+                            allTags = tags;
+                            const container = document.getElementById('allTagsList');
+                            container.innerHTML = allTags.map(tag => `
+                                <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg">
+                                    <input type="checkbox" value="${tag.id}" 
+                                        ${assignedTags.some(t => t.id === tag.id) ? 'checked' : ''}
+                                        class="rounded border-gray-300 text-[#7700F0]">
+                                    <span>🏷️ ${tag.name}</span>
+                                </label>
+                            `).join('');
+                            document.getElementById('assignTagsModal').classList.remove('hidden');
+                        });
+                }
+                
+                function closeAssignTagsModal() {
+                    document.getElementById('assignTagsModal').classList.add('hidden');
+                }
+            
+                    function saveAssignedTags() {
+                        const selected = Array.from(document.querySelectorAll('#allTagsList input:checked'))
+                            .map(cb => parseInt(cb.value));
+                        
+                        fetch('{{ route("notes.tags.assign", $note) }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ tags: selected })
+                        }).then(() => {
+                            loadNoteTags();
+                            closeAssignTagsModal();
+                        });
+                    }
+                    
+                    loadNoteTags();
+                </script>
             </form>
         </div>
     </div>

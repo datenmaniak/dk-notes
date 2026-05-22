@@ -90,9 +90,12 @@
                         <span>📋</span>
                         <span>Mis Notas</span>
                     </a>
+                    <a href="#" onclick="openTagsModal(); return false;" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-700 transition">
+                        <span>🏷️</span>
+                        <span># Etiquetas</span>
+                    </a>
 
-                    {{-- NUEVO: Configuración --}}
-                 {{-- Preferencias del usuario --}}
+                    {{-- Preferencias del usuario --}}
 
                     <a href="{{ route('settings.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-purple-700 transition">
                     <span>⚙️</span>
@@ -209,6 +212,98 @@
             {{ $slot }}
         </main>
     </div>
+
+    {{-- Modal de gestión de etiquetas --}}
+    <div id="tagsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div class="p-6">
+                <h3 class="text-lg font-semibold mb-4"># Editar etiquetas</h3>
+                
+                <div class="mb-4">
+                    <div class="flex gap-2">
+                        <input type="text" id="newTagName" placeholder="Nueva etiqueta" 
+                            class="flex-1 border-gray-300 rounded-lg focus:ring-[#7700F0] focus:border-[#7700F0]">
+                        <button id="createTagBtn" class="px-4 py-2 bg-[#7700F0] text-white rounded-lg hover:bg-purple-700">
+                            ✔️ Crear
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="tagsList" class="space-y-2 max-h-64 overflow-y-auto">
+                    <!-- Las etiquetas se cargarán aquí -->
+                </div>
+                
+                <div class="mt-4 text-right">
+                    <button onclick="closeTagsModal()" class="px-4 py-2 bg-gray-300 rounded-lg">Salir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTags = [];
+        let isAdmin = {{ Auth::user()->is_admin ? 'true' : 'false' }};
+        
+        function openTagsModal() {
+            document.getElementById('tagsModal').classList.remove('hidden');
+            loadTags();
+        }
+        
+        function closeTagsModal() {
+            document.getElementById('tagsModal').classList.add('hidden');
+        }
+        
+        function loadTags() {
+            fetch('{{ route("tags.index") }}')
+                .then(response => response.json())
+                .then(tags => {
+                    currentTags = tags;
+                    const container = document.getElementById('tagsList');
+                    container.innerHTML = '';
+                    tags.forEach(tag => {
+                        const div = document.createElement('div');
+                        div.className = 'flex items-center justify-between p-2 bg-gray-50 rounded-lg';
+                        div.innerHTML = `
+                            <span>🏷️ ${tag.name}</span>
+                            ${isAdmin ? `<button onclick="deleteTag(${tag.id})" class="text-red-500 hover:text-red-700">🗑️</button>` : ''}
+                        `;
+                        container.appendChild(div);
+                    });
+                });
+        }
+        
+        function deleteTag(tagId) {
+            if (!confirm('¿Eliminar esta etiqueta?')) return;
+            
+            fetch(`/tags/${tagId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                }
+            }).then(() => {
+                loadTags();
+            });
+        }
+        
+        document.getElementById('createTagBtn')?.addEventListener('click', function() {
+            const name = document.getElementById('newTagName').value.trim();
+            if (!name) return;
+            
+            fetch('{{ route("tags.store") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: name })
+            }).then(response => response.json())
+            .then(() => {
+                document.getElementById('newTagName').value = '';
+                loadTags();
+            });
+        });
+    </script>
 
     <!-- Highlight.js JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>

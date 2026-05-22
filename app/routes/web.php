@@ -48,6 +48,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Etiquetas
+    Route::prefix('tags')->group(function () {
+    Route::get('/', [App\Http\Controllers\TagController::class, 'index'])->name('tags.index');
+    Route::post('/', [App\Http\Controllers\TagController::class, 'store'])->name('tags.store');
+    Route::delete('/{tag}', [App\Http\Controllers\TagController::class, 'destroy'])->name('tags.destroy');
+    Route::post('/notes/{note}/tags', [App\Http\Controllers\TagController::class, 'assign'])->name('notes.tags.assign');
+    Route::get('/notes/{note}/tags', [App\Http\Controllers\TagController::class, 'getNoteTags'])->name('notes.tags.get');
+});
+
 
 });
 

@@ -115,6 +115,15 @@
                                 </form>
                             </div>
                         </li>
+
+                        {{-- Mostrar etiqueta --}}
+                        <div class="flex flex-wrap gap-1 mt-1">
+                            @foreach($note->tags as $tag)
+                                {{-- <span class="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">🏷️ {{ $tag->name }}</span> --}}
+                                <span class="text-xs  text-grey-200 px-2 py-0.5 ">🏷️ {{ $tag->name }}</span>
+                            @endforeach
+                        </div>
+
                     @endforeach
                 </ul>
             @endif

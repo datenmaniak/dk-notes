@@ -69,7 +69,7 @@
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
 
         {{-- Sidebar --}}
-        <aside id="sidebar" class="fixed lg:relative inset-y-0 left-0 w-80 lg:w-80 bg-[#7700F0] text-white transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 flex-shrink-0 h-screen overflow-y-auto lg:block">
+        <aside id="sidebar" class="fixed lg:relative inset-y-0 left-0 w-80 lg:w-80 bg-[#7700F0] text-white transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 flex-shrink-0 h-full overflow-y-auto lg:block">
             <div class="h-full flex flex-col">
                 {{-- User Info --}}
                 <div class="p-6 border-b border-purple-400">

@@ -6,9 +6,9 @@
 
 # Valores por defecto
 CONTAINER="dk-app"
+DESTINO="/var/www/html/public/notes"
 DRY_RUN=false
 DELETE_ORPHANS=false
-RUTA_PERSONAL=""
 
 # Directorio base fijo (no se puede copiar directamente a esta ruta)
 BASE_NOTES="/var/www/html/public/notes"
@@ -21,127 +21,25 @@ show_help() {
     echo "sync-notes.sh - Sincroniza notas con el contenedor DKNotes"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    echo "Uso: $0 <DIRECTORIO_LOCAL> --personal <RUTA> [OPCIONES]"
+    echo "Uso: $0 <DIRECTORIO_LOCAL> [OPCIONES]"
     echo ""
     echo "Argumentos:"
     echo "  DIRECTORIO_LOCAL       Ruta local de las notas (requerido)"
-    echo "  -p, --personal RUTA    Ruta personal (subcarpeta dentro de notes) (requerido)"
     echo ""
     echo "Opciones:"
     echo "  -d, --dry-run          Simula la sincronizacion (no copia ni importa)"
     echo "  -D, --delete-orphans   Elimina archivos en destino que no existen en origen"
     echo "  -c, --container NOMBRE Nombre del contenedor (default: dk-app)"
+    echo "  -t, --destino RUTA     Ruta destino en contenedor (default: /var/www/html/public/notes)"
     echo "  -h, --help             Muestra esta ayuda"
     echo ""
     echo "Ejemplos:"
-    echo "  $0 ~/notes --personal usuario@ejemplo.com"
-    echo "  $0 ~/notes -p proyecto-x --delete-orphans"
-    echo "  $0 ~/mis-notas -p usuario@empresa.com --dry-run"
-    echo ""
-    echo "Referencia para desarrolladores:"
-    echo "  Ruta base fija: ${BASE_NOTES}"
-    echo "  Destino final:  ${BASE_NOTES}/[RUTA_PERSONAL]"
-    echo "  No se permite copiar directamente a la raiz de notes"
+    echo "  $0 ~/notes"
+    echo "  $0 ~/notes --dry-run"
+    echo "  $0 ~/notes --delete-orphans"
+    echo "  $0 ~/mis-notas -c otro-container -t /var/www/html/public/notes/mi-carpeta"
     echo ""
 }
-
-# ============================================================
-# Normalizar ruta personal (solo a-z, sin acentos, sin numeros, sin caracteres especiales)
-# ============================================================
-normalize_personal_path() {
-    local original="$RUTA_PERSONAL"
-    local normalized
-    
-    # Convertir a minusculas
-    normalized=$(echo "$original" | tr '[:upper:]' '[:lower:]')
-    
-    # Eliminar acentos (áéíóú → aeiou)
-    normalized=$(echo "$normalized" | sed 's/[áäâà]/a/g; s/[éëêè]/e/g; s/[íïîì]/i/g; s/[óöôò]/o/g; s/[úüûù]/u/g')
-    
-    # Convertir ñ a n
-    normalized=$(echo "$normalized" | sed 's/ñ/n/g')
-    
-    # Eliminar todo lo que no sea a-z
-    normalized=$(echo "$normalized" | sed 's/[^a-z]//g')
-    
-    # Verificar que no quede vacio
-    if [ -z "$normalized" ]; then
-        echo ""
-        echo "ERROR: La ruta personal no contiene caracteres validos"
-        echo ""
-        echo "Original: \"$original\""
-        echo "Despues de normalizar: (vacio)"
-        echo ""
-        echo "La ruta personal debe contener al menos una letra (a-z)."
-        echo "Ejemplo: --personal misnotas"
-        echo ""
-        exit 1
-    fi
-    
-    # Limitar longitud a 100 caracteres
-    if [ ${#normalized} -gt 100 ]; then
-        normalized="${normalized:0:100}"
-        echo "  (Ruta personal truncada a 100 caracteres)"
-    fi
-    
-    # Mostrar normalizacion si hubo cambios
-    if [ "$normalized" != "$original" ]; then
-        echo "  Ruta personal normalizada: \"$original\" → \"$normalized\""
-    fi
-    
-    RUTA_PERSONAL="$normalized"
-    echo "  OK: Ruta personal: $RUTA_PERSONAL"
-}
-
-# ============================================================
-# Validar formato de ruta personal
-# ============================================================
-# validate_personal_path() {
-#     # Verificar que no este vacia
-#     if [ -z "$RUTA_PERSONAL" ]; then
-#         echo "ERROR: Debes especificar la ruta personal con --personal"
-#         echo ""
-#         echo "Ejemplo:"
-#         echo "  $0 ~/notes --personal usuario@ejemplo.com"
-#         echo ""
-#         echo "La ruta personal es la subcarpeta dentro de notes donde se copiaran tus archivos."
-#         echo "Consulta la ayuda con --help para mas informacion."
-#         exit 1
-#     fi
-    
-#     # Verificar que no contenga ".." (path traversal)
-#     if [[ "$RUTA_PERSONAL" == *".."* ]]; then
-#         echo "ERROR: Ruta personal no valida: \"${RUTA_PERSONAL}\""
-#         echo ""
-#         echo "La ruta personal no puede contener \"..\""
-#         echo "Esto evitara salir del directorio de notas permitido."
-#         echo ""
-#         echo "Usa un valor como: usuario@ejemplo.com, proyecto-x, o notas-trabajo"
-#         exit 1
-#     fi
-    
-#     # Verificar que no sea "." o "/" o "./"
-#     if [[ "$RUTA_PERSONAL" == "." || "$RUTA_PERSONAL" == "/" || "$RUTA_PERSONAL" == "./" ]]; then
-#         echo "ERROR: Ruta personal no valida: \"${RUTA_PERSONAL}\""
-#         echo ""
-#         echo "No se permite copiar a la raiz de notas."
-#         echo "Debes especificar una subcarpeta valida."
-#         echo ""
-#         echo "Usa un valor como: usuario@ejemplo.com, proyecto-x, o notas-trabajo"
-#         exit 1
-#     fi
-    
-#     # Eliminar slash al inicio si existe
-#     if [[ "$RUTA_PERSONAL" == /* ]]; then
-#         RUTA_PERSONAL="${RUTA_PERSONAL#/}"
-#         echo "  (Normalizando ruta: eliminado slash inicial)"
-#     fi
-    
-#     # Eliminar slash al final si existe
-#     RUTA_PERSONAL="${RUTA_PERSONAL%/}"
-    
-#     echo " ✅ OK: Ruta personal valida: ${RUTA_PERSONAL}"
-# }
 
 # ============================================================
 # Verificar si el contenedor esta corriendo
@@ -153,7 +51,7 @@ check_container() {
         podman ps --format "  - {{.Names}}"
         exit 1
     fi
-    echo " ✅ OK: Contenedor '${CONTAINER}' encontrado"
+    echo "OK: Contenedor '${CONTAINER}' encontrado"
 }
 
 # ============================================================
@@ -164,33 +62,31 @@ check_local_dir() {
         echo "ERROR: El directorio local no existe: ${LOCAL_DIR}"
         exit 1
     fi
-    echo " ✅ OK: Directorio local encontrado: ${LOCAL_DIR}"
+    echo "OK: Directorio local encontrado: ${LOCAL_DIR}"
 }
 
 # ============================================================
-# Construir destino final y verificar si existe
+# Verificar si el directorio destino existe en el contenedor
 # ============================================================
 check_dest_dir() {
-    DESTINO_FINAL="${BASE_NOTES}/${RUTA_PERSONAL}"
-    # echo "  Destino final: ${CONTAINER}:${DESTINO_FINAL}"
-    
-    if ! podman exec "$CONTAINER" test -d "$DESTINO_FINAL" 2>/dev/null; then
+    echo "  Verificando directorio destino en el contenedor..."
+    if ! podman exec "$CONTAINER" test -d "$DESTINO" 2>/dev/null; then
         echo ""
-        echo "❌  ERROR: El directorio destino no existe en el contenedor "
+        echo "ERROR: El directorio destino no existe en el contenedor"
         echo ""
-        # echo "Ruta buscada: ${CONTAINER}:${DESTINO_FINAL}"
+        echo "Ruta buscada: ${CONTAINER}:${DESTINO}"
         echo ""
-        echo "⚠️  Este directorio debe ser creado previamente desde la aplicacion web DKNotes."
+        echo "Este directorio debe ser creado previamente desde la aplicacion web DKNotes."
         echo ""
-        echo " 💡  Sugerencia:"
-        echo "  1. Accede a la aplicacion web."
-        echo "  2. Define  '${RUTA_PERSONAL}' como su directorio personal, guarde los cambios. "
-        echo "  3. Vuelve a ejecutar este script."
+        echo "Por favor:"
+        echo "  1. Accede a la aplicacion web"
+        echo "  2. Configura tu espacio de notas"
+        echo "  3. Vuelve a ejecutar este script"
         echo ""
-        echo "⚠️  Por seguridad de los datos se ha omitido crear el directorio automaticamente."
+        echo "El script no creara el directorio automaticamente."
         exit 1
     fi
-    echo "  Directorio destino encontrado"
+    echo "  Directorio destino encontrado: ${DESTINO}"
 }
 
 # ============================================================
@@ -202,7 +98,7 @@ show_dry_run_summary() {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
     echo "Origen: ${LOCAL_DIR}"
-    echo "Destino: ${CONTAINER}:${BASE_NOTES}/${RUTA_PERSONAL}"
+    echo "Destino: ${CONTAINER}:${DESTINO}"
     echo ""
     
     echo "Archivos .md que seran copiados:"
@@ -217,8 +113,8 @@ show_dry_run_summary() {
     if [ "$DELETE_ORPHANS" = true ]; then
         echo ""
         echo "Archivos que seran eliminados (huérfanos):"
-        podman exec "$CONTAINER" find "${BASE_NOTES}/${RUTA_PERSONAL}" -name "*.md" -type f 2>/dev/null | while read -r remote_file; do
-            rel_path="${remote_file#${BASE_NOTES}/${RUTA_PERSONAL}/}"
+        podman exec "$CONTAINER" find "$DESTINO" -name "*.md" -type f 2>/dev/null | while read -r remote_file; do
+            rel_path="${remote_file#$DESTINO/}"
             local_file="${LOCAL_DIR}/${rel_path}"
             if [ ! -f "$local_file" ]; then
                 echo "  - ${rel_path}"
@@ -241,14 +137,12 @@ show_dry_run_summary() {
 delete_orphan_files() {
     echo "  Eliminando archivos huerfanos en destino..."
     
-    DESTINO_FINAL="${BASE_NOTES}/${RUTA_PERSONAL}"
-    
     # Verificar que el directorio existe antes de buscar
-    podman exec "$CONTAINER" test -d "$DESTINO_FINAL" || return 0
+    podman exec "$CONTAINER" test -d "$DESTINO" || return 0
     
     deleted=0
-    podman exec "$CONTAINER" find "$DESTINO_FINAL" -name "*.md" -type f 2>/dev/null | while read -r remote_file; do
-        rel_path="${remote_file#$DESTINO_FINAL/}"
+    podman exec "$CONTAINER" find "$DESTINO" -name "*.md" -type f 2>/dev/null | while read -r remote_file; do
+        rel_path="${remote_file#$DESTINO/}"
         local_file="${LOCAL_DIR}/${rel_path}"
         if [ ! -f "$local_file" ]; then
             podman exec "$CONTAINER" rm "$remote_file"
@@ -265,8 +159,6 @@ delete_orphan_files() {
 # ============================================================
 copy_files() {
     echo "  Copiando archivos nuevos/modificados..."
-    
-    DESTINO_FINAL="${BASE_NOTES}/${RUTA_PERSONAL}"
     
     # Contar archivos .md
     total=$(find "$LOCAL_DIR" -name "*.md" -type f | wc -l)
@@ -289,7 +181,7 @@ copy_files() {
         rel_path="${rel_path#/}"
         
         # Obtener directorio destino
-        dest_dir="${DESTINO_FINAL}/$(dirname "$rel_path")"
+        dest_dir="${DESTINO}/$(dirname "$rel_path")"
         
         # Crear directorio destino si no existe
         podman exec "$CONTAINER" mkdir -p "$dest_dir" 2>/dev/null
@@ -307,13 +199,13 @@ copy_files() {
 # Ejecutar sincronizacion real
 # ============================================================
 run_sync() {
-    # echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    # echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Copiando notas al contenedor..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
     # Verificar que el directorio destino existe
     check_dest_dir
 
-    echo "Copiando notas al contenedor..."
     # Copiar archivos nuevos/modificados
     copy_files
     
@@ -330,15 +222,15 @@ run_sync() {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Las notas han sido copiadas al contenedor."
     echo ""
-    echo "Ahora acceda a la aplicacion web DKNotes :"
-    echo "  - Elija 'Sincronizar' "
-    echo "  - Revise en 'Mis Notas' u obtenga un listado"
-    echo "  - Esta todo listo para gestionar el contenido de sus notas."
+    echo "Ahora ve a la aplicacion web DKNotes para:"
+    echo "  - Importar las notas"
+    echo "  - Revisar el contenido"
+    echo "  - Gestionar tus notas"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 
 # ============================================================
-# Procesar argumento
+# Procesar argumentos
 # ============================================================
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -354,12 +246,12 @@ while [[ $# -gt 0 ]]; do
             DELETE_ORPHANS=true
             shift
             ;;
-        -p|--personal)
-            RUTA_PERSONAL="$2"
-            shift 2
-            ;;
         -c|--container)
             CONTAINER="$2"
+            shift 2
+            ;;
+        -t|--destino)
+            DESTINO="$2"
             shift 2
             ;;
         -*)
@@ -385,20 +277,6 @@ if [ -z "$LOCAL_DIR" ]; then
 fi
 
 # ============================================================
-# Validar que se proporciono la ruta personal
-# ============================================================
-if [ -z "$RUTA_PERSONAL" ]; then
-    echo "ERROR: Debes especificar la ruta personal con --personal"
-    echo ""
-    echo "Ejemplo:"
-    echo "  $0 ~/notes --personal usuario"
-    echo ""
-    echo "Consulta la ayuda con --help para mas informacion."
-    exit 1
-fi
-
-
-# ============================================================
 # Ejecutar script
 # ============================================================
 echo ""
@@ -410,8 +288,6 @@ echo ""
 # Validaciones
 check_container
 check_local_dir
-# validate_personal_path
-normalize_personal_path
 
 # Ejecutar segun modo
 if [ "$DRY_RUN" = true ]; then

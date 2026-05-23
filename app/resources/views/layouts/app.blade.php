@@ -215,7 +215,7 @@
 
     {{-- Modal de gestión de etiquetas --}}
     <div id="tagsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 flex flex-col max-h-[90vh]">
             <div class="p-6">
                 <h3 class="text-lg font-semibold mb-4"># Editar etiquetas</h3>
                 
@@ -229,7 +229,7 @@
                     </div>
                 </div>
                 
-                <div id="tagsList" class="space-y-2 max-h-64 overflow-y-auto">
+                <div id="tagsList" class="space-y-2 max-h-64 overflow-y-auto flex-1 overflow-y-auto max-h-64">
                     <!-- Las etiquetas se cargarán aquí -->
                 </div>
                 

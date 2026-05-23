@@ -15,7 +15,8 @@
                     {{-- // edicion de la nota  --}}
                            {{-- Botón Volver --}}
                     <div class="mb-6">
-                        <a href="{{ route('notes.index') }}" class="text-blue-600 hover:underline">
+                        {{-- <a href="{{ route('notes.index') }}" class="text-blue-600 hover:underline"> --}}
+                        <a href="{{ route('notes.index') }}" class=" text-blue-600 hover:bg-gray-100 rounded-lg inline-block px-2 py-1">
                             ← Volver a mis notas
                         </a>
                     </div>
@@ -31,7 +32,7 @@
                      {{-- Título alineado a la izquierda, como botón de edición --}}
                     <div class="mb-4">
                         <a href="{{ route('notes.edit', $note) }}" 
-                           class="text-3xl font-bold text-gray-800 cursor-pointer hover:bg-gray-100 transition-colors inline-block px-2 py-1 -ml-2">
+                           class="text-3xl font-bold text-gray-800 cursor-pointer hover:bg-gray-200 transition-colors inline-block px-2 py-1 -ml-2">
                             {{ $note->title }}
                         </a>
                     </div>

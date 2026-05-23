@@ -72,7 +72,7 @@
                         </label>
                         <input type="text" name="ruta_personal" value="{{ $settings['ruta_personal'] }}"
                                class="w-full border-gray-300 rounded-lg focus:ring-[#7700F0] focus:border-[#7700F0]"
-                               placeholder="ej: proyectos, trabajo, diario">
+                               placeholder="ej: proyectos, trabajos, apuntes, diario, anotaciones, notas">
                         <p class="text-xs text-gray-500 mt-1">
                             Solo letras minúsculas, entre 5 y 16 caracteres.<br>
                         </p>

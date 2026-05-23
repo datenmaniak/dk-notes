@@ -1,16 +1,44 @@
 <x-app-layout>
-    <x-slot name="header">
+    {{-- <x-slot name="header">
         <h1 class="text-3xl font-bold text-gray-800">{{ $note->title }}</h1>
-    </x-slot>
+    </x-slot> --}}
 
     <div class="py-12">
         <div class="p-6 pt-16 lg:pt-6 max-w-4xl mx-auto">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    
+{{--                     
                     <div class="mb-4">
                         <a href="{{ route('notes.index') }}" class="text-blue-600 hover:underline">← Volver a mis notas</a>
+                    </div> --}}
+
+                    {{-- // edicion de la nota  --}}
+                           {{-- Botón Volver --}}
+                    <div class="mb-6">
+                        <a href="{{ route('notes.index') }}" class="text-blue-600 hover:underline">
+                            ← Volver a mis notas
+                        </a>
                     </div>
+                    
+                    {{-- Título centrado como botón de edición
+                    <div class="text-center mb-4">
+                        <a href="{{ route('notes.edit', $note) }}" 
+                           class="text-2xl font-bold text-gray-800 cursor-pointer hover:text-[#7700F0] hover:underline transition-colors inline-block">
+                            {{ $note->title }}
+                        </a>
+                    </div> --}}
+
+                     {{-- Título alineado a la izquierda, como botón de edición --}}
+                    <div class="mb-4">
+                        <a href="{{ route('notes.edit', $note) }}" 
+                           class="text-3xl font-bold text-gray-800 cursor-pointer hover:bg-gray-100 transition-colors inline-block px-2 py-1 -ml-2">
+                            {{ $note->title }}
+                        </a>
+                    </div>
+                    
+                    {{-- Línea separadora --}}
+                    <div class="border-b border-gray-200 mb-6"></div>
+                    
                     
                     {{-- Metadatos --}}
                     <div class="flex flex-wrap gap-3 text-sm text-gray-500 mb-4 pb-4 border-b border-gray-200">

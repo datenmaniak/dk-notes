@@ -313,8 +313,8 @@ class NoteController extends Controller
         Log::info('=== INICIO Sincronización desde web ===');
         Log::info('Directorio: ' . $directorioConfigurado);
         
-        // Ejecutar importación
-        Artisan::call('notes:import');
+        // Ejecutar importación pasando el ID del usuario actual
+        Artisan::call('notes:import', ['--user' => Auth::id()]);
         $output = Artisan::output();
         
         Log::info('Salida de notes:import:');

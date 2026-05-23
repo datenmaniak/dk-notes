@@ -18,7 +18,8 @@ use Parsedown;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-#[Signature('notes:import')]
+// #[Signature('notes:import')]
+#[Signature('notes:import {--user=}')]
 #[Description('Importa notas Markdown desde un directorio')]
 class ImportNotesCommand extends Command
 {
@@ -29,11 +30,24 @@ class ImportNotesCommand extends Command
     public function handle()
     {
 
-    $usuario = User::first();
+    // $usuario = User::first();
+    // if (!$usuario) {
+    //     $this->error("❌ No hay usuarios en el sistema.");
+    // return 1;
+    // }
+
+    $userId = $this->option('user');
+    if ($userId) {
+        $usuario = User::find($userId);
+    } else {
+        $usuario = User::first();
+    }
+
     if (!$usuario) {
         $this->error("❌ No hay usuarios en el sistema.");
-    return 1;
-}
+        return 1;
+    }
+
     // ruta por defecto: /var/www/html/public/notes
     
     // Obtener ruta personal y construir ruta completa

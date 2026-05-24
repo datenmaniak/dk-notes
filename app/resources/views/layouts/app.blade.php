@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- // para resaltado de sintaxis  --}}
-    <!-- Para vs (claro con contraste) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+   
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             hljs.highlightAll();
         });
     </script>
+    
     {{-- //  Es resaltado de sintaxis (Syntax Highlighting) para bloques --}}
     {{-- //  de código en Markdown. --}}
 
@@ -308,13 +309,13 @@
         });
     </script>
 
-    <!-- Highlight.js JavaScript -->
+    {{-- <!-- Highlight.js JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
         hljs.highlightAll();
         });
-    </script>
+    </script> --}}
 
     <script>
         const sidebar = document.getElementById('sidebar');

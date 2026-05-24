@@ -20,8 +20,10 @@ import xml from 'highlight.js/lib/languages/xml'; // HTML usa xml
 import dockerfile from 'highlight.js/lib/languages/dockerfile';
 
 // Importar tema de Highlight.js
-import 'highlight.js/styles/atom-one-dark.css';
-
+// import 'highlight.js/styles/atom-one-dark.css';
+// import 'highlight.js/styles/tomorrow-night-blue.css';
+import 'highlight.js/styles/tokyo-night-dark.css';
+n
 // Registrar los lenguajes
 hljs.registerLanguage('bash', bash);
 hljs.registerLanguage('yaml', yaml);

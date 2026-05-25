@@ -2,14 +2,15 @@
     <div class="p-6 pt-16 lg:pt-6 max-w-4xl mx-auto">
         <div class="bg-white rounded-lg shadow p-6">
             <div class="mb-4">
-                <a href="{{ route('notes.index') }}" class="text-blue-600 hover:underline">← Volver a mis notas</a>
+                <a href="{{ route('notes.index', ['page' => request()->input('page', 1)])  }}"
+                     class="text-blue-600 hover:underline">← Volver a mis notas</a>
             </div>
             
             <h1 class="text-2xl font-bold mb-6">Crear nueva nota</h1>
             
             <form method="POST" action="{{ route('notes.store') }}">
                 @csrf
-                
+                {{-- <input type="hidden" name="page" value="{{ request()->input('page', 1) }}"> --}}
                 <div class="mb-4">
                     <label class="block text-gray-700 font-medium mb-2">Título *</label>
                     <input type="text" name="title" value="{{ old('title') }}" 

@@ -16,11 +16,13 @@
                            {{-- Botón Volver --}}
                     <div class="mb-6">
                         {{-- <a href="{{ route('notes.index') }}" class="text-blue-600 hover:underline"> --}}
-                        <a href="{{ route('notes.index') }}" class="font-bold text-green-600 hover:bg-green-200 focus:outline-2 focus:outline-offset-2 focus:outline-gray-500  px-2 py-1 inline-block">
+                        <a href="{{ route('notes.index', ['page' => $page ?? 1]) }}" class="font-bold text-green-600 hover:bg-green-200 focus:outline-2 focus:outline-offset-2 focus:outline-gray-500  px-2 py-1 inline-block">
                         {{-- <a href="{{ route('notes.index') }}" class="text-purple-600 hover:bg-gray-100 rounded-lg  px-2 py-1"> --}}
                             ← Volver a mis notas
                         </a>
                     </div>
+
+        
 
                                         
                     {{-- Título centrado como botón de edición

@@ -85,7 +85,7 @@
                         
                         <li class="p-4 {{ $rowClass }} flex items-center justify-between">
                             <div class="flex-1">
-                                <a href="{{ route('notes.show', $note) }}" class="text-gray-800 hover:text-blue-600">
+                                <a href="{{ route('notes.show', $note) }}?page={{ $notes->currentPage() }}" class="text-gray-800 hover:text-blue-600">
                                     {{ $note->title }}
                                 </a>
                                 <div class="text-sm mt-1">
@@ -103,7 +103,7 @@
                                 </div>
                             </div>
                             <div class="flex gap-2">
-                                <a href="{{ route('notes.edit', $note) }}" class="text-gray-500 hover:text-blue-600" title="Editar">
+                                <a href="{{ route('notes.edit', $note) }}?page={{ $notes->currentPage() }}" class="text-gray-500 hover:text-blue-600" title="Editar">
                                     ✏️
                                 </a>
                                 <form method="POST" action="{{ route('notes.destroy', $note) }}" onsubmit="return confirm('¿Eliminar esta nota?')">
@@ -146,12 +146,12 @@
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4">Filtrar por categoría</h3>
                     <div class="space-y-2 overflow-y-auto max-h-64 pr-2">
-                        <a href="{{ route('notes.filter') }}" class="block px-4 py-2 hover:bg-gray-100 rounded">
+                        <a href="{{ route('notes.filter') }}?page={{ $notes->currentPage() }}" class="block px-4 py-2 hover:bg-gray-100 rounded">
                             📋 Todas las notas
                         </a>
                         @foreach(\App\Models\Category::all() as $category)
                             <div class="flex items-center justify-between">
-                                <a href="{{ route('notes.filter', $category->slug) }}" class="block px-4 py-2 hover:bg-gray-100 rounded flex-1">
+                                <a href="{{ route('notes.filter', $category->slug) }}?page={{ $notes->currentPage() }}" class="block px-4 py-2 hover:bg-gray-100 rounded flex-1">
                                     📂 {{ $category->name }}
                                 </a>
                                 <form method="POST" action="{{ route('categories.destroy', $category) }}" 

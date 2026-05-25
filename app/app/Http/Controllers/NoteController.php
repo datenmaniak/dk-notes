@@ -40,26 +40,8 @@ class NoteController extends Controller
             $totalNotas = Note::where('user_id', Auth::id())->count();
         }
 
-        //  remove este bloque
-        // if (Auth::user()->is_admin) {
-        //     // Administrador: ve todas las notas
-        //     // $notes = Note::with('category')->get(); // reemplazado, al usar paginacion
-        //     $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
-        //     $totalNotas = Note::count(); // Todas las notas
-        // } else {
-        //     // Usuario normal: solo sus notas
-        //     // $notes = Auth::user()->notes()->with('category')->get();
-        //     // $notes = Auth::user()->$notes()->with('category')->paginate($perPage);
-
-            
-        //     $notes = Note::where('user_id', Auth::id())->with('category')->paginate($perPage);
-
-        //     $totalNotas = Note::count(); // Solo sus notas
-
-        //     $notes = Auth::user();
-        //     $notes = Note::with('category')->paginate($perPage);  // ✅ Correcto
-        // }
-        // remove hasta aqui 
+        // Guardar la página actual en sesión para volver después de editar/crear
+        session(['last_notes_page' => request()->input('page', 1)]);
 
 
         // total categorias
@@ -112,142 +94,17 @@ class NoteController extends Controller
             abort(403, 'No autorizado');
         }
 
-        // remove este bloque
-        // Filtrar las notas por rol
-        // if (Auth::user()->is_admin) {
-        //     // Administrador: ve todas las notas
-        //     $notes = Note::with('category')->get();
-        // } else {
-        //     // Usuario normal: solo sus notas
-        //     // $notes = Auth::user()->notes()->with('category')->get();
-        //     $notes = Auth::user();
-        //     $notes()->with('category')->get();
-        // }
-        // remove 
 
         // Conteo de notas por categorias
         $categoriasConNotas = Category::withCount('notes')->get();
+
+        // para no perder la ubicacion del paginador
+        $page = request()->input('page', 1);
         
         // Retornar vista con la nota
-        return view('notes.show', compact('note','categoriasConNotas'));
+        return view('notes.show', compact('note','categoriasConNotas','page'));
     }
 
-
-    // public function sync()
-    // {
-    //     $usuario = Auth::id();
-    //     if (!$usuario) {
-    //         $this->error("❌ No hay usuarios en el sistema.");
-    //     return 1;
-
-    //     // // $directorioConfigurado = UserSetting::getValue($userId, 'directorio_notas', base_path('notes'));
-    //     // $directorioConfigurado = UserSetting::getValue($userId, 'directorio_notas', base_path('public/notes'));
-
-    //     // Obtener ruta personal y construir ruta completa
-    //     $rutaPersonal = UserSetting::getValue($usuario->id, 'ruta_personal', '');
-    //     $directorioBase = base_path('public/notes');
-
-    //     if ($rutaPersonal) {
-    //         $directorioConfigurado = $directorioBase . '/' . $rutaPersonal;
-    //     } else {
-    //         $directorioConfigurado = '';
-    //         $this->error("❌ El directorio directorio personal no ha sido configurado ");
-    //         return 1;
-    //     }
-        
-    //        // Verificar que el directorio existe
-    //     if (!is_dir($directorioConfigurado)) {
-    //         $this->error("❌ El directorio personal no ha sido configurado " . $directorioNotas);
-    //         // $this->info("💡 Ejecuta: mkdir -p " . $directorioNotas);
-    //         $this->info("💡 Vaya a la sección de   Configuración  ⚙️");
-    //         return 1;
-    //     }
-
-
-    //     // Verificar si el directorio existe
-    //     if (!File::exists($directorioConfigurado)) {
-    //         // Intentar crear el directorio automáticamente
-    //         try {
-    //             File::makeDirectory($directorioConfigurado, 0755, true);
-    //             $mensaje = "📁 Directorio creado automáticamente: {$directorioConfigurado}\n\n";
-    //             $mensaje .= "Ahora debes copiar tus archivos .md a este directorio.\n\n";
-    //             $mensaje .= "Instrucciones:\n";
-    //             $mensaje .= "1. Abre otra terminal\n";
-    //             $mensaje .= "2. Ejecuta: podman cp ~/notes/. dk-app:{$directorioConfigurado}/\n";
-    //             $mensaje .= "     podman cp ~/notes/. dk-app:{$directorioConfigurado}/\n";
-    //             $mensaje .= "3. Luego vuelve a hacer clic en Sincronizar";
-                
-    //             return redirect()->route('notes.index')->with('warning', $mensaje);
-    //         } catch (\Exception $e) {
-    //             // No se pudo crear automáticamente, mostrar instrucciones manuales
-    //             $mensaje = "❌ El directorio no existe y no se pudo crear automáticamente.\n\n";
-    //             $mensaje .= "Configuración actual: {$directorioConfigurado}\n\n";
-    //             $mensaje .= "Para solucionar, ejecuta manualmente:\n";
-    //             $mensaje .= "docker exec -it dk-app mkdir -p {$directorioConfigurado}\n";
-    //             $mensaje .= "docker exec -it dk-app chmod 755 {$directorioConfigurado}\n\n";
-    //             $mensaje .= "Luego copia tus notas:\n";
-    //             $mensaje .= "docker cp ~/notes/. dk-app:{$directorioConfigurado}/\n\n";
-    //             $mensaje .= "Después vuelve a intentar Sincronizar";
-                
-    //             return redirect()->route('notes.index')->with('error', $mensaje);
-    //         }
-    //     }
-        
-    //     // Verificar si el directorio está vacío
-    //     $archivos = File::allFiles($directorioConfigurado);
-    //     $archivosMd = array_filter($archivos, function($file) {
-    //         return in_array($file->getExtension(), ['md', 'markdown']);
-    //     });
-        
-    //     if (count($archivosMd) === 0) {
-    //         $mensaje = "⚠️ El directorio existe pero está vacío.\n\n";
-    //         $mensaje = "No se encontraron archivos .md en: {$directorioConfigurado}";
-    //         $mensaje .= "Copia tus notas al directorio y vuelve a intentar:\n";
-    //         $mensaje .= "docker cp ~/notes/. dk-app:{$directorioConfigurado}/";
-            
-    //         return redirect()->route('notes.index')->with('warning', $mensaje);
-    //     }
-        
-    //     // Log para verificar que se ejecuta el botón
-    //     Log::info('=== INICIO Sincronización desde web ===');
-        
-    //     // Ejecutar importación
-    //     Artisan::call('notes:import');
-    //     $output = Artisan::output();
-        
-    //     Log::info('Salida de notes:import:');
-    //     Log::info($output);
-        
-    //     // Actualizar checksums de notas que cambiaron en disco
-    //     $notes = Note::whereNotNull('file_path')->get();
-    //     $updated = 0;
-        
-    //     Log::info('Notas con file_path: ' . $notes->count());
-        
-    //     foreach ($notes as $note) {
-    //         if (file_exists($note->file_path)) {
-    //             $currentChecksum = md5(file_get_contents($note->file_path));
-    //             if ($currentChecksum !== $note->checksum) {
-    //                 $note->checksum = $currentChecksum;
-    //                 $note->save();
-    //                 $updated++;
-    //                 Log::info('Checksum actualizado para nota ID: ' . $note->id);
-    //             }
-    //         } else {
-    //             Log::warning('Archivo no encontrado: ' . $note->file_path);
-    //         }
-    //     }
-        
-    //     $message = "✅ Notas sincronizadas correctamente.";
-    //     if ($updated > 0) {
-    //         $message .= " ($updated notas actualizadas por cambios en disco)";
-    //     }
-    //     $message .= "\n\n📁 Directorio: {$directorioConfigurado}";
-        
-    //     Log::info('=== FIN Sincronización ===');
-        
-    //     return redirect()->route('notes.index')->with('success', $message);
-    // }
 
     public function sync()
     {
@@ -354,22 +211,15 @@ class NoteController extends Controller
         if ($note->user_id !== Auth::id() && !Auth::user()->is_admin) {
             abort(403);
         }
-
-        // remove este bloque 
-        // // Filtrar las notas por rol
-        // if (Auth::user()->is_admin) {
-        //     // Administrador: ve todas las notas
-        //     $notes = Note::with('category')->get();
-        // } else {
-        //     // Usuario normal: solo sus notas
-        //     // $notes = Auth::user()->notes()->with('category')->get();
-        //     $notes = Auth::user();
-        //     $notes()->with('category')->get();
-        // }
-        // remove hasta aqui 
-        
+    
         $note->delete();
-        return redirect()->route('notes.index')->with('success', 'Nota eliminada.');
+
+        // $page = request()->input('page', 1); 
+        $page = session('last_notes_page', 1);
+
+
+        // return redirect()->route('notes.index')->with('success', 'Nota eliminada.');
+        return redirect()->route('notes.index', ['page' => $page])->with('success', 'Nota eliminada.');
     }
 
      public function edit(Note $note)
@@ -378,22 +228,12 @@ class NoteController extends Controller
             abort(403);
         }
 
-        // remove este bloque 
-        // Filtrar las notas por rol
-        // if (Auth::user()->is_admin) {
-        //     // Administrador: ve todas las notas
-        //     $notes = Note::with('category')->get();
-        // } else {
-        //     // Usuario normal: solo sus notas
-        //     // $notes = Auth::user()->notes()->with('category')->get();
-        //     $notes = Auth::user();
-        //     $notes()->with('category')->get();
-        // }
-        // remove hasta aqui
+
+        $page = request()->input('page', 1);
         
         $categoriasConNotas = Category::withCount('notes')->get();
 
-        return view('notes.edit', compact('note','categoriasConNotas'));
+        return view('notes.edit', compact('note','categoriasConNotas','page'));
     }
 
 
@@ -403,18 +243,9 @@ class NoteController extends Controller
             abort(403);
         }
 
-        // remove este bloque 
-        // Filtrar las notas por rol
-        // if (Auth::user()->is_admin) {
-        //     // Administrador: ve todas las notas
-        //     $notes = Note::with('category')->get();
-        // } else {
-        //     // Usuario normal: solo sus notas
-        //     // $notes = Auth::user()->notes()->with('category')->get();
-        //     $notes = Auth::user();
-        //     $notes()->with('category')->get();
-        // }
-        // remove hasta aqui 
+        $page = request()->input('page', 1);
+
+
 
         $request->validate([
             'title' => 'required|string|max:255',
@@ -438,8 +269,11 @@ class NoteController extends Controller
         if ($note->file_path && file_exists(dirname($note->file_path))) {
             file_put_contents($note->file_path, $request->content_markdown);
         }
-        
-            return redirect()->route('notes.show', $note)->with('success', 'Nota actualizada.');
+
+        // Obtener la página guardada (o 1 si no existe)
+        $page = session('last_notes_page', 1);
+
+        return redirect()->route('notes.show', ['note' => $note, 'page' => $page])->with('success', 'Nota actualizada.');
     }
 
     public function filter($categorySlug = null)
@@ -523,109 +357,19 @@ class NoteController extends Controller
             'updated_at' => now(),
         ]);
         
-        return redirect()->route('notes.show', $note)->with('success', 'Nota creada correctamente.');
+        // $page = request()->input('page', 1); 
+        $page = session('last_notes_page', 1);
+
+
+        // return redirect()->route('notes.show', $note)->with('success', 'Nota creada correctamente.');
+        return redirect()->route('notes.show', ['note' => $note, 'page' => $page])->with('success', 'Nota creada correctamente.');
     }
 
-    // BEGIN 
-    // public function upload(Request $request)
-    // {
-
-    //     //  dd($request->all()); // ← Agrega esta línea al principio
-
-    //     $request->validate([
-    //         'file' => 'required|file|mimes:md,markdown|max:2048', // máx 2MB
-    //         'category_id' => 'nullable|string',
-    //         'new_category' => 'nullable|string|max:100'
-    //     ]);
-
-    //      dd('1. Validación pasó'); // ← Punto 1
-
-    //     // AGREGAR LOGS AQUÍ
-    //     Log::info('=== SUBIR NOTA ===');
-    //     Log::info('Category ID recibido: ' . $request->category_id);
-    //     Log::info('New category: ' . $request->new_category);
-    
-    //     // Procesar categoría
-    //     $categoryId = null;
-
-
-    //     if ($request->category_id == 'new' && $request->new_category) {
-    //         // Crear nueva categoría
-    //         Log::info('Creando nueva categoría: ' . $request->new_category);
-    //         $slug = Str::slug($request->new_category);
-    //         $category = Category::firstOrCreate(
-    //             ['slug' => $slug],
-    //             ['name' => $request->new_category]
-    //         );
-    //         $categoryId = $category->id;
-    //         Log::info('Categoría creada con ID: ' . $categoryId);
-    //     } elseif (is_numeric($request->category_id) && $request->category_id > 0) {
-    //         // Usar categoría existente
-    //         Log::info('Usando categoría existente ID: ' . $categoryId);
-    //         $categoryId = (int) $request->category_id;
-    //     }
-
-    //     //   dd('2. Categoría procesada: ' . $categoryId); // ← Punto 2
-        
-    //     Log::info('Category ID final: ' . $categoryId);
-
-    //     // Leer el archivo subido
-    //     $file = $request->file('file');
-    //     $contenido = File::get($file->getPathname());
-    //     $nombreArchivo = $file->getClientOriginalName();
-        
-    //     //    dd('3. Archivo leído: ' . strlen($contenido) . ' bytes'); // ← Punto 3
-
-    //     // Extraer título
-    //     $titulo = $this->extraerTitulo($contenido, $nombreArchivo);
-        
-    //     // Convertir Markdown a HTML
-    //     $parsedown = new Parsedown();
-    //     $html = $parsedown->text($contenido);
-        
-    //     // Calcular checksum
-    //     $checksum = md5($contenido);
-        
-    //     // Verificar duplicado por checksum
-    //     $existente = Note::where('checksum', $checksum)->first();
-    //     if ($existente) {
-    //         return redirect()->route('notes.index')->with('warning', 'La nota ya existe: ' . $existente->title);
-    //     }
-        
-    //     // Crear slug único
-    //     $slug = Str::slug($titulo) . '-' . uniqid();
-        
-    //     // Guardar nota
-    //     $note = Note::create([
-    //         'title' => $titulo,
-    //         'slug' => $slug,
-    //         'content_markdown' => $contenido,
-    //         'content_html' => $html,
-    //         'checksum' => $checksum,
-    //         'category_id' => $categoryId ?: null,
-    //         'user_id' => Auth::id(),
-    //         'created_at' => now(),
-    //         'updated_at' => now(),
-    //     ]);
-
-    //     Log::info('Nota guardada con ID: ' . ($note->id ?? 'no creada'));
-        
-    //     return redirect()->route('notes.show', $note)->with('success', 'Nota subida correctamente.');
-    // }
-    // END  
 
     public function upload(Request $request)
 {
     try {
 
-        // // ✅ AGREGAR ESTO AL PRINCIPIO
-        // $file = $request->file('file');
-        // dd([
-        // 'nombre' => $file->getClientOriginalName(),
-        // 'extension' => $file->getClientOriginalExtension(),
-        // 'mime' => $file->getMimeType(),
-        // 'tamaño' => $file->getSize(),
-        // ]);
 
         // Punto 1: Validación del archivo .md a subir
         $request->validate([
@@ -641,36 +385,6 @@ class NoteController extends Controller
         // Punto 2: Procesar categoría
         $categoryId = null;
         
-        // begin bloque a remover 
-        // if ($request->category_id == 'new' && $request->new_category) {
-        //     $slug = Str::slug($request->new_category);
-        //     $category = Category::firstOrCreate(
-        //         ['slug' => $slug],
-        //         ['name' => $request->new_category]
-        //     );
-        //     $categoryId = $category->id;
-        // } elseif (is_numeric($request->category_id) && $request->category_id > 0) {
-        //     $categoryId = (int) $request->category_id;
-        // }
-        // END remove si funciona 
-        // Procesar categoría
-        // $categoryId = null;
-
-        // remove desde aqui
-        // Si se proporcionó una nueva categoría (texto), úsala primero
-        // if ($request->new_category && trim($request->new_category) !== '') {
-        //     $slug = \Str::slug($request->new_category);
-        //     $category = Category::firstOrCreate(
-        //         ['slug' => $slug],
-        //         ['name' => $request->new_category]
-        //     );
-        //     $categoryId = $category->id;
-        // } 
-        // // Si no, usar la categoría seleccionada en el select (si es numérica)
-        // elseif (is_numeric($request->category_id) && $request->category_id > 0) {
-        //     $categoryId = (int) $request->category_id;
-        // }
-        // remover 
       
         // 1. Si se escribió nueva categoría (texto)
         if ($request->new_category && trim($request->new_category) !== '') {
@@ -733,8 +447,9 @@ class NoteController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-        
-        return redirect()->route('notes.show', $note)->with('success', '✅ Nota subida correctamente. ID: ' . $note->id);
+        $page = request()->input('page', 1);
+        return redirect()->route('notes.show', ['note' => $note, 'page' => $page])->with('success', '✅ Nota subida correctamente. ID: ' . $note->id);
+        // return redirect()->route('notes.show', $note)->with('success', '✅ Nota subida correctamente. ID: ' . $note->id);
         
     } catch (\Exception $e) {
         // Capturar cualquier error y mostrarlo en la página de notas

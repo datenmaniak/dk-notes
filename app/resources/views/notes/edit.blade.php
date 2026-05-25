@@ -8,10 +8,22 @@
             
             <h1 class="text-2xl font-bold mb-6">Editar Nota</h1>
             
+            
+            
             <form method="POST" action="{{ route('notes.update', $note) }}">
                 @csrf
-                @method('PUT')
+
                 
+                <div class="flex gap-3 justify-end">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                        💾 Guardar cambios
+                    </button>
+                    <a href="{{ route('notes.show', $note) }}" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg">
+                        Cancelar
+                    </a>
+                </div>
+
+                @method('PUT')
                 <div class="mb-4">
                     <label class="block text-gray-700 font-medium mb-2">Título</label>
                     <input type="text" name="title" value="{{ old('title', $note->title) }}" 
@@ -29,7 +41,19 @@
                         @endforeach
                     </select>
                 </div>
+                        {{-- 
+                        <button type="button" onclick="openAssignTagsModal()" class="mb-2 text-sm text-[#7700F0] hover:text-purple-700 justify-end">
+                        + Asignar etiqueta
+                        </button> --}}
 
+                    <div class="flex justify-end">
+                        <button
+                            type="button"
+                            onclick="openAssignTagsModal()"
+                            class="mb-2 ml-auto px-3 py-1.5 text-sm text-[#7700F0] border border-[#7700F0] bg-transparent rounded-md hover:bg-[#7700F0] hover:text-white transition-colors duration-200">
+                            + Asignar etiqueta
+                        </button>
+                    </div>
 
                 
                 <div class="mb-4">
@@ -38,24 +62,27 @@
                               class="w-full border-gray-300 rounded-lg font-mono text-sm focus:border-blue-500 focus:ring focus:ring-blue-200" required>{{ old('content_markdown', $note->content_markdown) }}</textarea>
                 </div>
                 
-                <div class="flex gap-3">
+                {{-- movido al tope del form  --}}
+                {{-- <div class="flex gap-3">
                     <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
                         💾 Guardar cambios
                     </button>
                     <a href="{{ route('notes.show', $note) }}" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg">
                         Cancelar
                     </a>
-                </div>
+                </div> --}}
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Etiquetas</label>
-                    <div id="noteTagsContainer" class="flex flex-wrap gap-2 mb-2">
+                    {{-- <label class="block text-gray-700 font-medium mb-2">Etiquetas</label> --}}
+                    {{-- <div id="noteTagsContainer" class="flex flex-wrap gap-2 mb-2"> --}}
                         <!-- Las etiquetas se mostrarán aquí -->
-                    </div>
+                   
+                    {{-- Se ha movido arriba del contenido y aplicado nuevo estilos --}}
+                    {{-- </div>
                         <button type="button" onclick="openAssignTagsModal()" class="text-sm text-[#7700F0] hover:text-purple-700">
                         + Asignar etiqueta
                         </button>
-                    </div>
+                    </div> --}}
 
                     {{-- Modal de asignación de etiquetas --}}
                     <div id="assignTagsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">

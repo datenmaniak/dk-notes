@@ -18,6 +18,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/notes/sync', [App\Http\Controllers\NoteController::class, 'sync'])->name('notes.sync');
     Route::get('/notes/create', [App\Http\Controllers\NoteController::class, 'create'])->name('notes.create');
     Route::post('/notes', [App\Http\Controllers\NoteController::class, 'store'])->name('notes.store');
+   
+    
+    // Rutas genericas 
+    Route::get('/notes', [App\Http\Controllers\NoteController::class, 'index'])->name('notes.index');
+    Route::get('/notes/{note}', [App\Http\Controllers\NoteController::class, 'show'])->name('notes.show');
+    
     // subir notas
     Route::post('/notes/upload', [App\Http\Controllers\NoteController::class, 'upload'])->name('notes.upload');
     // eliminar todas las notas
@@ -26,10 +32,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/notes/{note}/edit', [App\Http\Controllers\NoteController::class, 'edit'])->name('notes.edit');
     Route::put('/notes/{note}', [App\Http\Controllers\NoteController::class, 'update'])->name('notes.update');
     Route::delete('/notes/{note}', [App\Http\Controllers\NoteController::class, 'destroy'])->name('notes.destroy');
-
-    // Rutas genericas 
-    Route::get('/notes/{note}', [App\Http\Controllers\NoteController::class, 'show'])->name('notes.show');
-    Route::get('/notes', [App\Http\Controllers\NoteController::class, 'index'])->name('notes.index');
 
     // Configuraciones
     Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');

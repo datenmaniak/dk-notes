@@ -20,8 +20,6 @@
                         {{-- <a href="{{ route('notes.index') }}" class="text-purple-600 hover:bg-gray-100 rounded-lg  px-2 py-1"> --}}
                             ← Volver a mis notas
                         </a>
-
-              
                     </div>
 
                                         
@@ -36,11 +34,21 @@
                      {{-- Título alineado a la izquierda, como botón de edición --}}
                     <div class="mb-4">
                         <a href="{{ route('notes.edit', $note) }}" 
-                           class="text-lg font-bold cursor-pointer  hover:bg-purple-600 transition-colors inline-block hover:text-white px-2 py-1 -ml-2">
-                           {{-- class="text-3xl font-bold text-gray-600 cursor-pointer bg-sky-700 hover:bg-sky-200 transition-colors inline-block px-2 py-1 -ml-2"> --}}
+                            class="text-lg mb-2 ml-auto px-3 py-1.5 text-sm text-[#7700F0] border border-[#7700F0] bg-transparent rounded-md hover:bg-[#7700F0] hover:text-white transition-colors duration-200">
+                           {{-- class="text-lg font-bold cursor-pointer  hover:bg-purple-600 transition-colors inline-block hover:text-white px-2 py-1 -ml-2"> --}}
                             {{ $note->title }}
                         </a>
                     </div>
+
+                    {{-- Prueba --}}
+                      {{-- <div class="flex justify-end"> --}}
+                        {{-- <button
+                            type="button"
+                            onclick="openAssignTagsModal()"
+                            class="mb-2 ml-auto px-3 py-1.5 text-sm text-[#7700F0] border border-[#7700F0] bg-transparent rounded-md hover:bg-[#7700F0] hover:text-white transition-colors duration-200">
+                            + Asignar etiqueta
+                        </button>
+                    </div> --}}
                     
                     {{-- Línea separadora --}}
                     <div class="border-b border-gray-200 mb-6"></div>

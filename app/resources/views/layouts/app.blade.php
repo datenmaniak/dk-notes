@@ -7,9 +7,6 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
-   
-
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             hljs.highlightAll();

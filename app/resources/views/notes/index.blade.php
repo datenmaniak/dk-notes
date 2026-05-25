@@ -64,9 +64,16 @@
                     No hay notas disponibles.
                 </div>
             @else
+                @php
+                    $currentFilter = session('last_notes_filter');
+                    $queryParams = $currentFilter ? ['category' => $currentFilter, 'page' => $notes->currentPage()] : ['page' => $notes->currentPage()];
+                @endphp
+
                 <ul class="divide-y divide-gray-200">
                     @foreach($notes as $note)
+                      
                         @php
+                          
                             $rowClass = '';
                             switch($note->status) {
                                 case 'orphan_category':
@@ -85,7 +92,8 @@
                         
                         <li class="p-4 {{ $rowClass }} flex items-center justify-between">
                             <div class="flex-1">
-                                <a href="{{ route('notes.show', $note) }}?page={{ $notes->currentPage() }}" class="text-gray-800 hover:text-blue-600">
+                                <a href="{{ route('notes.show', array_merge(['note' => $note], $queryParams))  }}" class="text-gray-800 hover:text-blue-600">
+                                {{-- <a href="{{ route('notes.show', $note) }}?page={{ $notes->currentPage() }}" class="text-gray-800 hover:text-blue-600"> --}}
                                     {{ $note->title }}
                                 </a>
                                 <div class="text-sm mt-1">
@@ -103,7 +111,8 @@
                                 </div>
                             </div>
                             <div class="flex gap-2">
-                                <a href="{{ route('notes.edit', $note) }}?page={{ $notes->currentPage() }}" class="text-gray-500 hover:text-blue-600" title="Editar">
+                                <a href="{{ route('notes.edit', array_merge(['note' => $note], $queryParams))}}" class="text-gray-500 hover:text-blue-600" title="Editar">
+                                {{-- <a href="{{ route('notes.edit', $note) }}?page={{ $notes->currentPage() }}" class="text-gray-500 hover:text-blue-600" title="Editar"> --}}
                                     ✏️
                                 </a>
                                 <form method="POST" action="{{ route('notes.destroy', $note) }}" onsubmit="return confirm('¿Eliminar esta nota?')">

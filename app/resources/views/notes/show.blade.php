@@ -2,27 +2,34 @@
     {{-- <x-slot name="header">
         <h1 class="text-3xl font-bold text-gray-800">{{ $note->title }}</h1>
     </x-slot> --}}
-
+<!-- Filtro en sesión: {{ session('last_notes_filter') }} -->
+<!-- Página en sesión: {{ session('last_notes_page') }} -->
     <div class="py-12">
         <div class="p-6 pt-16 lg:pt-6 max-w-4xl mx-auto">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-{{--                     
-                    <div class="mb-4">
-                        <a href="{{ route('notes.index') }}" class="text-blue-600 hover:underline">← Volver a mis notas</a>
-                    </div> --}}
 
-                    {{-- // edicion de la nota  --}}
-                           {{-- Botón Volver --}}
+
+            {{-- // edicion de la nota  --}}
+
+            {{-- Control del paginacion y categoria filtrada --}}
+            @php
+                $lastFilter = session('last_notes_filter');
+                $lastPage = session('last_notes_page', 1);
+                $backUrl = $lastFilter ? route('notes.filter', ['category' => $lastFilter, 'page' => $lastPage]) : route('notes.index', ['page' => $lastPage]);
+            @endphp
+
+                    {{-- Botón Volver --}}
                     <div class="mb-6">
-                        {{-- <a href="{{ route('notes.index') }}" class="text-blue-600 hover:underline"> --}}
-                        <a href="{{ route('notes.index', ['page' => $page ?? 1]) }}" class="font-bold text-green-600 hover:bg-green-200 focus:outline-2 focus:outline-offset-2 focus:outline-gray-500  px-2 py-1 inline-block">
-                        {{-- <a href="{{ route('notes.index') }}" class="text-purple-600 hover:bg-gray-100 rounded-lg  px-2 py-1"> --}}
-                            ← Volver a mis notas
-                        </a>
+                        <a href="{{ $backUrl }}"
+                        class="font-bold text-green-600 hover:bg-green-200 focus:outline-2 focus:outline-offset-2 focus:outline-gray-500  px-2 py-1 inline-block">
+                        ← Volver a mis notas
+                    </a>
+                    {{-- <a href="{{ route('notes.index', ['page' => $page ?? 1]) }}" --}}
+                        {{-- class="font-bold text-green-600 hover:bg-green-200 focus:outline-2 focus:outline-offset-2 focus:outline-gray-500 px-2 py-1 inline-block"> --}}
+                            {{-- ← Volver a mis notas --}}
+                        {{-- </a> --}}
                     </div>
-
-        
 
                                         
                     {{-- Título centrado como botón de edición

@@ -1,25 +1,32 @@
 <x-app-layout>
 
-     <!-- DIAGNÓSTICO: Valor de page = {{ $page ?? 'NO DEFINIDO' }} -->
-
+   
     {{-- <div class="p-6 max-w-4xl mx-auto"> --}}
     <div class="p-6 pt-16 lg:pt-6 max-w-4xl mx-auto">
         <div class="bg-white rounded-lg shadow p-6">
             <div class="mb-4">
-                <a href="{{ route('notes.show', ['note' => $note, 'page' => $page ?? 1]) }}"
+                 @php
+                    $currentFilter = session('last_notes_filter');
+                    $queryParams = session('last_notes_filter') ? ['category' => session('last_notes_filter'), 'page' => $page ?? 1] : ['page' => $page ?? 1];
+                @endphp
+                <a href="{{ route('notes.show', ['note' => $note] + $queryParams)  }}"
+                {{-- <a href="{{ route('notes.show', ['note' => $note, 'page' => $page ?? 1]) }}" --}}
                 class="text-blue-600 hover:underline">← Volver a la nota</a>
             </div>
             
             <h1 class="text-2xl font-bold mb-6">Editar Nota</h1>
             
-       
             
             <form method="POST" action="{{ route('notes.update', $note) }}">
                 @csrf
                 
                 {{-- Control de ubicacion del paginador --}}
                 <input type="hidden" name="page" value="{{ $page ?? 1 }}">
-                
+                @php
+                    $currentFilter = session('last_notes_filter');
+                    $queryParams = $currentFilter ? ['category' => $currentFilter, 'page' => $page ?? 1] : ['page' => $page ?? 1];
+                @endphp
+
                 
                 @method('PUT')
                 
@@ -27,7 +34,8 @@
                     <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
                         💾 Guardar cambios
                     </button>
-                    <a href="{{ route('notes.show', ['note' => $note, 'page' => $page ?? 1])  }}" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg">
+                    <a href="{{ route('notes.show', ['note' => $note] + $queryParams)   }}" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg">
+                    {{-- <a href="{{ route('notes.show', ['note' => $note, 'page' => $page ?? 1])  }}" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg"> --}}
                         Cancelar
                     </a>
                 </div>

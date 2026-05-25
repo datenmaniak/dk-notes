@@ -42,7 +42,7 @@ class NoteController extends Controller
 
         // Guardar la página actual en sesión para volver después de editar/crear
         session(['last_notes_page' => request()->input('page', 1)]);
-
+        session(['last_notes_filter' => null]);
 
         // total categorias
         $totalCategorias = Category::count();
@@ -211,15 +211,19 @@ class NoteController extends Controller
         if ($note->user_id !== Auth::id() && !Auth::user()->is_admin) {
             abort(403);
         }
+
+        $page = session('last_notes_page', 1);
+        $filter = session('last_notes_filter');
     
         $note->delete();
 
-        // $page = request()->input('page', 1); 
-        $page = session('last_notes_page', 1);
+        if ($filter) {
+            return redirect()->route('notes.filter', ['category' => $filter, 'page' => $page])->with('success', 'Nota eliminada.');
+        } else {
+            return redirect()->route('notes.index', ['page' => $page])->with('success', 'Nota eliminada.');
+        }
 
-
-        // return redirect()->route('notes.index')->with('success', 'Nota eliminada.');
-        return redirect()->route('notes.index', ['page' => $page])->with('success', 'Nota eliminada.');
+        // return redirect()->route('notes.index', ['page' => $page])->with('success', 'Nota eliminada.');
     }
 
      public function edit(Note $note)
@@ -242,10 +246,6 @@ class NoteController extends Controller
         if ($note->user_id !== Auth::id() && !Auth::user()->is_admin) {
             abort(403);
         }
-
-        $page = request()->input('page', 1);
-
-
 
         $request->validate([
             'title' => 'required|string|max:255',
@@ -272,8 +272,15 @@ class NoteController extends Controller
 
         // Obtener la página guardada (o 1 si no existe)
         $page = session('last_notes_page', 1);
+        $filter = session('last_notes_filter');
 
-        return redirect()->route('notes.show', ['note' => $note, 'page' => $page])->with('success', 'Nota actualizada.');
+        if ($filter) {
+            return redirect()->route('notes.filter', ['category' => $filter, 'page' => $page])->with('success', 'Nota actualizada.');
+        } else {
+            return redirect()->route('notes.index', ['page' => $page])->with('success', 'Nota actualizada.');
+        }
+
+        // return redirect()->route('notes.show', ['note' => $note, 'page' => $page])->with('success', 'Nota actualizada.');
     }
 
     public function filter($categorySlug = null)
@@ -298,6 +305,10 @@ class NoteController extends Controller
         
         $totalCategorias = Category::count();
         $categoriasConNotas = Category::withCount('notes')->get();
+
+        // Guardar página y filtro actual en sesión
+        session(['last_notes_page' => request()->input('page', 1)]);    
+        session(['last_notes_filter' => $categorySlug]);
         
         return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias','categoriasConNotas'));
     }
@@ -324,6 +335,10 @@ class NoteController extends Controller
 
     public function store(Request $request)
     {
+
+        $page = session('last_notes_page', 1);
+        $filter = session('last_notes_filter');
+
         $request->validate([
             'title' => 'required|string|max:255',
             'content_markdown' => 'required|string',
@@ -357,12 +372,13 @@ class NoteController extends Controller
             'updated_at' => now(),
         ]);
         
-        // $page = request()->input('page', 1); 
-        $page = session('last_notes_page', 1);
+        if ($filter) {
+            return redirect()->route('notes.filter', ['category' => $filter, 'page' => $page])->with('success', 'Nota creada correctamente.');
+        } else {
+            return redirect()->route('notes.index', ['page' => $page])->with('success', 'Nota creada correctamente.');
+        }
 
-
-        // return redirect()->route('notes.show', $note)->with('success', 'Nota creada correctamente.');
-        return redirect()->route('notes.show', ['note' => $note, 'page' => $page])->with('success', 'Nota creada correctamente.');
+        // return redirect()->route('notes.show', ['note' => $note, 'page' => $page])->with('success', 'Nota creada correctamente.');
     }
 
 

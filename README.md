@@ -53,6 +53,20 @@ El desarrollo de **dk-notes** está estructurado en cuatro fases críticas que r
 - Podman & Podman-Compose.
 - Git.
 
+
+------
+## Análisis del Roadmap General DKNotes (al 25.05.2026, 11:56)
+---
+Resumen de las 4 Fases Principales
+
+| Fase | Nombre | Objetivo | Estado |
+|---|---|---|---|
+| 1 | Monolito Local | Desarrollo de la aplicación Laravel | ✅ Completada |
+| 2 | Cloud-Native | Preparación para la nube (contenedores, configuración) | ⏳ Pendiente |
+| 3 | Orquestación | Despliegue en Kubernetes (k3s) | ⏳ Pendiente |
+| 4 | CI/CD | Automatización de despliegues | ⏳ Pendiente |
+
+
 ------
 
 *Desarrollado bajo la firma de **datenmaniak**.*

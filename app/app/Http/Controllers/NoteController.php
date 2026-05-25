@@ -259,7 +259,7 @@ class NoteController extends Controller
         $note->update([
             'title' => $request->title,
             'content_markdown' => $request->content_markdown,
-            'content_html' => \Parsedown::instance()->text($request->content_markdown),
+            'content_html' => Parsedown::instance()->text($request->content_markdown),
             'category_id' => $request->category_id,
             'checksum' => $newChecksum,
             'updated_at' => now(),
@@ -435,8 +435,9 @@ class NoteController extends Controller
         // Limitar a 255 caracteres
         $titulo = substr($titulo, 0, 250);
         
-        // Punto 5: Convertir Markdown a HTML
+        // Punto 5: Convertir Markdown a HTML y mantiene espaciado entre lineas
         $parsedown = new Parsedown();
+        // $parsedown->setBreaksEnabled(true);
         $html = $parsedown->text($contenido);
         
         // Punto 6: Calcular checksum

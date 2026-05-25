@@ -112,14 +112,9 @@ class ImportNotesCommand extends Command
     //       composer require erusev/parsedown
     //
     $parsedown = new Parsedown();
+    // $parsedown->setBreaksEnabled(true);
 
-    // Obtener el usuario administrador (el primero creado)
-    // $usuario = User::first();
-    // if (!$usuario) {
-    //     $this->error("❌ No hay usuarios en el sistema. Crea un usuario primero.");
-    //     return 1;
-    // }
-
+  
     // Reemplazar el Contenido del foreach, para proseguir con el procesador
     // de contenido markdown a HTML
     foreach ($archivos as $archivo) {

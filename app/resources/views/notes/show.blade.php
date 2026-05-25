@@ -24,7 +24,7 @@
                         <a href="{{ $backUrl }}"
                         class="font-bold text-green-600 hover:bg-green-200 focus:outline-2 focus:outline-offset-2 focus:outline-gray-500  px-2 py-1 inline-block">
                         ← Volver a mis notas
-                    </a>
+                        </a>
                     {{-- <a href="{{ route('notes.index', ['page' => $page ?? 1]) }}" --}}
                         {{-- class="font-bold text-green-600 hover:bg-green-200 focus:outline-2 focus:outline-offset-2 focus:outline-gray-500 px-2 py-1 inline-block"> --}}
                             {{-- ← Volver a mis notas --}}
@@ -114,11 +114,27 @@
                     
                     {{-- Contenido de la nota --}}
                     <div class="prose max-w-none mt-6">
+                    {{-- <div class="note-content prose max-w-none mt-6"> --}}
                         {!! $note->content_html !!}
+                    </div>
+
+                       {{-- Botón Volver --}}
+                    <div class="mb-7 border-t">
+                        <a href="{{ $backUrl }}"
+                        class=" font-bold text-green-600 hover:bg-green-200 focus:outline-2 focus:outline-offset-2 focus:outline-gray-500  px-2 py-1 inline-block">
+                        ← Volver a mis notas
+                        </a>
                     </div>
                     
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- Agrega estilo para apreciar el espaciado en el contenido de las notas  --}}
+    <style>
+        .note-content {
+            white-space: pre-line;
+        }
+    </style>
 </x-app-layout>

@@ -116,7 +116,7 @@ class NoteController extends Controller
         
         // Obtener ruta personal y construir ruta completa
         $rutaPersonal = UserSetting::getValue($userId, 'ruta_personal', '');
-        $directorioBase = base_path('public/notes');
+        $directorioBase = base_path('storage/app/public/notes');
         
         if (!$rutaPersonal) {
             return redirect()->route('notes.index')->with('error', '❌ No has configurado tu ruta personal. Ve a Configuración ⚙️');

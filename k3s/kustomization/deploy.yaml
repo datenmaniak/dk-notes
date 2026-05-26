@@ -14,53 +14,60 @@ spec:
       labels:
         app: dknotes
     spec:
-      # ----------------------------------------------------
-      # 1. CONTENEDOR DE INICIALIZACIÓN (Copia el código)
-      # ----------------------------------------------------
-      initContainers:
-      - name: install-code
-        image: 10.0.0.100:5000/dknotes-laravel:v1 # Tu misma imagen de Laravel
-#        command: ["cp", "-a", "/var/www/html/.", "/shared-html/"]
-        command: ["sh", "-c", "cp -a /var/www/html/. /shared-html/ || cp -a /app/. /shared-html/"]
-        volumeMounts:
-        - name: code-volume
-          mountPath: /shared-html
-
-      # ----------------------------------------------------
-      # 2. CONTENEDORES PRINCIPALES (Arrancan en paralelo)
-      # ----------------------------------------------------
       containers:
-      # El Servidor Web Nginx
+      # ----------------------------------------------------
+      # 1. CONTENEDOR NGINX (Servidor Web)
+      # ----------------------------------------------------
       - name: nginx
         image: nginx:alpine
         ports:
         - containerPort: 80
           name: http
         volumeMounts:
-        - name: code-volume
+        # Volumen compartido: Aquí Nginx buscará el index.php y assets estáticos
+        - name: public-assets
           mountPath: /var/www/html
         - name: nginx-config-volume
           mountPath: /etc/nginx/conf.d/default.conf
           subPath: default.conf
-
+  
       # El Procesador de PHP (Laravel)
       - name: web-app
-        image: 10.0.0.100:5000/dknotes-laravel:v1
+        image: 10.0.0.100:5000/dknotes-laravel:1.2
         imagePullPolicy: Always
         ports:
         - containerPort: 9000
           name: fastcgi
+
+        # =========================================================================
+        # 🚀 CONFIGURACIÓN DEL ENTORNO (INYECCIÓN SIN ARCHIVO .ENV)
+        # =========================================================================
         env:
+        # 1. Configuración General de la Aplicación
+        - name: APP_ENV
+          value: "production"
+        - name: APP_DEBUG
+          value: "false"            # Desactivado en producción para no exponer errores internos
+        - name: APP_URL
+          value: "https://dknotes.local" # Modifica esto por tu dominio o IP del clúster
+        - name: APP_KEY
+          value: "N3Nob2d1bg==" # Clave para encriptar sesiones
+
+        # 2. Conexión al motor de Base de Datos (PostgreSQL)
+        - name: DB_CONNECTION
+          value: "pgsql"                 # ← Reemplaza el 'mysql' por defecto de Laravel
         - name: DB_HOST
           value: "postgres-service.postgres.svc.cluster.local"
-        - name: POSTGRES_DB
+        - name: DB_PORT
+          value: "5432"                  # ← Puerto nativo de PostgreSQL
+        - name: DB_DATABASE
           value: "dknotes"
-        - name: POSTGRES_USER
+ 
+        # 3. Credenciales de la Base de Datos (Inyectadas desde tu Secret de K8s)
+        - name: DB_USERNAME
           valueFrom:
-            secretKeyRef:
-              name: dknotes-secrets
-              key: username
-        - name: POSTGRES_PASSWORD
+            secretKeyRef: { name: dknotes-secrets, key: username}
+        - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: dknotes-secrets
@@ -73,21 +80,27 @@ spec:
             cpu: "400m"
             memory: "512Mi"
         volumeMounts:
-        - name: code-volume
-          mountPath: /var/www/html
-        # Almacenamiento persistente NFS para uploads (se monta sobre la carpeta copiada)
-        - name: storage-uploads
-          mountPath: /var/www/html/storage/app/public
+        # Laravel expone su carpeta pública nativa (con los assets de Vite ya compilados)
+        # al volumen de Nginx
+        - name: public-assets
+          mountPath: /var/www/html/public
+        # PUNTO DE PERSISTENCIA: Tu PVC montado en las rutas para cargar imágenes y data externa
+        - name: storage-persistence
+          mountPath: /var/www/html/storage/app/public/contenido
+        - name: storage-persistence
+          mountPath: /var/www/html/storage/app/data
+      
 
       # ----------------------------------------------------
       # 3. VOLÚMENES DEL POD
       # ----------------------------------------------------
       volumes:
-      - name: code-volume
+      - name: public-assets
         emptyDir: {}
       - name: nginx-config-volume
         configMap:
           name: nginx-config
-      - name: storage-uploads
+      # Tu PVC existente para datos persistentes
+      - name: storage-persistence
         persistentVolumeClaim:
           claimName: dknotes-uploads-pvc

@@ -16,7 +16,7 @@ class SettingsController extends Controller
         $userId = Auth::id();
         
         $rutaPersonal = UserSetting::getValue($userId, 'ruta_personal', '');
-        $rutaBase = base_path('public/notes');
+        $rutaBase = base_path('storage/app/public/notes');
         $rutaCompleta = $rutaPersonal ? $rutaBase . '/' . $rutaPersonal : $rutaBase;
         
         $settings = [
@@ -47,7 +47,7 @@ class SettingsController extends Controller
             if ($rutaPersonal === '') {
                 // Usuario quiere usar solo el directorio base
                 UserSetting::setValue($userId, 'ruta_personal', '');
-                UserSetting::setValue($userId, 'directorio_notas', base_path('public/notes'));
+                UserSetting::setValue($userId, 'directorio_notas', base_path('storage/app/public/notes'));
                 
             } else {
                 // Normalizar a minúsculas
@@ -82,7 +82,7 @@ class SettingsController extends Controller
                 }
                 
                 // Crear directorio si no existe
-                $rutaCompleta = base_path('public/notes/' . $rutaPersonal);
+                $rutaCompleta = base_path('storage/app/public/notes' . $rutaPersonal);
                 if (!File::exists($rutaCompleta)) {
                     try {
                         File::makeDirectory($rutaCompleta, 0755, true);

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\UserSetting;
 use Illuminate\Support\Str;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
@@ -77,17 +79,36 @@ class CategoryController extends Controller
         return redirect()->route('notes.index')->with('success', $message);
     }
     
+    // private function getDirectorioNotas()
+    // {
+    //     // Misma lógica que en ImportNotesCommand
+    //     $directorio = 'notes';
+        
+    //     if (str_starts_with($directorio, '~/')) {
+    //         $home = getenv('HOME') ?: $_SERVER['HOME'] ?? '';
+    //         $directorio = $home . substr($directorio, 1);
+    //     }
+        
+    //     return base_path('notes');
+    // }
     private function getDirectorioNotas()
     {
-        // Misma lógica que en ImportNotesCommand
-        $directorio = 'notes';
+        // $userId = auth()->id();
+        $userId = Auth::id();
         
-        if (str_starts_with($directorio, '~/')) {
-            $home = getenv('HOME') ?: $_SERVER['HOME'] ?? '';
-            $directorio = $home . substr($directorio, 1);
+        if (!$userId) {
+            return base_path('storage/app/public/notes');
         }
         
-        return base_path('notes');
+        $rutaPersonal = UserSetting::getValue($userId, 'ruta_personal', '');
+        
+        
+        if ($rutaPersonal) {
+            return base_path('storage/app/public/notes') . '/' . $rutaPersonal;
+
+        }
+        
+        return base_path('storage/app/public/notes');
     }
     
     private function getDirectoriosNivel1(string $basePath): array

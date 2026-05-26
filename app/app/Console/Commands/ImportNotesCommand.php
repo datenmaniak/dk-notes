@@ -48,11 +48,11 @@ class ImportNotesCommand extends Command
         return 1;
     }
 
-    // ruta por defecto: /var/www/html/public/notes
     
     // Obtener ruta personal y construir ruta completa
     $rutaPersonal = UserSetting::getValue($usuario->id, 'ruta_personal', '');
-    $directorioBase = base_path('public/notes');
+    $directorioBase = base_path('storage/app/public/notes');
+    // $directorioBase = base_path('public/notes');
 
     $directorioNotas = '';
     if ($rutaPersonal) {

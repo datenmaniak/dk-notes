@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dknotes-ingress
+#  namespace: dknotes
+  annotations:
+    # Traefik es el ingress class por defecto en k3s
+  #  traefik.ingress.kubernetes.io/router.entrypoints: web
+    kubernetes.io/ingress.class: traefik  # El controlador por defecto de k3s
+spec:
+  rules:
+  - host: dknotes.local # O la IP de tu nodo si no tienes DNS configurado
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dknotes-service
+            port:
+              number: 80

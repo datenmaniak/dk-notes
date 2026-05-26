@@ -1,0 +1,32 @@
+---
+# 1. El Volumen Físico
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: dknotes-uploads-pv
+spec:
+  storageClassName: ""
+  capacity:
+    storage: 16Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany # Permite que varios pods lean/escriban a la vez
+  persistentVolumeReclaimPolicy: Retain # Mantiene los archivos si se borra el PVC
+  nfs:
+    path: /archives/dknotes     # ruta dedicada en el servidor NFS
+    server: 10.0.0.200              # IP de servidor NFS
+---
+# 2. El Reclamo del Espacio
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dknotes-uploads-pvc
+  namespace: dknotes
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 16Gi
+  volumeName: dknotes-uploads-pv # Vinculación directa al PV creado arriba

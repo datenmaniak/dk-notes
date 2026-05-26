@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dknotes-web
+  namespace: dknotes
+  labels:
+    app: dknotes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dknotes
+  template:
+    metadata:
+      labels:
+        app: dknotes
+    spec:
+      containers:
+      - name: web-app
+        image: 10.0.0.100:5000/dknotes-laravel:v1 # Cambia por tu ruta real
+        imagePullPolicy: Always # agregada junto con la persistencia
+        ports:
+        - containerPort: 80
+        env:
+        - name: DB_HOST
+          #value: "postgres-service"
+          # # Aquí está el cambio clave para la conexión entre namespaces
+          value: "postgres-service.postgres.svc.cluster.local"
+        - name: POSTGRES_DB
+          value: "dknotes"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: dknotes-secrets # Nombre de tu Secret
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: dknotes-secrets # Nombre de tu Secret
+              key: password
+        resources:
+          limits:           # El techo maximo: 
+            cpu: "1000m"
+            memory: "1Gi"
+          requests:         # Lo que el Pod reserva al nacer
+            cpu: "400m"
+            memory: "512Mi"
+        volumeMounts:
+        - name: storage-uploads
+          mountPath: /var/www/html # Carpeta interna de la App
+      volumes:
+      - name: storage-uploads
+        persistentVolumeClaim:
+          claimName: dknotes-uploads-pvc

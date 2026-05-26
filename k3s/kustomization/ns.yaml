@@ -1,0 +1,4 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dknotes # Puedes usar el nombre que prefieras

@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dknotes-web
+  labels:
+    app: dknotes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dknotes
+  template:
+    metadata:
+      labels:
+        app: dknotes
+    spec:
+      # ----------------------------------------------------
+      # 1. CONTENEDOR DE INICIALIZACIÓN (Copia el código)
+      # ----------------------------------------------------
+      initContainers:
+      - name: install-code
+        image: 10.0.0.100:5000/dknotes-laravel:v1 # Tu misma imagen de Laravel
+#        command: ["cp", "-a", "/var/www/html/.", "/shared-html/"]
+        command: ["sh", "-c", "cp -a /var/www/html/. /shared-html/ || cp -a /app/. /shared-html/"]
+        volumeMounts:
+        - name: code-volume
+          mountPath: /shared-html
+
+      # ----------------------------------------------------
+      # 2. CONTENEDORES PRINCIPALES (Arrancan en paralelo)
+      # ----------------------------------------------------
+      containers:
+      # El Servidor Web Nginx
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+          name: http
+        volumeMounts:
+        - name: code-volume
+          mountPath: /var/www/html
+        - name: nginx-config-volume
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+
+      # El Procesador de PHP (Laravel)
+      - name: web-app
+        image: 10.0.0.100:5000/dknotes-laravel:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
+          name: fastcgi
+        env:
+        - name: DB_HOST
+          value: "postgres-service.postgres.svc.cluster.local"
+        - name: POSTGRES_DB
+          value: "dknotes"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: dknotes-secrets
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: dknotes-secrets
+              key: password
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
+          requests:
+            cpu: "400m"
+            memory: "512Mi"
+        volumeMounts:
+        - name: code-volume
+          mountPath: /var/www/html
+        # Almacenamiento persistente NFS para uploads (se monta sobre la carpeta copiada)
+        - name: storage-uploads
+          mountPath: /var/www/html/storage/app/public
+
+      # ----------------------------------------------------
+      # 3. VOLÚMENES DEL POD
+      # ----------------------------------------------------
+      volumes:
+      - name: code-volume
+        emptyDir: {}
+      - name: nginx-config-volume
+        configMap:
+          name: nginx-config
+      - name: storage-uploads
+        persistentVolumeClaim:
+          claimName: dknotes-uploads-pvc

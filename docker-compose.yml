@@ -31,7 +31,8 @@ services:
   # El Procesador de PHP (Laravel)
   laravel:
     build:
-      context: ./laravel
+      context: .
+      dockerfile: laravel/Dockerfile-v1.2
     container_name: dk-app
     restart: always
     security_opt:

@@ -1,0 +1,38 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: dknotes
+
+# --- Aquí defines el secreto de forma manual  ---#
+secretGenerator:
+- name: dknotes-tls-secret
+  type: kubernetes.io/tls
+  files:
+      - tls.crt=dknotes.local.pem 
+      - tls.key=dknotes.local-key.pem
+
+
+# Aquí enlazas el archivo del deployment
+resources:
+# 1. Base / entorno 
+- ns.yaml
+# 2. Configuracion u seguridad 
+- secret.yaml
+# configmap.yaml 
+# 3. Almacenamiento
+- pv-pvc-nfs-persistence.yaml
+# 4. cargas de trabajo
+- deploy.yaml
+# 5. Red y conectividad
+- webservice.yaml
+- ingress.yaml
+# patches:
+#   - path: 09-patch-probes.yaml
+#     target:
+#       kind: Deployment
+#       name: mariadb
+ConfigMapGenerator:
+- name: nginx-config
+  files:
+    - default.conf

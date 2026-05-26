@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dknotes-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: dknotes.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: webservice-service
+            port:
+              number: 80
+  # ↑ CONSERVA LO ANTERIOR Y AÑADE ESTO:
+  tls:
+  - hosts:
+    - dknotes.local
+    secretName: dknotes-tls-secret

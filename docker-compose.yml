@@ -32,9 +32,9 @@ services:
   laravel:
     build:
       context: .
-      dockerfile: laravel/Dockerfile-v1.41
+      dockerfile: laravel/Dockerfile-v1.42
       container_name: dknotes-laravel
-    image: registro.local:5000/dknotes-laravel:1.41
+    image: registro.local:5000/dknotes-laravel:1.42
     restart: always
     security_opt:
       - label:disable

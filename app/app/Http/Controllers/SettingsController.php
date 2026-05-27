@@ -82,7 +82,7 @@ class SettingsController extends Controller
                 }
                 
                 // Crear directorio si no existe
-                $rutaCompleta = base_path('storage/app/public/notes' . $rutaPersonal);
+                $rutaCompleta = base_path('storage/app/public/notes/' . $rutaPersonal);
                 if (!File::exists($rutaCompleta)) {
                     try {
                         File::makeDirectory($rutaCompleta, 0755, true);

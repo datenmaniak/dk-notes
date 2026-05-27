@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: setup-storage
+  namespace: dknotes
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: setup
+        image: alpine:latest
+        command:
+        - sh
+        - -c
+        - |
+          mkdir -p /storage/framework/cache
+          mkdir -p /storage/framework/sessions
+          mkdir -p /storage/framework/views
+          mkdir -p /storage/framework/testing
+          chown -R 33:33 /storage/framework
+          chmod -R 775 /storage/framework
+          echo "Directorios creados:"
+          ls -la /storage/framework/
+        volumeMounts:
+        - name: storage-persistence
+          mountPath: /storage
+      volumes:
+      - name: storage-persistence
+        persistentVolumeClaim:
+          claimName: dknotes-uploads-pvc

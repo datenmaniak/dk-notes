@@ -18,7 +18,7 @@ resources:
 # 1. Base / entorno 
 - ns.yaml
 # 2. Configuracion u seguridad 
-- secret-1.0.yaml
+- secret-1.1.yaml
 # configmap.yaml 
 # 3. Almacenamiento
 - pv-pvc-nfs-persistence.yaml

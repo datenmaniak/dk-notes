@@ -7,7 +7,7 @@
 
 # Configuracion NFS/SSH
 NFS_SERVER="root@pve.homelab"
-NFS_BASE="/archives/dknotes/app/public"
+NFS_BASE="/archives/dknotes/app/public/notes"
 SSH_KEY="~/.ssh/datenmaniak"
 SSH_CMD="ssh -i ${SSH_KEY}"
 

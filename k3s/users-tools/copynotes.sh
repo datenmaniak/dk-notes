@@ -1,28 +1,31 @@
 #!/bin/bash
 
 # ============================================================
-# sync-notes.sh - Sincroniza notas via NFS/SSH con kubectl
-# Alternativa C: Permisos asignados desde el pod
+# sync-notes.sh - Sincroniza notas via NFS/SSH con chown
+# Alternativa A: Permisos asignados durante rsync
 # ============================================================
 
 # Configuracion NFS/SSH
 NFS_SERVER="root@pve.homelab"
-NFS_BASE="/archives/dknotes/app/public"
+NFS_BASE="/archives/dknotes/app/public/notes"
 SSH_KEY="~/.ssh/datenmaniak"
 SSH_CMD="ssh -i ${SSH_KEY}"
 
-# Configuracion Kubernetes
-K8S_NAMESPACE="dknotes"
-K8S_DEPLOY="dknotes-web"
-K8S_CONTAINER="web-app"
-K8S_BASE="/storage/app/public"
+# Propietario para la app web
+OWNER="www-data"
+GROUP="www-data"
 
 # Valores por defecto
 DRY_RUN=false
 DELETE_ORPHANS=false
 RUTA_PERSONAL=""
 LOCAL_DIR=""
-SKIP_K8S_CHECK=false
+
+# Exclusiones de directorios (siempre excluidos)
+EXCLUDE_DIRS=".git node_modules .vscode .idea __pycache__ vendor dist build coverage .terraform"
+
+# Exclusiones de archivos
+EXCLUDE_FILES=".DS_Store *.swp .env* Thumbs.db *.log *.tmp"
 
 # ============================================================
 # Mostrar ayuda
@@ -30,7 +33,7 @@ SKIP_K8S_CHECK=false
 show_help() {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "sync-notes.sh - Sincroniza notas con servidor NFS (DKNotes)"
-    echo "Alternativa C: Permisos asignados desde el pod via kubectl"
+    echo "Alternativa A: Permisos asignados durante rsync"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
     echo "Uso: $0 <DIRECTORIO_LOCAL> --personal <RUTA> [OPCIONES]"
@@ -42,23 +45,22 @@ show_help() {
     echo "Opciones:"
     echo "  -d, --dry-run          Simula la sincronizacion (no copia archivos)"
     echo "  -D, --delete-orphans   Elimina archivos en destino no existentes en origen"
-    echo "  -k, --skip-k8s-check   Omite verificacion de conexion a Kubernetes"
     echo "  -h, --help             Muestra esta ayuda"
     echo ""
     echo "Caracteristicas:"
-    echo "  - Copia archivos via rsync/SSH al NFS"
-    echo "  - Asigna permisos ejecutando chown dentro del pod via kubectl"
-    echo "  - Requiere acceso a Kubernetes (kubeconfig configurado)"
+    echo "  - Los archivos se crean con propietario ${OWNER}:${GROUP}"
+    echo "  - Permisos: directorios=755, archivos=644"
+    echo "  - No requiere acceso a Kubernetes"
     echo ""
     echo "Ejemplos:"
     echo "  $0 ~/notes --personal usuario"
     echo "  $0 ~/notes -p proyecto-x --delete-orphans"
-    echo "  $0 ~/mis-notas -p usuario --skip-k8s-check"
+    echo "  $0 ~/mis-notas -p usuario --dry-run"
     echo ""
 }
 
 # ============================================================
-# Normalizar ruta personal
+# Normalizar ruta personal (solo a-z)
 # ============================================================
 normalize_personal_path() {
     local original="$RUTA_PERSONAL"
@@ -101,44 +103,16 @@ check_ssh_connection() {
         return 0
     else
         echo "ERROR"
-        echo "❌ No se pudo conectar al servidor NFS"
+        echo ""
+        echo "❌ No se pudo conectar al servidor NFS: ${NFS_SERVER}"
+        echo ""
+        echo "Verifica:"
+        echo "  - La clave SSH existe en: ${SSH_KEY}"
+        echo "  - El servidor es accesible"
+        echo "  - La clave esta autorizada en el servidor"
+        echo ""
         exit 1
     fi
-}
-
-# ============================================================
-# Verificar conectividad Kubernetes
-# ============================================================
-check_k8s_connection() {
-    if [ "$SKIP_K8S_CHECK" = true ]; then
-        echo "  ⚠️  Verificacion de Kubernetes omitida (--skip-k8s-check)"
-        return 0
-    fi
-    
-    echo -n "  Verificando conexion a Kubernetes... "
-    
-    if ! command -v kubectl &> /dev/null; then
-        echo "ERROR"
-        echo "❌ kubectl no esta instalado o no esta en el PATH"
-        exit 1
-    fi
-    
-    if ! kubectl cluster-info &> /dev/null; then
-        echo "ERROR"
-        echo "❌ No se puede conectar al cluster Kubernetes"
-        echo "   Verifica tu archivo kubeconfig"
-        exit 1
-    fi
-    echo "OK"
-    
-    echo -n "  Verificando deployment ${K8S_DEPLOY} en namespace ${K8S_NAMESPACE}... "
-    if ! kubectl -n "${K8S_NAMESPACE}" get deployment "${K8S_DEPLOY}" &> /dev/null; then
-        echo "ERROR"
-        echo "❌ Deployment no encontrado: ${K8S_DEPLOY}"
-        echo "   Namespace: ${K8S_NAMESPACE}"
-        exit 1
-    fi
-    echo "OK"
 }
 
 # ============================================================
@@ -153,66 +127,60 @@ check_local_dir() {
 }
 
 # ============================================================
-# Verificar/Crear directorio destino en NFS
+# Verificar usuario www-data en el servidor NFS
 # ============================================================
-check_and_create_dest_dir() {
-    DESTINO_FINAL="${NFS_BASE}/${RUTA_PERSONAL}"
+check_www_data_on_nfs() {
+    echo -n "  Verificando usuario ${OWNER} en servidor NFS... "
     
-    echo -n "  Verificando directorio destino en NFS... "
-    
-    if ${SSH_CMD} "${NFS_SERVER}" "test -d '${DESTINO_FINAL}'" 2>/dev/null; then
-        echo "existe"
+    if ${SSH_CMD} "${NFS_SERVER}" "id ${OWNER} >/dev/null 2>&1"; then
+        echo "OK"
         return 0
     else
-        echo "no existe, creando..."
-        ${SSH_CMD} "${NFS_SERVER}" "mkdir -p '${DESTINO_FINAL}'"
+        echo "ERROR"
+        echo ""
+        echo "⚠️  El usuario ${OWNER} no existe en el servidor NFS"
+        echo ""
+        echo "Esto significa que --chown=${OWNER}:${GROUP} podria fallar."
+        echo ""
+        echo "Sugerencias:"
+        echo "  1. Crear el usuario www-data en el servidor NFS"
+        echo "  2. Usar Alternativa C (kubectl) en su lugar"
+        echo "  3. Forzar el uso de UID numerico (33:33) modificando este script"
+        echo ""
         
-        if [ $? -eq 0 ]; then
-            echo "  ✅ Directorio creado en NFS"
-            return 0
-        else
-            echo "❌ ERROR: No se pudo crear el directorio destino"
+        read -p "¿Deseas continuar de todas formas? (s/N): " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Ss]$ ]]; then
             exit 1
         fi
     fi
 }
 
 # ============================================================
-# Asignar permisos via kubectl desde el pod
+# Verificar/Crear directorio destino
 # ============================================================
-apply_permissions_via_kubectl() {
-    echo ""
-    echo "  Asignando permisos via kubectl (desde el pod)..."
+check_and_create_dest_dir() {
+    DESTINO_FINAL="${NFS_BASE}/${RUTA_PERSONAL}"
     
-    K8S_DEST_DIR="${K8S_BASE}/${RUTA_PERSONAL}"
+    echo -n "  Verificando directorio destino... "
     
-    echo -n "    Ejecutando chown -R www-data:www-data ${K8S_DEST_DIR} ... "
-    
-    if kubectl -n "${K8S_NAMESPACE}" exec "deploy/${K8S_DEPLOY}" -c "${K8S_CONTAINER}" \
-        -- chown -R www-data:www-data "${K8S_DEST_DIR}" 2>/dev/null; then
-        echo "OK"
-        echo -n "    Estableciendo permisos (directorios=755, archivos=644)... "
-        
-        # Establecer permisos estandar
-        kubectl -n "${K8S_NAMESPACE}" exec "deploy/${K8S_DEPLOY}" -c "${K8S_CONTAINER}" \
-            -- bash -c "find ${K8S_DEST_DIR} -type d -exec chmod 755 {} \; && find ${K8S_DEST_DIR} -type f -exec chmod 644 {} \;" 2>/dev/null
-        echo "OK"
+    if ${SSH_CMD} "${NFS_SERVER}" "test -d '${DESTINO_FINAL}'" 2>/dev/null; then
+        echo "existe"
         return 0
     else
-        echo "ERROR"
-        echo ""
-        echo "⚠️  No se pudieron asignar permisos via kubectl"
-        echo "   Posibles causas:"
-        echo "   - El pod no esta corriendo"
-        echo "   - La ruta ${K8S_DEST_DIR} no existe dentro del pod"
-        echo "   - El usuario www-data no existe en el pod"
-        echo ""
+        echo "no existe, creando..."
         
-        if [ "$SKIP_K8S_CHECK" = false ]; then
-            echo "   Sugerencia: Ejecuta manualmente:"
-            echo "   kubectl -n ${K8S_NAMESPACE} exec deploy/${K8S_DEPLOY} -c ${K8S_CONTAINER} -- chown -R www-data:www-data ${K8S_DEST_DIR}"
+        # Crear directorio con permisos correctos desde el inicio
+        ${SSH_CMD} "${NFS_SERVER}" "mkdir -p '${DESTINO_FINAL}' && chown ${OWNER}:${GROUP} '${DESTINO_FINAL}' && chmod 755 '${DESTINO_FINAL}'"
+        
+        if [ $? -eq 0 ]; then
+            echo "  ✅ Directorio creado con permisos ${OWNER}:${GROUP} (755)"
+            return 0
+        else
+            echo ""
+            echo "❌ ERROR: No se pudo crear el directorio destino"
+            exit 1
         fi
-        return 1
     fi
 }
 
@@ -225,11 +193,24 @@ show_dry_run_summary() {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
     echo "Origen: ${LOCAL_DIR}"
-    echo "Destino NFS: ${NFS_SERVER}:${NFS_BASE}/${RUTA_PERSONAL}"
-    echo "Destino Pod: ${K8S_BASE}/${RUTA_PERSONAL}"
+    echo "Destino: ${NFS_SERVER}:${NFS_BASE}/${RUTA_PERSONAL}"
+    echo "Propietario: ${OWNER}:${GROUP}"
+    echo "Permisos: Directorios=755, Archivos=644"
     echo ""
     
-    RSYNC_CMD="rsync -avzn"
+    RSYNC_CMD="rsync -avzn --chown=${OWNER}:${GROUP} --chmod=D755,F644"
+
+    for dir in $EXCLUDE_DIRS; do
+    RSYNC_CMD="${RSYNC_CMD} --exclude='${dir}'"
+    done
+
+    # Exclusiones de archivos
+    for pattern in $EXCLUDE_FILES; do
+        RSYNC_CMD="${RSYNC_CMD} --exclude='${pattern}'"
+    done
+
+    # Excluir todo lo demás
+    RSYNC_CMD="${RSYNC_CMD} --exclude='*'"
     
     if [ "$DELETE_ORPHANS" = true ]; then
         RSYNC_CMD="${RSYNC_CMD} --delete"
@@ -242,17 +223,9 @@ show_dry_run_summary() {
     RSYNC_CMD="${RSYNC_CMD} '${LOCAL_DIR}/' '${NFS_SERVER}:${NFS_BASE}/${RUTA_PERSONAL}/'"
     
     echo ""
-    echo "Archivos que seran copiados:"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     eval ${RSYNC_CMD}
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    
-    if [ "$SKIP_K8S_CHECK" = false ]; then
-        echo ""
-        echo "Post-sincronizacion:"
-        echo "  Se ejecutara: chown -R www-data:www-data ${K8S_BASE}/${RUTA_PERSONAL}"
-        echo "  (via kubectl dentro del pod)"
-    fi
 }
 
 # ============================================================
@@ -260,11 +233,28 @@ show_dry_run_summary() {
 # ============================================================
 run_sync() {
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "Sincronizando notas (copia a NFS + permisos via kubectl)"
+    echo "Sincronizando notas (con asignacion de permisos)"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
-    # Construir comando rsync (sin --chown)
-    RSYNC_CMD="rsync -avz --progress"
+    # Construir comando rsync con --chown y --chmod
+    RSYNC_CMD="rsync -avz --progress --chown=${OWNER}:${GROUP} --chmod=D755,F644"
+
+    # Patrones de inclusión (solo .md y directorios)
+    RSYNC_CMD="${RSYNC_CMD} --include='*.md'"
+    RSYNC_CMD="${RSYNC_CMD} --include='*/'"
+
+    # Exclusiones de directorios
+    for dir in $EXCLUDE_DIRS; do
+        RSYNC_CMD="${RSYNC_CMD} --exclude='${dir}'"
+    done
+
+    # Exclusiones de archivos
+    for pattern in $EXCLUDE_FILES; do
+        RSYNC_CMD="${RSYNC_CMD} --exclude='${pattern}'"
+    done
+
+    # Excluir todo lo demás
+    RSYNC_CMD="${RSYNC_CMD} --exclude='*'"
     
     if [ "$DELETE_ORPHANS" = true ]; then
         RSYNC_CMD="${RSYNC_CMD} --delete"
@@ -278,53 +268,34 @@ run_sync() {
     
     echo "  Origen:   ${LOCAL_DIR}"
     echo "  Destino:  ${NFS_SERVER}:${NFS_BASE}/${RUTA_PERSONAL}"
+    echo "  Dueño:    ${OWNER}:${GROUP}"
+    echo "  Permisos: d=755, f=644"
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
     # Ejecutar rsync
     eval ${RSYNC_CMD}
     
-    if [ $? -ne 0 ]; then
+    if [ $? -eq 0 ]; then
         echo ""
-        echo "❌ ERROR: La sincronizacion via rsync fallo"
-        exit 1
-    fi
-    
-    # Asignar permisos via kubectl (solo si no es dry-run)
-    if [ "$DRY_RUN" = false ] && [ "$SKIP_K8S_CHECK" = false ]; then
-        apply_permissions_via_kubectl
-        PERMISSIONS_OK=$?
-    else
-        PERMISSIONS_OK=0
-    fi
-    
-    echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    
-    if [ $PERMISSIONS_OK -eq 0 ]; then
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo "✅ Sincronizacion completada exitosamente"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo ""
-        echo "📌 Las notas han sido copiadas y los permisos han sido asignados."
+        echo "📌 Los archivos ya tienen los permisos correctos (${OWNER}:${GROUP})"
+        echo "   Las notas estan disponibles para la aplicacion web."
         echo ""
-        echo "   Si las notas no aparecen inmediatamente en la app:"
+        echo "   Si las notas no aparecen inmediatamente:"
         echo "   1. Accede a la aplicacion web DKNotes"
         echo "   2. Ve a 'Sincronizacion' y haz clic en 'Sincronizar notas'"
         echo "   3. Revisa 'Mis Notas'"
         echo ""
-    else
-        echo "⚠️  Sincronizacion completada pero con advertencias"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    else
         echo ""
-        echo "📌 Los archivos fueron copiados al NFS, pero los permisos"
-        echo "   no pudieron asignarse automaticamente."
-        echo ""
-        echo "   Para asignarlos manualmente, ejecuta:"
-        echo "   kubectl -n ${K8S_NAMESPACE} exec deploy/${K8S_DEPLOY} -c ${K8S_CONTAINER} -- \\"
-        echo "     chown -R www-data:www-data ${K8S_BASE}/${RUTA_PERSONAL}"
-        echo ""
+        echo "❌ ERROR: La sincronizacion fallo"
+        exit 1
     fi
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 
 # ============================================================
@@ -347,10 +318,6 @@ while [[ $# -gt 0 ]]; do
         -p|--personal)
             RUTA_PERSONAL="$2"
             shift 2
-            ;;
-        -k|--skip-k8s-check)
-            SKIP_K8S_CHECK=true
-            shift
             ;;
         -*)
             echo "ERROR: Opcion desconocida: $1"
@@ -383,22 +350,17 @@ fi
 # ============================================================
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "DKNotes - Sincronizacion de notas (Alternativa C)"
+echo "DKNotes - Sincronizacion de notas (Alternativa A)"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
 check_local_dir
 check_ssh_connection
-
-if [ "$SKIP_K8S_CHECK" = false ]; then
-    check_k8s_connection
-else
-    echo "  ⚠️  Verificacion de Kubernetes omitida (--skip-k8s-check)"
-fi
-
+check_www_data_on_nfs
 normalize_personal_path
 
 if [ "$DRY_RUN" = true ]; then
+    # En dry-run no creamos directorio, solo verificamos existencia
     DESTINO_FINAL="${NFS_BASE}/${RUTA_PERSONAL}"
     if ! ${SSH_CMD} "${NFS_SERVER}" "test -d '${DESTINO_FINAL}'" 2>/dev/null; then
         echo ""

@@ -116,7 +116,7 @@ spec:
         - name: APP_DEBUG
           value: "true"
         - name: APP_URL
-          value: "https://dknotes.local"
+          value: "https://dknotes.datenmaniak.lab"
         - name: APP_KEY
           valueFrom:
             secretKeyRef:

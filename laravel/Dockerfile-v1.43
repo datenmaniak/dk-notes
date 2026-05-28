@@ -1,0 +1,73 @@
+# =========================================================================
+# ETAPA 1: COMPILACIÓN DE ASSETS (Frontend)
+# =========================================================================
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /app
+
+# Copiamos solo los archivos necesarios para instalar dependencias de Node
+COPY ./app/package*.json ./
+
+RUN npm ci
+
+# Copiamos el resto del código para que Vite/Mix pueda compilar
+COPY ./app/ ./
+
+# Compilamos los assets para producción (Genera la carpeta public/build)
+RUN npm run build
+
+
+# =========================================================================
+# ETAPA 2: IMAGEN FINAL DE PRODUCCIÓN (PHP-FPM)
+# =========================================================================
+FROM php:8.3-fpm-alpine
+
+# Evitar que genere el archivo '.ash_history' en el WORKDIR
+ENV HISTFILE=/tmp/
+RUN echo 'export HISTFILE=/dev/null' >> /etc/profile
+
+# Instalamos únicamente dependencias de sistema para PostgreSQL y utilidades PHP
+RUN apk add --no-cache \
+    postgresql-dev \
+    libpng-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    icu-dev
+
+# Instalamos extensiones de PHP vitales
+RUN docker-php-ext-install pdo pdo_pgsql pgsql gd zip intl
+
+# Instalamos Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configuramos el directorio de trabajo coincidiendo con el root de Nginx
+WORKDIR /var/www/html
+
+# 1. Copiamos todo el código fuente de la aplicación PHP
+#COPY ./app /var/www/html
+COPY --chown=www-data:www-data --exclude=.env ./app /var/www/html
+
+
+
+# 2. TRAEMOS LOS ASSETS COMPILADOS DESDE LA ETAPA 1
+# Reemplazamos la carpeta public/build local con la compilada de forma limpia por Node
+COPY --from=frontend-builder /app/public/build /var/www/html/public/build
+
+# Configuramos permisos estrictos para el usuario de PHP-FPM (www-data)
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# RuntimeException
+# vendor/laravel/framework/src/Illuminate/Encryption/Encrypter.php:61
+# Unsupported cipher or incorrect key length. Supported ciphers are: aes-128-cbc....
+#
+# solucion a este fallo: eliminar el .env  y recompilar la imagen.
+RUN rm -f /var/www/html/.env
+
+# Al final del build, eliminar directorios vacíos o temporales
+RUN find /var/www/html/public -type d -empty -delete
+
+EXPOSE 9000
+CMD ["php-fpm"]

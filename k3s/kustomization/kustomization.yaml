@@ -23,7 +23,7 @@ resources:
 # 3. Almacenamiento
 - pv-pvc-nfs-persistence.yaml
 # 4. cargas de trabajo
-- deploy-v1.42.yaml
+- deploy-v1.43.yaml
 # 5. Red y conectividad
 - webservice.yaml
 - ingress.yaml

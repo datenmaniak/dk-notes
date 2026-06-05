@@ -1,0 +1,14 @@
+#k3s/kustomization/image-repository.yaml 
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: dknotes-laravel
+  namespace: flux-system
+spec:
+  image: registro.local:5000/dknotes-laravel
+  interval: 1m
+  allowInsecure: true
+
+
+# allowInsecure: true → Permite registros HTTP (tu caso local)
+# interval: 1m → Escanea el registro cada 1 minuto buscando nuevas versiones

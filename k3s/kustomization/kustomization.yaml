@@ -20,7 +20,9 @@ resources:
 - deploy.yaml
 - webservice.yaml
 - ingress.yaml
-
+- image-repository.yaml
+- image-policy.yaml
+- image-update-automation.yaml
 # ConfigMap de nginx
 configMapGenerator:
 - name: nginx-config

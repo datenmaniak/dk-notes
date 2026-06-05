@@ -38,7 +38,7 @@ spec:
       # ============================================
       initContainers:
       - name: copy-code
-        image: registro.local:5000/dknotes-laravel:1.44 # {"$imagepolicy": "flux-system:dknotes-laravel"}
+        image: 10.0.0.100:5000/dknotes-laravel:1.44
         imagePullPolicy: Always
         command:
         - sh
@@ -98,16 +98,11 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 5
 
-      # El marcador # {"$imagepolicy": "flux-system:dknotes-laravel"} le dice a Flux
-      #  exactamente qué policy usar para actualizar esta línea.
-
-
-
       # ----------------------------------------------------
       # 2. CONTENEDOR PHP-FPM (Laravel)
       # ----------------------------------------------------
       - name: web-app
-        image: registro.local:5000/dknotes-laravel:1.44 # {"$imagepolicy": "flux-system:dknotes-laravel"}
+        image: 10.0.0.100:5000/dknotes-laravel:1.44
         imagePullPolicy: Always
         ports:
         - containerPort: 9000

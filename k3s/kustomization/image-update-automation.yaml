@@ -1,0 +1,31 @@
+# k3s/kustomization/image-update-automation.yaml
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: dknotes-laravel
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  git:
+    checkout:
+      ref:
+        branch: laravel-k3s
+    commit:
+      author:
+        name: fluxbot
+        email: fluxbot@local
+      messageTemplate: "🤖 Actualizar imagen a {{ .NewImage }}"
+    push:
+      branch: laravel-k3s
+  update:
+    path: ./k3s/kustomization
+    strategy: setters
+
+# explicacion
+# interval: 5m → Cada 5 minutos, escanea si hay nuevas imágenes
+# path: ./k3s/kustomization → Busca YAMLs para actualizar en esta carpeta
+# messageTemplate → Mensaje de commit que usará Flux

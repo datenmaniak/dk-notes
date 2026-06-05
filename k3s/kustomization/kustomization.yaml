@@ -4,23 +4,24 @@ kind: Kustomization
 
 namespace: dknotes
 
-# Secret TLS manual
+# Secreto TLS manual
 secretGenerator:
 - name: dknotes-tls-secret
   type: kubernetes.io/tls
   files:
-    - tls.crt=dknotes.local.pem 
-    - tls.key=dknotes.local-key.pem
+  - tls.crt=dknotes.local.pem
+  - tls.key=dknotes.local-key.pem
 
-# Recursos
+# Recursos principales
 resources:
-  - ns.yaml
-  - secret.yaml
-  - pv-pvc-nfs-persistence.yaml
-  - deploy.yaml
-  - webservice.yaml
-  - ingress.yaml
+- ns.yaml
+- secret.yaml
+- pv-pvc-nfs-persistence.yaml
+- deploy.yaml
+- webservice.yaml
+- ingress.yaml
 
+# ConfigMap de nginx
 configMapGenerator:
 - name: nginx-config
   files:

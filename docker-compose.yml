@@ -34,7 +34,7 @@ services:
       context: .
       dockerfile: laravel/Dockerfile-v1.43
       container_name: dknotes-laravel
-    image: registro.local:5000/dknotes-laravel:1.43
+    image: registro.local:5000/dknotes-laravel:1.44
     restart: always
     security_opt:
       - label:disable

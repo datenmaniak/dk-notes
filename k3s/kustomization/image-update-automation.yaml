@@ -1,5 +1,6 @@
 # k3s/kustomization/image-update-automation.yaml
-apiVersion: image.toolkit.fluxcd.io/v1beta1
+apiVersion: image.toolkit.fluxcd.io/v1
+#beta1
 kind: ImageUpdateAutomation
 metadata:
   name: dknotes-laravel
@@ -23,7 +24,7 @@ spec:
       branch: laravel-k3s
   update:
     path: ./k3s/kustomization
-    strategy: setters
+    strategy: Setters
 
 # explicacion
 # interval: 5m → Cada 5 minutos, escanea si hay nuevas imágenes

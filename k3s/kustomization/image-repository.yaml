@@ -5,9 +5,9 @@ metadata:
   name: dknotes-laravel
   namespace: flux-system
 spec:
-  image: registro.local:5000/dknotes-laravel
+  image: 10.0.0.100:5000/dknotes-laravel
   interval: 1m
-  allowInsecure: true
+#  allowInsecure: true
 
 
 # allowInsecure: true → Permite registros HTTP (tu caso local)

@@ -7,26 +7,24 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: shogun7  # ← Cambia por tu clave real
+      POSTGRES_PASSWORD: shogun7 # ← Cambia por tu clave real
       POSTGRES_DB: dknotes
     security_opt:
       - label:disable
     userns_mode: "keep-id"
     volumes:
       - /var/home/datenmaniak/pg-data:/var/lib/postgresql/data
-      - ./postgres/init-scripts:/docker-entrypoint-initdb.d:Z  # Scripts de inicialización
+      - ./postgres/init-scripts:/docker-entrypoint-initdb.d:Z # Scripts de inicialización
     networks:
       - dk-network
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d dknotes"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d dknotes" ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
-
-
 
   # El Procesador de PHP (Laravel)
   laravel:
@@ -34,8 +32,7 @@ services:
       context: .
       dockerfile: laravel/Dockerfile-v1.43
       container_name: dknotes-laravel
-    image: registro.local:5000/dknotes-laravel:1.44
-    restart: always
+    image: local-reg.dk.lab:5000/dknotes-laravel:1.50
     security_opt:
       - label:disable
     userns_mode: "keep-id"
@@ -51,12 +48,11 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "php-fpm", "-t"]
+      test: [ "CMD", "php-fpm", "-t" ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
-
 
   # El Servidor Web (Nginx)
   nginx:
@@ -64,9 +60,9 @@ services:
       context: ./nginx
     container_name: dk-proxy
     restart: always
-#    security_opt:
-#      - label:disable
-#    userns_mode: "keep-id"
+    #    security_opt:
+    #      - label:disable
+    #    userns_mode: "keep-id"
     ports:
       - "8080:80"
     volumes:
@@ -79,7 +75,7 @@ services:
       laravel:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health" ]
       interval: 15s
       timeout: 5s
       retries: 3

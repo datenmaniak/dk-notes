@@ -5,7 +5,7 @@ metadata:
   name: dknotes-laravel
   namespace: flux-system
 spec:
-  image: 10.0.0.100:5000/dknotes-laravel
+  image: local-reg.dk.lab:5000/dknotes-laravel
   interval: 1m
 #  allowInsecure: true
 

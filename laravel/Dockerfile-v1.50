@@ -3,15 +3,16 @@
 # =========================================================================
 FROM node:20-alpine AS frontend-builder
 
-
+# Definimos el directorio de trabajo
 WORKDIR /var/www/html
 
 # Copiamos solo los archivos necesarios para instalar dependencias de Node
+# Como ejecutas Podman desde la raíz, buscamos en la carpeta 'app/'
 COPY app/package*.json ./
 
 RUN npm ci
 
-# Copiamos el resto del código para que Vite/Mix pueda compilar
+# Copiamos el resto del código del frontend para la compilación de Vite
 COPY app/ ./
 
 # Compilamos los assets para producción (Genera la carpeta public/build)
@@ -23,11 +24,11 @@ RUN npm run build
 # =========================================================================
 FROM php:8.3-fpm-alpine
 
-# Evitar que genere el archivo '.ash_history' en el WORKDIR
+# Evitar que genere el archivo '.ash_history'
 ENV HISTFILE=/tmp/
 RUN echo 'export HISTFILE=/dev/null' >> /etc/profile
 
-# Instalamos únicamente dependencias de sistema para PostgreSQL y utilidades PHP
+# Instalamos dependencias de sistema para PostgreSQL y utilidades PHP
 RUN apk add --no-cache \
     postgresql-dev \
     libpng-dev \
@@ -48,27 +49,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # 1. Copiamos todo el código fuente de la aplicación PHP
-#COPY ./app /var/www/html
-COPY --chown=www-data:www-data --exclude=.env ./app /var/www/html
-
-
+# Gracias al .dockerignore, el archivo .env local NO se copiará aquí.
+COPY --chown=www-data:www-data ./app /var/www/html
 
 # 2. TRAEMOS LOS ASSETS COMPILADOS DESDE LA ETAPA 1
-# Reemplazamos la carpeta public/build local con la compilada de forma limpia por Node
-COPY --from=frontend-builder /app/public/build /var/www/html/public/build
+# Corregida la ruta origen: En la Etapa 1 el WORKDIR era /var/www/html
+COPY --from=frontend-builder /var/www/html/public/build /var/www/html/public/build
 
 # Configuramos permisos estrictos para el usuario de PHP-FPM (www-data)
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# RuntimeException
-# vendor/laravel/framework/src/Illuminate/Encryption/Encrypter.php:61
-# Unsupported cipher or incorrect key length. Supported ciphers are: aes-128-cbc....
-#
-# solucion a este fallo: eliminar el .env  y recompilar la imagen.
-RUN rm -f /var/www/html/.env
-
-# Al final del build, eliminar directorios vacíos o temporales
-RUN find /var/www/html/public -type d -empty -delete
 
 EXPOSE 9000
 CMD ["php-fpm"]

@@ -38,7 +38,7 @@ spec:
       # ============================================
       initContainers:
       - name: copy-code
-        image: local-reg.dk.lab:5000/dknotes-laravel:1.50 # {"$imagepolicy": "flux-system:dknotes-laravel"}
+        image: local-reg.dk.lab:5000/dknotes-laravel:1.51 # {"$imagepolicy": "flux-system:dknotes-laravel"}
         imagePullPolicy: Always
         command:
         - sh
@@ -107,7 +107,7 @@ spec:
       # 2. CONTENEDOR PHP-FPM (Laravel)
       # ----------------------------------------------------
       - name: web-app
-        image: local-reg.dk.lab:5000/dknotes-laravel:1.50 # {"$imagepolicy": "flux-system:dknotes-laravel"}
+        image: local-reg.dk.lab:5000/dknotes-laravel:1.51 # {"$imagepolicy": "flux-system:dknotes-laravel"}
         imagePullPolicy: Always
         ports:
         - containerPort: 9000

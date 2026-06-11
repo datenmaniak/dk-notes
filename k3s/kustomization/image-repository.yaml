@@ -1,6 +1,6 @@
 #k3s/kustomization/image-repository.yaml 
-# apiVersion: image.toolkit.fluxcd.io/v1beta2
-apiVersion: image.toolkit.fluxcd.io/v1
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+#apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageRepository
 metadata:
   name: dknotes-laravel
@@ -8,8 +8,8 @@ metadata:
 spec:
   image: local-reg.dk.lab:5000/dknotes-laravel
   interval: 1m
-#  allowInsecure: true
-
-
-# allowInsecure: true → Permite registros HTTP (tu caso local)
-# interval: 1m → Escanea el registro cada 1 minuto buscando nuevas versiones
+  insecure: true
+  secretRef:
+    name: registry-auth
+  certSecretRef:
+    name: registry-ca

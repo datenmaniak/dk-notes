@@ -22,9 +22,9 @@ spec:
       messageTemplate: |
        🤖 Actualización automática de imagen [skip ci]
         
-        {{ range .UpdatedChanges -}}
-        - -> {{ .NewImage }}
-        {{ end -}}
+#        {{ range .UpdatedChanges -}}
+#        - -> {{ .NewImage }}
+#        {{ end -}}
     push:
       branch: laravel-k3s
   update:

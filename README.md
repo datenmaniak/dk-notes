@@ -61,10 +61,10 @@ Resumen de las 4 Fases Principales
 
 | Fase | Nombre | Objetivo | Estado |
 |---|---|---|---|
-| 1 | Monolito Local | Desarrollo de la aplicación Laravel | ✅ Completada |
-| 2 | Cloud-Native | Preparación para la nube (contenedores, configuración) | ⏳ Pendiente |
-| 3 | Orquestación | Despliegue en Kubernetes (k3s) | ⏳ Pendiente |
-| 4 | CI/CD | Automatización de despliegues | ⏳ Pendiente |
+| 1 | Monolito Local | Desarrollo de la aplicación: Docker, Laravel | ✅ Completada |
+| 2 | Cloud-Native | Preparación para la nube (contenedores, configuración) | ✅ Completada |
+| 3 | Orquestación | Despliegue en Kubernetes (k3s) | ✅ Completada|
+| 4 | CI/CD | Automatización de despliegues | ⚙️ Activo / Experimental 👨‍🎓 |
 
 
 ------

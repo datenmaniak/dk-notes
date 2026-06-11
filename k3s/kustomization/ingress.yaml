@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: dknotes.datenmaniak.lab
+  - host: dknotes.dk.lab
     http:
       paths:
       - path: /

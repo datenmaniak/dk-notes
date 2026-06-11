@@ -1,0 +1,1 @@
+openssl req -x509 -nodes -days 765 -newkey rsa:2048 -keyout dknotes.dk.lab.key -out dknotes.dk.lab.crt -subj "/CN=dknotes.dk.lab"

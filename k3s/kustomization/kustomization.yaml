@@ -9,8 +9,8 @@ secretGenerator:
 - name: dknotes-tls-secret
   type: kubernetes.io/tls
   files:
-  - tls.crt=dknotes.local.pem
-  - tls.key=dknotes.local-key.pem
+  - tls.crt=dknotes.dk.lab.crt
+  - tls.key=dknotes.dk.lab.key
 
 # Recursos principales
 resources:

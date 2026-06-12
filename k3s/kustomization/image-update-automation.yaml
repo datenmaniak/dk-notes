@@ -19,7 +19,7 @@ spec:
       author:
         name: fluxbot
         email: fluxbot@local
-        messageTemplate: "🤖 Updated Vers {{ .SelectedTarget.Tag }} [skip ci]"
+      messageTemplate: "🤖 Updated Vers {{ .SelectedTarget.Tag }} [skip ci]"
     push:
       branch: laravel-k3s
   update:

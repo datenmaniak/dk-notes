@@ -20,7 +20,7 @@ spec:
         name: fluxbot
         email: fluxbot@local
       messageTemplate: |
-       🤖 Actualización automática de imagen [skip ci]
+       🤖 Updated Vers {{ regexpCapture .NewImage \":([^:]+)$\" }} [skip ci]
         
 #        {{ range .UpdatedChanges -}}
 #        - -> {{ .NewImage }}

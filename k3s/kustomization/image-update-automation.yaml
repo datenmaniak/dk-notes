@@ -19,7 +19,7 @@ spec:
       author:
         name: fluxbot
         email: fluxbot@local
-        messageTemplate: "🤖 Desplegando versión: {{ index (split .NewImage \":\") 2 }} [skip ci]"
+        messageTemplate: "🤖 Desplegada versión: {{ .SelectedTarget.Tag }} [skip ci]"
       # messageTemplate: |
       #  🤖 Updated Vers {{ regexpCapture .NewImage \":([^:]+)$\" }} [skip ci]
         

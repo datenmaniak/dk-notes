@@ -7,7 +7,7 @@ metadata:
   namespace: flux-system
 spec:
   image: local-reg.dk.lab:5000/dknotes-laravel
-  interval: 5m
+  interval: 2m
   insecure: true
   secretRef:
     name: registry-auth

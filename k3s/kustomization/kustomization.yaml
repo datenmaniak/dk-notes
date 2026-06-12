@@ -2,29 +2,30 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: dknotes
-
-# Secreto TLS manual
-secretGenerator:
-- name: dknotes-tls-secret
-  type: kubernetes.io/tls
-  files:
-  - tls.crt=dknotes.dk.lab.crt
-  - tls.key=dknotes.dk.lab.key
-
-# Recursos principales
+# Recursos principales (Removido el namespace global para evitar colisiones con Flux)
 resources:
-- ns.yaml
-- secret.yaml
-- pv-pvc-nfs-persistence.yaml
-- deploy.yaml
-- webservice.yaml
-- ingress.yaml
-- image-repository.yaml
-- image-policy.yaml
-- image-update-automation.yaml
+  - ns.yaml                        # 1. Crea el namespace dknotes
+  - secret.yaml                    # 2. Credenciales de la app
+  - pv-pvc-nfs-persistence.yaml    # 3. Almacenamiento MariaDB
+  - deploy.yaml                    # 4. Despliegue Laravel
+  - webservice.yaml                # 5. Servicio interno
+  - ingress.yaml                   # 6. Exposición de la red
+  - image-repository.yaml          # 7. Componentes Flux (Recomiendo que estos
+  - image-policy.yaml              #    tres mantengan namespace: flux-system
+  - image-update-automation.yaml   #    dentro de sus respectivos archivos)
+
+# Secreto TLS manual para la aplicación
+secretGenerator:
+  - name: dknotes-tls-secret
+    namespace: dknotes             # Forzamos que el secreto vaya a la app
+    type: kubernetes.io/tls
+    files:
+      - tls.crt=dknotes.dk.lab.crt
+      - tls.key=dknotes.dk.lab.key
+
 # ConfigMap de nginx
 configMapGenerator:
-- name: nginx-config
-  files:
-    - default.conf
+  - name: nginx-config
+    namespace: dknotes             # Forzamos que el configmap vaya a la app
+    files:
+      - default.conf

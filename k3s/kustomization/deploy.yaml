@@ -22,23 +22,20 @@ spec:
       # Volumen compartido para el código de la aplicación
       - name: app-code
         emptyDir: {}
-      
       # Volumen persistente para storage (archivos subidos, logs, cache)
       - name: storage-persistence
         persistentVolumeClaim:
           claimName: dknotes-uploads-pvc
-      
       # Configuración de Nginx
       - name: nginx-config-volume
         configMap:
           name: nginx-config
-
       # ============================================
       # INITCONTAINER: Copia el código al volumen compartido
       # ============================================
       initContainers:
       - name: copy-code
-        image: local-reg.dk.lab:5000/dknotes-laravel:1.52.0 # {"$imagepolicy": "flux-system:dknotes-laravel"}
+        image: local-reg.dk.lab:5000/dknotes-laravel:1.54.1 # {"$imagepolicy": "flux-system:dknotes-laravel"}
         imagePullPolicy: Always
         command:
         - sh
@@ -55,13 +52,12 @@ spec:
 
           chown -R 33:33 /app-code/storage || true
           chmod -R 775 /app-code/storage || true
-          
+
           echo "Setup completado"
           ls -la /app-code/storage/framework/
         volumeMounts:
         - name: app-code
           mountPath: /app-code
-
       # ============================================
       # CONTENEDORES PRINCIPALES
       # ============================================
@@ -97,22 +93,18 @@ spec:
             port: 80
           initialDelaySeconds: 5
           periodSeconds: 5
-
       # El marcador # {"$imagepolicy": "flux-system:dknotes-laravel"} le dice a Flux
       #  exactamente qué policy usar para actualizar esta línea.
-
-
 
       # ----------------------------------------------------
       # 2. CONTENEDOR PHP-FPM (Laravel)
       # ----------------------------------------------------
       - name: web-app
-        image: local-reg.dk.lab:5000/dknotes-laravel:1.52.0 # {"$imagepolicy": "flux-system:dknotes-laravel"}
+        image: local-reg.dk.lab:5000/dknotes-laravel:1.54.1 # {"$imagepolicy": "flux-system:dknotes-laravel"}
         imagePullPolicy: Always
         ports:
         - containerPort: 9000
           name: fastcgi
-        
         # Variables de entorno
         env:
         # Configuración general de Laravel
@@ -127,8 +119,6 @@ spec:
             secretKeyRef:
               name: dknotes-secrets
               key: app_key
-        
-        
         # Conexión a PostgreSQL
         - name: DB_CONNECTION
           value: "pgsql"
@@ -138,7 +128,6 @@ spec:
           value: "5432"
         - name: DB_DATABASE
           value: "dknotes"
-        
         # Credenciales desde Secret
         - name: DB_USERNAME
           valueFrom:
@@ -150,7 +139,6 @@ spec:
             secretKeyRef:
               name: dknotes-secrets
               key: password
-        
         # Recursos
         resources:
           limits:
@@ -159,7 +147,6 @@ spec:
           requests:
             cpu: "400m"
             memory: "512Mi"
-        
         # Volúmenes
         volumeMounts:
         # Código de la aplicación (lectura/escritura para Laravel)
@@ -168,7 +155,6 @@ spec:
         # Persistencia para archivos subidos y datos
         - name: storage-persistence
           mountPath: /var/www/html/storage
-        
         # Health check para PHP-FPM
         livenessProbe:
           tcpSocket:

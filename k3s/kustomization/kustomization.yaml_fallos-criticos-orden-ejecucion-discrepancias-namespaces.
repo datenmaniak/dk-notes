@@ -1,0 +1,30 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: dknotes
+
+# Secreto TLS manual
+secretGenerator:
+- name: dknotes-tls-secret
+  type: kubernetes.io/tls
+  files:
+  - tls.crt=dknotes.dk.lab.crt
+  - tls.key=dknotes.dk.lab.key
+
+# Recursos principales
+resources:
+- ns.yaml
+- secret.yaml
+- pv-pvc-nfs-persistence.yaml
+- deploy.yaml
+- webservice.yaml
+- ingress.yaml
+- image-repository.yaml
+- image-policy.yaml
+- image-update-automation.yaml
+# ConfigMap de nginx
+configMapGenerator:
+- name: nginx-config
+  files:
+    - default.conf

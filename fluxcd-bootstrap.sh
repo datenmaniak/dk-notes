@@ -3,9 +3,13 @@ flux bootstrap github \
   --repository=dk-notes \
   --branch=laravel-k3s \
   --path=./k3s/kustomization \
-  --components-extra=image-reflector-controller,image-automation-controller
-#\
-#  --force
+  --components-extra=image-reflector-controller,image-automation-controller \
+  --read-write-key=true
+##  Importante: es necesario agregar --read-write-key, de lo contrario
+#   el Deploy Key tendra permiso: Read Only
+#   Lo cual afectaria el flujo automatizado.
+#
+#
 
 # Forzar actualización de Flux
 #flux reconcile source git flux-system

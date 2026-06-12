@@ -1,0 +1,16 @@
+[ req ]
+distinguished_name = req_distinguished_name
+x509_extensions     = v3_ca
+
+[ req_distinguished_name ]
+CN = local-reg.dk.lab
+
+[ v3_ca ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints       = critical,CA:TRUE
+keyUsage               = critical, digitalSignature, cRLSign, keyCertSign
+subjectAltName         = @alt_names
+
+[alt_names]
+DNS.1 = local-reg.dk.lab

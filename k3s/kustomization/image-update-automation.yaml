@@ -19,14 +19,7 @@ spec:
       author:
         name: fluxbot
         email: fluxbot@local
-        # messageTemplate: "🤖 Desplegada versión: {{ .SelectedTarget.Tag }} [skip ci]"
-        messageTemplate: |
-        🤖 Updated Vers {{ .SelectedTarget.Tag }} [skip ci]
-      #  🤖 Updated Vers {{ regexpCapture .NewImage \":([^:]+)$\" }} [skip ci]
-        
-#        {{ range .UpdatedChanges -}}
-#        - -> {{ .NewImage }}
-#        {{ end -}}
+        messageTemplate: "🤖 Updated Vers {{ .SelectedTarget.Tag }} [skip ci]"
     push:
       branch: laravel-k3s
   update:

@@ -19,8 +19,9 @@ spec:
       author:
         name: fluxbot
         email: fluxbot@local
-      messageTemplate: |
-       🤖 Updated Vers {{ regexpCapture .NewImage \":([^:]+)$\" }} [skip ci]
+        messageTemplate: "🤖 Desplegando versión: {{ index (split .NewImage \":\") 2 }} [skip ci]"
+      # messageTemplate: |
+      #  🤖 Updated Vers {{ regexpCapture .NewImage \":([^:]+)$\" }} [skip ci]
         
 #        {{ range .UpdatedChanges -}}
 #        - -> {{ .NewImage }}

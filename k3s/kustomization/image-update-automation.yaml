@@ -19,7 +19,7 @@ spec:
       author:
         name: fluxbot
         email: fluxbot@local
-      messageTemplate: "🤖 FluxCD: Nueva versión desplegada [skip ci]"
+      messageTemplate: "🤖 Updated Version: {{ range .UpdatedImages }}{{ . }}{{ end }} [skip ci]"
     push:
       branch: laravel-k3s
   update:

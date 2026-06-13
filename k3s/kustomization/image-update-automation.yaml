@@ -19,7 +19,15 @@ spec:
       author:
         name: fluxbot
         email: fluxbot@local
-      messageTemplate: "🤖 Updated Version: {{ range .UpdatedImages }}{{ .Image }}:{{ .Tag }}{{ end }} [skip ci]"
+      messageTemplate: |
+        🤖 [automated] Update container images
+        
+        {{ range $resource, $changes := .Changed.Objects -}}
+        {{ $resource.Kind }}/{{ $resource.Name }}:
+        {{ range $_, $change := $changes -}}
+        - {{ $change.OldValue }} -> {{ $change.NewValue }}
+        {{ end -}}
+        {{ end -}}
     push:
       branch: laravel-k3s
   update:

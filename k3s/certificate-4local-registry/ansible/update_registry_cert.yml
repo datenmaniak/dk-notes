@@ -1,0 +1,41 @@
+---
+- name: Seguridad Clúster - Actualizar Certificado de Registro Privado
+  hosts: cluster
+  become: yes          # Requiere privilegios sudo para modificar /etc/rancher/k3s/
+  serial: 1            # Ejecución secuencial (nodo por nodo) para proteger los Pods
+
+  vars:
+    # Ruta corregida para el Ansible Controller en Fedora Bluefin
+    local_cert_source: "/var/home/datenmaniak/dk-notes/k3s/certificate-4local-registry/registro.crt"
+    remote_cert_dest: "/etc/rancher/k3s/local-reg-ca.crt"
+    
+    k3s_registries_file: "/etc/rancher/k3s/registries.yaml"
+    line_to_update: "ca_file: /etc/rancher/k3s/local-reg-ca.crt"
+
+  tasks:
+    - name: 1. Copiar el nuevo certificado al directorio de K3s en los nodos
+      copy:
+        src: "{{ local_cert_source }}"
+        dest: "{{ remote_cert_dest }}"
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Notificar cambios en K3s
+
+    - name: 2. Asegurar la directiva ca_file preservando el resto de registries.yaml
+      lineinfile:
+        path: "{{ k3s_registries_file }}"
+        # Expresión regular que busca si ya existe alguna línea que configure un ca_file
+        regexp: '^\s*ca_file:.*'
+        # Inyecta la nueva ruta con una sangría estándar de 4 espacios (ajustable según tu archivo)
+        line: "    {{ line_to_update }}"
+        state: present
+        backup: yes  # <- CRÍTICO: Deja una copia de respaldo en la misma ruta antes de modificar
+      notify: Notificar cambios en K3s
+
+  handlers:
+    - name: Notificar cambios en K3s
+      systemd:
+        name: "{{ 'k3s' if 'masters' in group_names else 'k3s-agent' }}"
+        state: restarted
+        enabled: yes

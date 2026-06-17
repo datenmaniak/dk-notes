@@ -30,9 +30,9 @@ services:
   laravel:
     build:
       context: .
-      dockerfile: laravel/Dockerfile-v1.50
+      dockerfile: laravel/Dockerfile-8422_fpm-alpine
       container_name: dknotes-laravel
-    image: local-reg.dk.lab:5000/dknotes-laravel:1.54.7
+    image: local-reg.dk.lab:5000/dknotes-laravel:1.54.9
     security_opt:
       - label:disable
     userns_mode: "keep-id"

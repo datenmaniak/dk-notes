@@ -1,3 +1,17 @@
+# Revision del package.json
+
+## Error en Laravel
+
+```plaintext
+
+BadMethodCallException
+vendor/laravel/framework/src/Illuminate/Macroable/Traits/Macroable.php:117
+Method Illuminate\Foundation\Vite::fonts does not exist.
+```
+
+## codigo actual
+
+```json
 {
     "$schema": "https://www.schemastore.org/package.json",
     "private": true,
@@ -8,14 +22,14 @@
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
-        "@tailwindcss/vite": "^4.1.14",
+        "@tailwindcss/vite": "^4.0.0",
         "alpinejs": "^3.4.2",
         "autoprefixer": "^10.4.2",
         "concurrently": "^9.0.1",
-        "laravel-vite-plugin": "^1.2.0",
+        "laravel-vite-plugin": "^3.1.0",
         "postcss": "^8.4.31",
         "tailwindcss": "^3.1.0",
-        "vite": "^5.4.11"
+        "vite": "^8.0.13"
     },
     "dependencies": {
         "@tailwindcss/typography": "^0.5.19",
@@ -24,3 +38,5 @@
         "lodash": "^4.18.1"
     }
 }
+```
+

@@ -1,0 +1,33 @@
+name: Integración Continua (CI) - dk-notes
+
+# 1. DISPARADORES: Cuándo se ejecuta esta receta
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main" ]
+
+# 2. TRABAJOS: Qué va a hacer la máquina virtual
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest # El sistema operativo base en la nube
+
+    steps:
+      # Paso 1.1 y 1.2: Clonar el código del repositorio en la máquina virtual
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      # Paso 1.4: Configurar el entorno de PHP 8.3 y extensiones de forma automatizada
+      - name: Configurar PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, json, pdo_sqlite
+          tools: composer:v2
+          coverage: none
+
+      # Paso extra de control: Verificar que las versiones sean correctas en los logs
+      - name: Validar versiones del entorno
+        run: |
+          php -v
+          composer --version

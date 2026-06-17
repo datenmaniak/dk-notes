@@ -37,7 +37,7 @@ jobs:
       # la caché de Composer automáticamente de fondo si se lo indicamos.
       - name: Instalar Dependencias de PHP (Composer)
         working-directory: ./app
-        run: composer install --prefer-dist --no-progress --no-interaction
+        run: composer install --prefer-dist --no-progress --no-interaction --ignore-platform-reqs
 
       # Paso 2.2: El Guardián del Estilo (Laravel Pint)
       # Ejecuta el linter en modo prueba. Si encuentra errores de formato, rompe el pipeline.

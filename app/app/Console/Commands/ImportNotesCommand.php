@@ -16,10 +16,14 @@ use Illuminate\Support\Str;
 use Parsedown;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\Console\Attribute\AsCommand; // 🌟 Este es el namespace real de Symfony que usa Laravel 12 de fondo
+
 
 // #[Signature('notes:import')]
-#[Signature('notes:import {--user=}')]
-#[Description('Importa notas Markdown desde un directorio')]
+// #[Signature('notes:import {--user=}')]
+// #[Description('Importa notas Markdown desde un directorio')]
+#[AsCommand(name: 'notes:import', description: 'Importar notas Markdown desde un directorio')]
+
 class ImportNotesCommand extends Command
 {
     /**

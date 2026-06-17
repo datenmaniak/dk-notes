@@ -6,9 +6,9 @@ use App\Models\Note;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Attribute\AsCommand; // 🌟 Este es el namespace real de Symfony que usa Laravel 12 de fondo
 
-#[Signature('notes:show')]
-#[Description('Mostrar las notas importadas')]
+#[AsCommand(name: 'notes:show', description: 'Mostrar las notas importadas')]
 class ShowNotesCommand extends Command
 {
     /**

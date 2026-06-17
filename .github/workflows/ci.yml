@@ -38,6 +38,7 @@ jobs:
       - name: Instalar Dependencias de PHP (Composer)
         working-directory: ./app
         run: |
+          composer config platform.php 8.3.0
           composer install --prefer-dist --no-progress --no-interaction --ignore-platform-reqs --no-scripts
           php artisan package:discover --ansi 
 

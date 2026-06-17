@@ -18,10 +18,10 @@ jobs:
         uses: actions/checkout@v4
 
       # Paso 1.4: Configurar el entorno de PHP 8.3 y extensiones de forma automatizada
-      - name: Configurar PHP 8.3
+      - name: Configurar PHP 8.4
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.4'
           extensions: mbstring, xml, ctype, iconv, json, pdo_sqlite
           tools: composer:v2
           coverage: none

@@ -38,8 +38,11 @@ jobs:
       - name: Instalar Dependencias de PHP (Composer)
         working-directory: ./app
         run: composer install --prefer-dist --no-progress --no-interaction --ignore-platform-reqs --no-scripts
-        php artisan package:discover --ansi 
         
+        # Invocar artisan asegurando el PATH heredado de PHP 8.3
+        run: php artisan package:discover --ansi 
+
+
       # Paso 2.2: El Guardián del Estilo (Laravel Pint)
       # Ejecuta el linter en modo prueba. Si encuentra errores de formato, rompe el pipeline.
       - name: Validar Estilo de Código (Laravel Pint)

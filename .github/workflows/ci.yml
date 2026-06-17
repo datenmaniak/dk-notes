@@ -3,9 +3,9 @@ name: Integración Continua (CI) - dk-notes
 # 1. DISPARADORES: Cuándo se ejecuta esta receta
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "laravel-k3s","main", "develop" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "laravel-k3s", "main" ]
 
 # 2. TRABAJOS: Qué va a hacer la máquina virtual
 jobs:

@@ -7,11 +7,9 @@ use Illuminate\Support\Facades\Schema;
 //  Esta tabla no requiere campos
 //  `created_at` ni `updated_at`.
 //  Para maximizar el rendimiento del
-//  filtrado dinámico, se definirá 
-// una **clave primaria compuesta** 
+//  filtrado dinámico, se definirá
+// una **clave primaria compuesta**
 // mediante `PRIMARY KEY(note_id, tag_id)`
-
-
 
 return new class extends Migration
 {

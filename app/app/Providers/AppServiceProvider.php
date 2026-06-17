@@ -21,9 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-    
+
         View::composer('layout.app', SidebarComposer::class);
 
     }
 }
-

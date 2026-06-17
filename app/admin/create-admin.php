@@ -2,27 +2,26 @@
 
 /**
  * Herramienta administrativa: Crear usuario administrador
- * 
+ *
  * Ejecutar: php artisan tinker
  * Luego: include('scripts/create-admin.php');
- * 
+ *
  * Crea un nuevo usuario con rol de administrador.
  */
 
 // Verificar que se ejecuta desde CLI (no desde web)
 if (php_sapi_name() !== 'cli') {
-    die("Este script solo puede ejecutarse desde la línea de comandos.\n");
+    exit("Este script solo puede ejecutarse desde la línea de comandos.\n");
 }
-
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 // Función para leer contraseña oculta
-function readPassword($prompt = "Contraseña: ")
+function readPassword($prompt = 'Contraseña: ')
 {
     echo $prompt;
-    
+
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
         // Windows - no se puede ocultar fácilmente, usar readline normal
         return readline();
@@ -32,6 +31,7 @@ function readPassword($prompt = "Contraseña: ")
         $password = rtrim(fgets(STDIN), "\n");
         system('stty echo');
         echo "\n";
+
         return $password;
     }
 }
@@ -44,7 +44,7 @@ echo "════════════════════════�
 // Solicitar nombre
 $name = '';
 while (empty($name)) {
-    $name = trim(readline("Nombre completo: "));
+    $name = trim(readline('Nombre completo: '));
     if (empty($name)) {
         echo "❌ El nombre no puede estar vacío.\n";
     }
@@ -53,10 +53,10 @@ while (empty($name)) {
 // Solicitar email
 $email = '';
 while (empty($email)) {
-    $email = trim(readline("Correo electrónico: "));
+    $email = trim(readline('Correo electrónico: '));
     if (empty($email)) {
         echo "❌ El correo no puede estar vacío.\n";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } elseif (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo "❌ Formato de correo inválido.\n";
         $email = '';
     } else {
@@ -74,14 +74,15 @@ $password = '';
 $passwordConfirm = '';
 
 while (empty($password)) {
-    $password = readPassword("Contraseña: ");
+    $password = readPassword('Contraseña: ');
     if (strlen($password) < 6) {
         echo "❌ La contraseña debe tener al menos 6 caracteres.\n";
         $password = '';
+
         continue;
     }
-    
-    $passwordConfirm = readPassword("Confirmar contraseña: ");
+
+    $passwordConfirm = readPassword('Confirmar contraseña: ');
     if ($password !== $passwordConfirm) {
         echo "❌ Las contraseñas no coinciden.\n";
         $password = '';
@@ -113,16 +114,16 @@ try {
         'is_admin' => true,
         'email_verified_at' => now(),
     ]);
-    
+
     echo "\n═══════════════════════════════════════════════════════════\n";
     echo "✅ Usuario administrador creado exitosamente.\n";
     echo "   ID: {$user->id}\n";
     echo "   Nombre: {$user->name}\n";
     echo "   Email: {$user->email}\n";
     echo "═══════════════════════════════════════════════════════════\n\n";
-    
-} catch (\Exception $e) {
-    echo "\n❌ ERROR: " . $e->getMessage() . "\n";
-    echo "   Línea: " . $e->getLine() . "\n\n";
+
+} catch (Exception $e) {
+    echo "\n❌ ERROR: ".$e->getMessage()."\n";
+    echo '   Línea: '.$e->getLine()."\n\n";
     exit(1);
 }

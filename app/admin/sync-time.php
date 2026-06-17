@@ -2,22 +2,22 @@
 
 /**
  * Herramienta administrativa: Sincronizar hora y zona horaria
- * 
+ *
  * Ejecutar: php artisan tinker
  * Luego: include('scripts/sync-time.php');
- * 
+ *
  * Opciones:
  * - Configurar zona horaria de Laravel
  * - Sincronizar hora del sistema con NTP (requiere ntpdate)
  */
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
 // Verificar que se ejecuta desde CLI
 if (php_sapi_name() !== 'cli') {
-    die("Este script solo puede ejecutarse desde la línea de comandos.\n");
+    exit("Este script solo puede ejecutarse desde la línea de comandos.\n");
 }
 
 // Zonas horarias disponibles
@@ -54,13 +54,13 @@ echo "════════════════════════�
 
 // Mostrar hora actual del sistema
 echo "📅 Hora actual del sistema:\n";
-echo "   PHP:    " . date('Y-m-d H:i:s') . "\n";
-echo "   MySQL:  " . DB::select('SELECT NOW() as now')[0]->now . "\n";
+echo '   PHP:    '.date('Y-m-d H:i:s')."\n";
+echo '   MySQL:  '.DB::select('SELECT NOW() as now')[0]->now."\n";
 
 // Verificar si ntpdate está disponible
 $ntpAvailable = shell_exec('which ntpdate 2>/dev/null');
 // $hasNtp = !empty(trim($ntpAvailable));
-$hasNtp = !empty(trim($ntpAvailable ?? ''));
+$hasNtp = ! empty(trim($ntpAvailable ?? ''));
 
 echo "\n───────────────────────────────────────────────────────────\n";
 echo "Opciones:\n";
@@ -81,7 +81,7 @@ if ($opcion == 4) {
     exit;
 }
 
-if (!in_array($opcion, ['1', '2', '3'])) {
+if (! in_array($opcion, ['1', '2', '3'])) {
     echo "\n❌ Opción inválida.\n\n";
     exit;
 }
@@ -91,18 +91,18 @@ $selectedTz = '';
 if (in_array($opcion, ['1', '3'])) {
     echo "\n───────────────────────────────────────────────────────────\n";
     echo "Seleccione zona horaria:\n";
-    
+
     $i = 1;
     foreach ($timezones as $tz => $description) {
         echo "  {$i}. {$description} ({$tz})\n";
         $i++;
     }
-    
-    $tzOption = readline("\nNúmero de zona horaria (1-" . count($timezones) . "): ");
+
+    $tzOption = readline("\nNúmero de zona horaria (1-".count($timezones).'): ');
     $tzKeys = array_keys($timezones);
     $selectedTz = $tzKeys[$tzOption - 1] ?? null;
-    
-    if (!$selectedTz) {
+
+    if (! $selectedTz) {
         echo "\n❌ Zona horaria inválida.\n\n";
         exit;
     }
@@ -113,7 +113,7 @@ try {
     // 1. Configurar zona horaria de Laravel
     if (in_array($opcion, ['1', '3']) && $selectedTz) {
         echo "\n🔄 Configurando zona horaria: {$selectedTz}\n";
-        
+
         // Actualizar archivo config/app.php
         $configPath = base_path('config/app.php');
         $configContent = file_get_contents($configPath);
@@ -123,19 +123,19 @@ try {
             $configContent
         );
         file_put_contents($configPath, $configContent);
-        
+
         // Limpiar caché
         Artisan::call('config:clear');
-        
+
         echo "  ✅ Zona horaria configurada a: {$selectedTz}\n";
     }
-    
+
     // 2. Sincronizar hora con NTP
     if (in_array($opcion, ['2', '3'])) {
         if ($hasNtp) {
             echo "\n🔄 Sincronizando hora con NTP...\n";
             $output = shell_exec('sudo ntpdate -u pool.ntp.org 2>&1');
-            echo "  Resultado: " . ($output ? trim($output) : "Sincronizado") . "\n";
+            echo '  Resultado: '.($output ? trim($output) : 'Sincronizado')."\n";
             echo "  ✅ Hora sincronizada.\n";
         } else {
             echo "\n⚠️  ntpdate no está instalado.\n";
@@ -144,20 +144,20 @@ try {
             echo "  Luego ejecuta nuevamente el script.\n";
         }
     }
-    
+
     // Mostrar nueva hora
     echo "\n───────────────────────────────────────────────────────────\n";
     echo "📅 Nueva hora del sistema:\n";
-    echo "   PHP:    " . date('Y-m-d H:i:s') . "\n";
-    echo "   MySQL:  " . DB::select('SELECT NOW() as now')[0]->now . "\n";
+    echo '   PHP:    '.date('Y-m-d H:i:s')."\n";
+    echo '   MySQL:  '.DB::select('SELECT NOW() as now')[0]->now."\n";
     echo "───────────────────────────────────────────────────────────\n";
-    
+
     echo "\n═══════════════════════════════════════════════════════════\n";
     echo "✅ Sincronización completada.\n";
     echo "═══════════════════════════════════════════════════════════\n\n";
-    
-} catch (\Exception $e) {
-    echo "\n❌ ERROR: " . $e->getMessage() . "\n";
-    echo "   Línea: " . $e->getLine() . "\n\n";
+
+} catch (Exception $e) {
+    echo "\n❌ ERROR: ".$e->getMessage()."\n";
+    echo '   Línea: '.$e->getLine()."\n\n";
     exit(1);
 }

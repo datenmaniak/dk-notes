@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-             $table->boolean('is_admin')->default(false);
-             // 
+            $table->boolean('is_admin')->default(false);
+            //
             //  Rol	Permiso
             // Administrador	Puede reasignar notas a cualquier usuario
             //  Usuario normal	Solo ve y edita sus propias notas

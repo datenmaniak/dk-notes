@@ -9,7 +9,7 @@ use App\Models\Note;
 $output = fopen('diagnostic_result.txt', 'w');
 
 fwrite($output, "=== CATEGORÍAS EN BD ===\n");
-$categories = Category::all()->map(fn($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug]);
+$categories = Category::all()->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'slug' => $c->slug]);
 foreach ($categories as $c) {
     fwrite($output, "{$c['id']}: {$c['name']} (slug: {$c['slug']})\n");
 }
@@ -23,8 +23,8 @@ foreach ($notes as $note) {
 
 fwrite($output, "\n=== USUARIO ACTUAL ===\n");
 $user = Auth::user();
-fwrite($output, "ID: " . ($user ? $user->id : 'null') . "\n");
-fwrite($output, "Nombre: " . ($user ? $user->name : 'no autenticado') . "\n");
+fwrite($output, 'ID: '.($user ? $user->id : 'null')."\n");
+fwrite($output, 'Nombre: '.($user ? $user->name : 'no autenticado')."\n");
 
 fwrite($output, "\n=== NOTAS DEL USUARIO ===\n");
 if ($user) {
@@ -32,7 +32,7 @@ if ($user) {
     foreach ($userNotes as $note) {
         fwrite($output, "ID: {$note->id} | Título: {$note->title} | user_id: {$note->user_id} | category_id: {$note->category_id}\n");
     }
-    fwrite($output, "Total notas del usuario: " . $userNotes->count() . "\n");
+    fwrite($output, 'Total notas del usuario: '.$userNotes->count()."\n");
 } else {
     fwrite($output, "No hay usuario autenticado. Ejecuta: Auth::loginUsingId(1)\n");
 }

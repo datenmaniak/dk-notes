@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -13,37 +17,35 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
 
-     // Rutas específicas PRIMERO
-    Route::get('/notes/filter/{category?}', [App\Http\Controllers\NoteController::class, 'filter'])->name('notes.filter');
-    Route::post('/notes/sync', [App\Http\Controllers\NoteController::class, 'sync'])->name('notes.sync');
-    Route::get('/notes/create', [App\Http\Controllers\NoteController::class, 'create'])->name('notes.create');
-    Route::post('/notes', [App\Http\Controllers\NoteController::class, 'store'])->name('notes.store');
-   
-    
-    // Rutas genericas 
-    Route::get('/notes', [App\Http\Controllers\NoteController::class, 'index'])->name('notes.index');
-    Route::get('/notes/{note}', [App\Http\Controllers\NoteController::class, 'show'])->name('notes.show');
-    
+    // Rutas específicas PRIMERO
+    Route::get('/notes/filter/{category?}', [NoteController::class, 'filter'])->name('notes.filter');
+    Route::post('/notes/sync', [NoteController::class, 'sync'])->name('notes.sync');
+    Route::get('/notes/create', [NoteController::class, 'create'])->name('notes.create');
+    Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');
+
+    // Rutas genericas
+    Route::get('/notes', [NoteController::class, 'index'])->name('notes.index');
+    Route::get('/notes/{note}', [NoteController::class, 'show'])->name('notes.show');
+
     // subir notas
-    Route::post('/notes/upload', [App\Http\Controllers\NoteController::class, 'upload'])->name('notes.upload');
+    Route::post('/notes/upload', [NoteController::class, 'upload'])->name('notes.upload');
     // eliminar todas las notas
-    Route::delete('/notes/delete-all', [App\Http\Controllers\NoteController::class, 'deleteAll'])->name('notes.delete-all');
-    
-    Route::get('/notes/{note}/edit', [App\Http\Controllers\NoteController::class, 'edit'])->name('notes.edit');
-    Route::put('/notes/{note}', [App\Http\Controllers\NoteController::class, 'update'])->name('notes.update');
-    Route::delete('/notes/{note}', [App\Http\Controllers\NoteController::class, 'destroy'])->name('notes.destroy');
+    Route::delete('/notes/delete-all', [NoteController::class, 'deleteAll'])->name('notes.delete-all');
+
+    Route::get('/notes/{note}/edit', [NoteController::class, 'edit'])->name('notes.edit');
+    Route::put('/notes/{note}', [NoteController::class, 'update'])->name('notes.update');
+    Route::delete('/notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
     // Configuraciones
-    Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');
-    Route::post('/settings', [App\Http\Controllers\SettingsController::class, 'update'])->name('settings.update');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
     // Categorias
-    Route::post('/categories/recalculate', [App\Http\Controllers\CategoryController::class, 'recalculate'])->name('categories.recalculate');
-    Route::delete('/categories/{category}', [App\Http\Controllers\CategoryController::class, 'destroy'])->name('categories.destroy');
-    
-    // Otras
-    Route::post('/notes/take-ownership', [App\Http\Controllers\NoteController::class, 'takeOwnership'])->name('notes.take-ownership');
+    Route::post('/categories/recalculate', [CategoryController::class, 'recalculate'])->name('categories.recalculate');
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
+    // Otras
+    Route::post('/notes/take-ownership', [NoteController::class, 'takeOwnership'])->name('notes.take-ownership');
 
     // nativas Laravel
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -52,15 +54,13 @@ Route::middleware('auth')->group(function () {
 
     // Etiquetas
     Route::prefix('tags')->group(function () {
-    Route::get('/', [App\Http\Controllers\TagController::class, 'index'])->name('tags.index');
-    Route::post('/', [App\Http\Controllers\TagController::class, 'store'])->name('tags.store');
-    Route::delete('/{tag}', [App\Http\Controllers\TagController::class, 'destroy'])->name('tags.destroy');
-    Route::post('/notes/{note}/tags', [App\Http\Controllers\TagController::class, 'assign'])->name('notes.tags.assign');
-    Route::get('/notes/{note}/tags', [App\Http\Controllers\TagController::class, 'getNoteTags'])->name('notes.tags.get');
-});
-
+        Route::get('/', [TagController::class, 'index'])->name('tags.index');
+        Route::post('/', [TagController::class, 'store'])->name('tags.store');
+        Route::delete('/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
+        Route::post('/notes/{note}/tags', [TagController::class, 'assign'])->name('notes.tags.assign');
+        Route::get('/notes/{note}/tags', [TagController::class, 'getNoteTags'])->name('notes.tags.get');
+    });
 
 });
 
 require __DIR__.'/auth.php';
-

@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Support\Str;
 use App\Models\Category;
 use App\Models\Note;
 use App\Models\User;
@@ -11,8 +10,8 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 // as FacadesFile;
-
 
 use Parsedown;
 use RecursiveDirectoryIterator;
@@ -26,179 +25,180 @@ class ImportNotesCommand extends Command
     /**
      * Execute the console command.
      */
-
     public function handle()
     {
 
-    // $usuario = User::first();
-    // if (!$usuario) {
-    //     $this->error("❌ No hay usuarios en el sistema.");
-    // return 1;
-    // }
+        // $usuario = User::first();
+        // if (!$usuario) {
+        //     $this->error("❌ No hay usuarios en el sistema.");
+        // return 1;
+        // }
 
-    $userId = $this->option('user');
-    if ($userId) {
-        $usuario = User::find($userId);
-    } else {
-        $usuario = User::first();
-    }
-
-    if (!$usuario) {
-        $this->error("❌ No hay usuarios en el sistema.");
-        return 1;
-    }
-
-    
-    // Obtener ruta personal y construir ruta completa
-    $rutaPersonal = UserSetting::getValue($usuario->id, 'ruta_personal', '');
-    $directorioBase = base_path('storage/app/public/notes');
-    // $directorioBase = base_path('public/notes');
-
-    $directorioNotas = '';
-    if ($rutaPersonal) {
-        $directorioNotas = $directorioBase . '/' . $rutaPersonal;
-    }
-    //  else {
-    //     // $directorioNotas = $directorioBase;
-    //     // $this->info("💡 Declare su Configuración de directorio personal ");
-    //     $this->error("❌ El directorio directorio personal no ha sido configurado ");
-
-    // }
-
-    // Verificar que el directorio existe
-    if (!is_dir($directorioNotas)) {
-        $this->error("❌ El directorio personal no ha sido configurado " . $directorioNotas);
-        // $this->info("💡 Ejecuta: mkdir -p " . $directorioNotas);
-        $this->info("💡 Vaya a la sección de   Configuración  ⚙️");
-         return 1;
-        //  ⚙️ Configuración
-    }
-
-    $this->info("✅ Directorio encontrado: " . $directorioNotas);
-
-    // 1.1. Convertir ~ a la ruta del home del usuario
-    if (str_starts_with($directorioNotas, '~/')) {
-        $home = getenv('HOME') ?: $_SERVER['HOME'] ?? '';
-        $directorioNotas = $home . substr($directorioNotas, 1);
-    }
-
-    // // 2. Verificar que el directorio existe
-    // if (!is_dir($directorioNotas)) {
-    //     $this->error("El directorio no existe: " . $directorioNotas);
-    //     return 1;
-    // }
-
-    //  // 2.1. Confirmar que encontramos el directorio
-    // $this->info("✓ Directorio encontrado: " . $directorioNotas);
-
-    // 3. Buscar todos los archivos .md (recursivamente)
-    $this->info("Buscando archivos .md...");
-    // 3. Escanear todos los archivos .md (incluyendo subdirectorios)
-
-    $archivos = $this->obtenerArchivosMd($directorioNotas);
-
-    $totalArchivos = count($archivos);
-    $this->info("📄 Encontrados " . $totalArchivos . " archivos .md");
-
-    if ($totalArchivos === 0) {
-            $this->warn("⚠️ No hay archivos .md para importar");
-            return 0;
-    }
-
-     // 4. Procesar cada archivo
-    $contador = 0;
-    // ##  Paso 1: Instalar la Libreria
-    //
-    //       composer require erusev/parsedown
-    //
-    $parsedown = new Parsedown();
-    // $parsedown->setBreaksEnabled(true);
-
-  
-    // Reemplazar el Contenido del foreach, para proseguir con el procesador
-    // de contenido markdown a HTML
-    foreach ($archivos as $archivo) {
-        $contador++;
-        $this->info("[$contador/$totalArchivos] Procesando: " . basename($archivo));
-        
-        // 1. Obtener o crear la categoría
-        $nombreCategoria = $this->obtenerCategoria($archivo, $directorioNotas);
-        $categoriaId = null;
-        
-        if ($nombreCategoria) {
-            // Explicación: Primero busca por slug (que es único).
-            //  Si existe, usa esa categoría. Si no, la crea con el nombre actual.
-
-            $slug = Str::slug($nombreCategoria);
-
-            $categoria = Category::firstOrCreate(
-                ['slug' => $slug],
-                ['name' => $nombreCategoria]
-            );
-
-            $categoriaId = $categoria->id;
-            $this->line("   📂 Categoría: " . $nombreCategoria . " (ID: " . $categoriaId . ")");
+        $userId = $this->option('user');
+        if ($userId) {
+            $usuario = User::find($userId);
         } else {
-            // Sin categoría -> asignar "General"
-            $categoria = Category::firstOrCreate(
-                ['slug' => 'general'],
-                ['name' => 'General']
+            $usuario = User::first();
+        }
+
+        if (! $usuario) {
+            $this->error('❌ No hay usuarios en el sistema.');
+
+            return 1;
+        }
+
+        // Obtener ruta personal y construir ruta completa
+        $rutaPersonal = UserSetting::getValue($usuario->id, 'ruta_personal', '');
+        $directorioBase = base_path('storage/app/public/notes');
+        // $directorioBase = base_path('public/notes');
+
+        $directorioNotas = '';
+        if ($rutaPersonal) {
+            $directorioNotas = $directorioBase.'/'.$rutaPersonal;
+        }
+        //  else {
+        //     // $directorioNotas = $directorioBase;
+        //     // $this->info("💡 Declare su Configuración de directorio personal ");
+        //     $this->error("❌ El directorio directorio personal no ha sido configurado ");
+
+        // }
+
+        // Verificar que el directorio existe
+        if (! is_dir($directorioNotas)) {
+            $this->error('❌ El directorio personal no ha sido configurado '.$directorioNotas);
+            // $this->info("💡 Ejecuta: mkdir -p " . $directorioNotas);
+            $this->info('💡 Vaya a la sección de   Configuración  ⚙️');
+
+            return 1;
+            //  ⚙️ Configuración
+        }
+
+        $this->info('✅ Directorio encontrado: '.$directorioNotas);
+
+        // 1.1. Convertir ~ a la ruta del home del usuario
+        if (str_starts_with($directorioNotas, '~/')) {
+            $home = getenv('HOME') ?: $_SERVER['HOME'] ?? '';
+            $directorioNotas = $home.substr($directorioNotas, 1);
+        }
+
+        // // 2. Verificar que el directorio existe
+        // if (!is_dir($directorioNotas)) {
+        //     $this->error("El directorio no existe: " . $directorioNotas);
+        //     return 1;
+        // }
+
+        //  // 2.1. Confirmar que encontramos el directorio
+        // $this->info("✓ Directorio encontrado: " . $directorioNotas);
+
+        // 3. Buscar todos los archivos .md (recursivamente)
+        $this->info('Buscando archivos .md...');
+        // 3. Escanear todos los archivos .md (incluyendo subdirectorios)
+
+        $archivos = $this->obtenerArchivosMd($directorioNotas);
+
+        $totalArchivos = count($archivos);
+        $this->info('📄 Encontrados '.$totalArchivos.' archivos .md');
+
+        if ($totalArchivos === 0) {
+            $this->warn('⚠️ No hay archivos .md para importar');
+
+            return 0;
+        }
+
+        // 4. Procesar cada archivo
+        $contador = 0;
+        // ##  Paso 1: Instalar la Libreria
+        //
+        //       composer require erusev/parsedown
+        //
+        $parsedown = new Parsedown;
+        // $parsedown->setBreaksEnabled(true);
+
+        // Reemplazar el Contenido del foreach, para proseguir con el procesador
+        // de contenido markdown a HTML
+        foreach ($archivos as $archivo) {
+            $contador++;
+            $this->info("[$contador/$totalArchivos] Procesando: ".basename($archivo));
+
+            // 1. Obtener o crear la categoría
+            $nombreCategoria = $this->obtenerCategoria($archivo, $directorioNotas);
+            $categoriaId = null;
+
+            if ($nombreCategoria) {
+                // Explicación: Primero busca por slug (que es único).
+                //  Si existe, usa esa categoría. Si no, la crea con el nombre actual.
+
+                $slug = Str::slug($nombreCategoria);
+
+                $categoria = Category::firstOrCreate(
+                    ['slug' => $slug],
+                    ['name' => $nombreCategoria]
+                );
+
+                $categoriaId = $categoria->id;
+                $this->line('   📂 Categoría: '.$nombreCategoria.' (ID: '.$categoriaId.')');
+            } else {
+                // Sin categoría -> asignar "General"
+                $categoria = Category::firstOrCreate(
+                    ['slug' => 'general'],
+                    ['name' => 'General']
+                );
+                $categoriaId = $categoria->id;
+                $this->line('   📂 Categoría: '.$nombreCategoria.' (ID: '.$categoriaId.')');
+            }
+
+            // 2. Leer el contenido del archivo
+            $contenido = File::get($archivo);
+
+            // 3. Convertir Markdown a HTML
+            $html = $parsedown->text($contenido);
+
+            // Normalizar rutas de imágenes (AGREGAR ESTAS LÍNEAS)
+            $html = $this->normalizarRutasImagenes($html);
+
+            // 4. Extraer título
+            $titulo = $this->extraerTitulo($contenido, basename($archivo));
+            // Truncar a 250 caracteres máximo
+            if (strlen($titulo) > 250) {
+                $titulo = substr($titulo, 0, 247).'...';
+            }
+
+            $this->line('   📝 Título: '.$titulo);
+
+            // 5. Calcular checksum (hash del contenido)
+            $checksum = md5($contenido);
+
+            // 6. Verificar si la nota ya existe (por file_path o checksum)
+            $notaExistente = Note::where('file_path', $archivo)->first();
+
+            if ($notaExistente && $notaExistente->checksum === $checksum) {
+                $this->line('   ⏭️ Sin cambios, omitida');
+
+                continue;
+            }
+
+            // 7. Crear o actualizar la nota
+            $nota = Note::updateOrCreate(
+                ['file_path' => $archivo],
+                [
+                    'title' => $titulo,
+                    'slug' => Str::slug($titulo).'-'.uniqid(), // Asegura slugs únicos
+                    'content_markdown' => $contenido,
+                    'content_html' => $html,
+                    'checksum' => $checksum,
+                    'category_id' => $categoriaId,
+                    'user_id' => $usuario->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
             );
-             $categoriaId = $categoria->id;
-            $this->line("   📂 Categoría: " . $nombreCategoria . " (ID: " . $categoriaId . ")");
-        }
-        
-        // 2. Leer el contenido del archivo
-        $contenido = File::get($archivo);
-        
-        // 3. Convertir Markdown a HTML
-        $html = $parsedown->text($contenido);
 
-        // Normalizar rutas de imágenes (AGREGAR ESTAS LÍNEAS)
-        $html = $this->normalizarRutasImagenes($html);
-        
-        // 4. Extraer título
-        $titulo = $this->extraerTitulo($contenido, basename($archivo));
-        // Truncar a 250 caracteres máximo
-        if (strlen($titulo) > 250) {
-            $titulo = substr($titulo, 0, 247) . '...';
+            $this->line('   ✅ Nota guardada (ID: '.$nota->id.')');
+            $this->line('');
         }
 
-        $this->line("   📝 Título: " . $titulo);
-        
-        // 5. Calcular checksum (hash del contenido)
-        $checksum = md5($contenido);
-        
-        // 6. Verificar si la nota ya existe (por file_path o checksum)
-        $notaExistente = Note::where('file_path', $archivo)->first();
-        
-        if ($notaExistente && $notaExistente->checksum === $checksum) {
-            $this->line("   ⏭️ Sin cambios, omitida");
-            continue;
-        }
-        
-        // 7. Crear o actualizar la nota
-        $nota = Note::updateOrCreate(
-            ['file_path' => $archivo],
-            [
-                'title' => $titulo,
-                'slug' => Str::slug($titulo) . '-' . uniqid(), // Asegura slugs únicos
-                'content_markdown' => $contenido,
-                'content_html' => $html,
-                'checksum' => $checksum,
-                'category_id' => $categoriaId,
-                'user_id' => $usuario->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        );
-        
-        $this->line("   ✅ Nota guardada (ID: " . $nota->id . ")");
-        $this->line("");
+        return 0;
     }
-
-    return 0;
-}
 
     /**
      * Obtiene todos los archivos .md de un directorio y sus subdirectorios
@@ -233,7 +233,7 @@ class ImportNotesCommand extends Command
         }
 
         // Extraer el nombre del subdirectorio inmediato
-        $relativo = str_replace($directorioBase . DIRECTORY_SEPARATOR, '', $directorioArchivo);
+        $relativo = str_replace($directorioBase.DIRECTORY_SEPARATOR, '', $directorioArchivo);
         $partes = explode(DIRECTORY_SEPARATOR, $relativo);
 
         return $partes[0]; // Primer subdirectorio
@@ -257,7 +257,7 @@ class ImportNotesCommand extends Command
         return pathinfo($nombreArchivo, PATHINFO_FILENAME);
     }
 
-        /**
+    /**
      * Normaliza rutas de imágenes en el HTML generado
      */
     private function normalizarRutasImagenes(string $html): string
@@ -270,13 +270,12 @@ class ImportNotesCommand extends Command
             'src="/images/',
             $html
         );
-        
+
         // Retornar el HTML con las rutas normalizadas
         return $html;
     }
 
     // 5. Mostrar mensajes de progreso en la terminal
     // 6. Al final, mostrar un resumen (cuántas notas se importaron)
-
 
 }

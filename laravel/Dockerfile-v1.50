@@ -22,7 +22,7 @@ RUN npm run build
 # =========================================================================
 # ETAPA 2: IMAGEN FINAL DE PRODUCCIÓN (PHP-FPM)
 # =========================================================================
-FROM php:8.3-fpm-alpine
+FROM php:8.3.31-fpm-alpine
 
 # Evitar que genere el archivo '.ash_history'
 ENV HISTFILE=/tmp/

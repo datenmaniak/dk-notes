@@ -35,12 +35,17 @@ jobs:
       # Paso 2.1: Gestión Inteligente de Dependencias (Instalación + Caché)
       # Nota: La acción 'shivammathur/setup-php' que usamos en la Fase 1 ya maneja 
       # la caché de Composer automáticamente de fondo si se lo indicamos.
+
+      # ---- utilizado para troubleshooting del composer
+      # composer install --prefer-dist --no-progress --no-interaction --ignore-platform-reqs --no-scripts
+      # php artisan package:discover --ansi 
+          # composer config platform.php 8.3.0
+
       - name: Instalar Dependencias de PHP (Composer)
         working-directory: ./app
         run: |
-          composer config platform.php 8.3.0
-          composer install --prefer-dist --no-progress --no-interaction --ignore-platform-reqs --no-scripts
-          php artisan package:discover --ansi 
+          composer install --prefer-dist --no-progress --no-interaction
+        
 
 
       # Paso 2.2: El Guardián del Estilo (Laravel Pint)

@@ -1,14 +1,40 @@
+# Identificar error de ShowNotesCommand.php
+
+Error durante la Fase II de CI
+
+
+**Mensaje**
+
+```txt
+                                                                              
+  The command defined in "App\Console\Commands\ShowNotesCommand" cannot have   
+  an empty name.                                                               
+                                                                               
+
+Error: Process completed with exit code 1.
+```
+
+## Componente involucrado
+
+```bash
+~/dk-notes/app/Console/Commands/ShowNotesCommand.php
+```
+
+
+## Codigo actual
+
+```php
 <?php
 
 namespace App\Console\Commands;
 
 use App\Models\Note;
-// use Illuminate\Console\Attributes\Description;
-// use Illuminate\Console\Attributes\Signature;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Attribute\AsCommand; // 🌟 Este es el namespace real de Symfony que usa Laravel 12 de fondo
 
-#[AsCommand(name: 'notes:show', description: 'Mostrar las notas importadas')]
+#[Signature('notes:show')]
+#[Description('Mostrar las notas importadas')]
 class ShowNotesCommand extends Command
 {
     /**
@@ -43,3 +69,5 @@ class ShowNotesCommand extends Command
         return 0;
     }
 }
+```
+

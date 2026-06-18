@@ -55,18 +55,41 @@ El desarrollo de **dk-notes** está estructurado en cuatro fases críticas que r
 
 
 ------
-## Análisis del Roadmap General DKNotes (al 25.05.2026, 11:56)
----
-Resumen de las 4 Fases Principales
+
+## 🗺️ Hoja de Ruta del Proyecto (Roadmap)
+
+El desarrollo de **dk-notes** ha madurado a través de cuatro fases críticas de infraestructura:
 
 | Fase | Nombre | Objetivo | Estado |
 |---|---|---|---|
-| 1 | Monolito Local | Desarrollo de la aplicación: Docker, Laravel | ✅ Completada |
-| 2 | Cloud-Native | Preparación para la nube (contenedores, configuración) | ✅ Completada |
-| 3 | Orquestación | Despliegue en Kubernetes (k3s) | ✅ Completada|
-| 4 | CI/CD | Automatización de despliegues | ⚙️ Activo / Experimental 👨‍🎓 |
+| 1 | Monolito Local | Desarrollo de la aplicación: Podman, Laravel | ✅ Completada |
+| 2 | Cloud-Native | Preparación para la nube (configuración, logs a stdout) | ✅ Completada |
+| 3 | Orquestación | Despliegue en Kubernetes (k3s, PV/PVC, Ingress) | ✅ Completada |
+| 4 | CI/CD | Automatización de despliegues (Pipelines y GitOps) | ✅ Completada |
 
+---
+## 🔬 Estado Actual: Laboratorio de Funcionalidades y Portabilidad (⚙️ Activo / Experimental 👨‍🎓)
 
-------
+Con la base de infraestructura y el ciclo de vida de software (CI/CD) completamente automatizados y estables, **dk-notes** opera actualmente como un **proyecto piloto activo**. El enfoque principal ha dejado de ser la configuración del entorno para centrarse en:
+
+1. **Evolución del Producto:** Iteración rápida y agregación de nuevas funcionalidades de usuario.
+2. **Refactorización Estética:** Ajustes finos de estilos y mejora de la experiencia de usuario (UX/UI).
+3. **Migración hacia la Portabilidad:** Desacoplamiento progresivo de la dependencia estricta del backend tradicional en PHP para transformar el proyecto en una arquitectura hiper-portátil (Frontend SPA/PWA separado de una API agnóstica).
+
+---
+## 🛠️ Próximas Implementaciones (Backlog)
+
+### 🎨 UI/UX & Estilos
+- [ ] Implementación de un sistema de diseño desacoplado (Tailwind/Componentes limpios).
+- [ ] Optimización de la vista de lectura y renderizado Markdown para dispositivos móviles.
+
+### 🚀 Funcionalidades de Gestión de Notas
+- [ ] Buscador de texto completo (Full-Text Search) aprovechando la indexación nativa de PostgreSQL.
+- [ ] Vista de árbol o navegación jerárquica para las categorías y etiquetas de las notas.
+
+### 📦 Portabilidad & Desacoplamiento (Core)
+- [ ] Transformación del backend de Laravel en una API REST puramente Stateless (Autenticación vía JWT).
+---
+
 
 *Desarrollado bajo la firma de **datenmaniak**.*

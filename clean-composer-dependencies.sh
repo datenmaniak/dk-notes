@@ -1,9 +1,7 @@
-
-
 # Limpia y regenera todo en local
 #Dado que el entorno de dependencias se encuentra corrupto por las pruebas anteriores, ejecuta una limpieza absoluta en la terminal de tu Victus 15:
 
-cd ~/dk-notes/app
+#cd ~/dk-notes/app
 
 # Eliminamos la carpeta vendor corrupta y el candado viejo
 rm -rf vendor

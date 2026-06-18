@@ -25,18 +25,21 @@ use Symfony\Component\Console\Attribute\AsCommand; // 🌟 Este es el namespace 
 
 class ImportNotesCommand extends Command
 {
+    
+    /**
+     * La firma de consola que define las opciones aceptadas.
+     * 🌟 Al agregar {--user=}, Laravel habilita oficialmente la bandera '--user'
+     */
+    protected $signature = 'notes:import {--user=}';
+
+
     /**
      * Execute the console command.
      */
     public function handle()
     {
 
-        // $usuario = User::first();
-        // if (!$usuario) {
-        //     $this->error("❌ No hay usuarios en el sistema.");
-        // return 1;
-        // }
-
+        
         $userId = $this->option('user');
         if ($userId) {
             $usuario = User::find($userId);

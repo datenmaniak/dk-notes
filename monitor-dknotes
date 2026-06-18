@@ -1,0 +1,1 @@
+watch -n 2 kubectl get pods,deploy,secret,svc,pv,pvc,ingress -n dknotes -o wide

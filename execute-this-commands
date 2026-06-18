@@ -1,3 +1,2 @@
-git add app/Console/Commands/ImportNotesCommand.php
 git commit -m "style: aplicar auto-fixes de Laravel Pint en ImportNotesCommand"
 git push origin laravel-k3s

@@ -1,3 +1,16 @@
+##  error al acceder http://dknotes.dk.lab
+
+```plaintext
+Warning: require(/var/www/html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /var/www/html/public/index.php on line 14
+
+Fatal error: Uncaught Error: Failed opening required '/var/www/html/public/../vendor/autoload.php' (include_path='.:/usr/local/lib/php') in /var/www/html/public/index.php:14 Stack trace: #0 {main} thrown in /var/www/html/public/index.php on line 14
+```
+
+
+
+## Dockerfile actual
+
+```yaml
 # =========================================================================
 # ETAPA 1: COMPILACIÓN DE ASSETS (Frontend)
 # =========================================================================
@@ -57,19 +70,14 @@ WORKDIR /var/www/html
 # Gracias al .dockerignore, el archivo .env local NO se copiará aquí.
 COPY --chown=www-data:www-data ./app /var/www/html
 
-# 🌟 2. INSTALAR DEPENDENCIAS DE COMPOSER EN PRODUCCIÓN
-# Esto generará la carpeta /var/www/html/vendor que el contenedor tanto necesita
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
-
-
 # 2. TRAEMOS LOS ASSETS COMPILADOS DESDE LA ETAPA 1
 # Corregida la ruta origen: En la Etapa 1 el WORKDIR era /var/www/html
 COPY --from=frontend-builder /var/www/html/public/build /var/www/html/public/build
 
 # Configuramos permisos estrictos para el usuario de PHP-FPM (www-data)
-# 🌟 Añadimos también /var/www/html/vendor para asegurar que PHP pueda leerlo sin problemas
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/vendor
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 9000
 CMD ["php-fpm"]
+```
+

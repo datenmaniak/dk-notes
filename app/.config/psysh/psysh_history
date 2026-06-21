@@ -1,0 +1,3 @@
+include ('./admin/chage-rol.php');
+include ('./admin/change-rol.php');
+exit

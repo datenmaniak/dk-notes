@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* VARIABLES GLOBALES - Paleta datenmaniak */
+
+:root {
+    /* Modo Claro (por defecto) */
+    --bg-primary: #F9F7FF;
+    --border-color: rgba(119, 0, 240, 0.15);
+    --bg-card: #FFFFFF;
+    --bg-input: #F8FAFC;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #64748B;
+}
+
+/* Modo Oscuro */
+/* .dark {
+    --bg-primary: #0A0A0F;
+    --border-color: rgba(119, 0, 240, 0.3);
+    --bg-card: #121218;
+    --bg-input: #1A0B2E;
+    --text-primary: #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+} */
+
+* Modo Oscuro (Encapsulado correctamente para el compilador) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #0A0A0F;
+        --border-color: rgba(119, 0, 240, 0.3);
+        --bg-card: #121218;
+        --bg-input: #1A0B2E;
+        --text-primary: #F1F5F9;
+        --text-secondary: #94A3B8;
+        --text-muted: #64748B;
+    }
+}
+
+body {
+    /* font-family: 'Roboto', sans-serif; */
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+}
+
+   /* ESTILOS PERSONALIZADOS - CONTENIDO DE NOTAS */
+
+.note-content {
+    white-space: pre-line;
+}
+
+.note-content ul {
+    list-style-type: disc;
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.note-content li {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* ============================================
+   UTILIDADES PERSONALIZADAS (SIN @layer)
+   ============================================ */
+
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-base {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.input-base:focus {
+    border-color: #7700F0;
+    box-shadow: 0 0 0 2px rgba(119, 0, 240, 0.3);
+    outline: none;
+}

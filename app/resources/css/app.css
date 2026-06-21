@@ -3,6 +3,50 @@
 @tailwind utilities;
 
 
+/* UsingTailwind3417 */
+
+/* ============================================
+   VARIABLES GLOBALES - Paleta datenmaniak
+   ============================================ */
+
+/* Modo Claro (por defecto) */
+:root {
+    --bg-primary: #F9F7FF;
+    --border-color: rgba(119, 0, 240, 0.15);
+    --bg-card: #F9F7FF;
+    --bg-input: #f8fafc;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+}
+
+/* Modo Oscuro */
+.dark {
+    --bg-primary: #1A0B2E;
+    --border-color: rgba(119, 0, 240, 0.3);
+    --bg-card: #121218;
+    --bg-input: #1a1a2e;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+}
+
+/* ============================================
+   ESTILOS BASE
+   ============================================ */
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+}
+
+/* ============================================
+   ESTILOS PERSONALIZADOS - CONTENIDO DE NOTAS
+   (Manteniendo tu código existente)
+   ============================================ */
 /* Estilos personalizados para el contenido de notas */
 .note-content {
     white-space: pre-line;
@@ -19,3 +63,94 @@
     margin-top: 0.25rem;
     margin-bottom: 0.25rem;
 }
+
+/* ============================================
+   CLASES PERSONALIZADAS CON @layer
+   ============================================ */
+
+@layer components {
+    .card-daten {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .input-daten {
+        background-color: var(--bg-input);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .input-daten:focus {
+        border-color: #7700F0;
+        box-shadow: 0 0 0 2px rgba(119, 0, 240, 0.3);
+        outline: none;
+    }
+
+    .page-daten {
+        background-color: var(--bg-primary);
+        min-height: 100vh;
+        transition: background-color 0.3s ease;
+    }
+}
+
+@layer utilities {
+    /* Fondos */
+    .bg-daten-primary {
+        background-color: var(--bg-primary);
+    }
+    .bg-daten-card {
+        background-color: var(--bg-card);
+    }
+    .bg-daten-input {
+        background-color: var(--bg-input);
+    }
+
+    /* Textos */
+    .text-daten-primary {
+        color: var(--text-primary);
+    }
+    .text-daten-secondary {
+        color: var(--text-secondary);
+    }
+    .text-daten-muted {
+        color: var(--text-muted);
+    }
+
+    /* Bordes */
+    .border-daten {
+        border-color: var(--border-color);
+        border-style: solid;
+        border-width: 1px;
+    }
+    .border-daten-2 {
+        border-color: var(--border-color);
+        border-style: solid;
+        border-width: 2px;
+    }
+}
+
+/* ============================================
+   UTILIDADES PERSONALIZADAS
+   ============================================ */
+
+    /* .card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .input-base {
+        background-color: var(--bg-input);
+        border: 1px solid var(--border-color);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .input-base:focus {
+        border-color: #7700F0;
+        box-shadow: 0 0 0 2px rgba(119, 0, 240, 0.3);
+        outline: none;
+    } */

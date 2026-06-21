@@ -15,8 +15,10 @@ COPY app/package*.json ./
 RUN npm install --save-dev \
     laravel-vite-plugin@1.2.0 \
     vite@5.4.11 \
-    @tailwindcss/vite@4.1.14
+    tailwindcss@3.4.17
 
+
+#   no existe en V3 de tailwindcss,    @tailwindcss/vite@4.0.0 \
 # Copiamos el resto del código del frontend para la compilación de Vite
 COPY app/ ./
 

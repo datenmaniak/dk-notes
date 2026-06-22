@@ -1,4 +1,6 @@
 <x-app-layout>
+
+    
     <div class="p-6 pt-16 lg:pt-6 max-w-7xl mx-auto space-y-8 page-daten">
         
         {{-- ============================================ --}}
@@ -137,7 +139,7 @@
                                 </div>
 
                                 {{-- Listado interno de etiquetas --}}
-                                @if($note->tags->count() > 0)
+                                <!-- @if($note->tags->count() > 0)
                                     <div class="flex flex-wrap gap-1.5 pt-1">
                                         @foreach($note->tags as $tag)
                                             <span class="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200/60 dark:border-slate-700/60">
@@ -145,7 +147,23 @@
                                             </span>
                                         @endforeach
                                     </div>
+                                @endif -->
+                                @if($note->tags->count() > 0)
+                                    <div class="flex flex-wrap gap-1.5 pt-1">
+                                        @foreach($note->tags as $tag)
+                                            @php
+                                                $color = \App\Helpers\TagColors::getForTag($tag->name);
+                                            @endphp
+                                            <span class="inline-flex items-center gap-1 {{ $color['bg'] }} {{ $color['text'] }} px-2 py-0.5 rounded text-[11px] font-medium border {{ $color['border'] }}">
+                                                <i class="fa-solid fa-tag text-[11px] opacity-80"></i>
+                                                {{ $tag->name }}
+                                            </span>
+                                        @endforeach
+                                    </div>
                                 @endif
+        
+                                
+                        
                             </div>
 
                             {{-- Botones de Fila --}}

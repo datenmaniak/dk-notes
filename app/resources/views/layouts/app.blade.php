@@ -12,6 +12,7 @@
       @endphp
       class="{{ $darkClass }}">
 
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,6 +39,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+      
 </head>
 
 <body class="font-sans antialiased page-daten text-daten-primary">
@@ -171,12 +174,13 @@
     </div>
 
     {{-- Modal de gestión de etiquetas --}}
-    <div id="tagsModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-        <div class="bg-daten-card rounded-lg shadow-xl max-w-md w-full mx-4 flex flex-col max-h-[90vh] border border-daten transition-colors duration-300">
-            <div class="p-6">
-                <h3 class="text-lg font-semibold text-daten-primary mb-4">
-                    <i class="fas fa-tags"></i> Editar etiquetas
-                </h3>
+    <div id="tagsModal" class="fixed inset-0 bg-black/50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-full w-full">
+            <div class="bg-daten-card rounded-lg shadow-xl max-w-md w-full mx-4 flex flex-col max-h-[90vh] border border-daten transition-colors duration-300">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-daten-primary mb-4">
+                        <i class="fas fa-tags"></i> Editar etiquetas
+                    </h3>
                 
                 <div class="mb-4">
                     <div class="flex gap-2">

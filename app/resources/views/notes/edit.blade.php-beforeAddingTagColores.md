@@ -102,7 +102,7 @@
                 </div>
 
                 {{-- Modal de asignación de etiquetas --}}
-                <div id="assignTagsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50  transition-all p-4 hidden ">
+                <div id="assignTagsModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center transition-all p-4">
                     <div class="bg-daten-card rounded-xl border border-daten shadow-2xl max-w-md w-full mx-4 overflow-hidden max-h-[90vh] flex flex-col">
                         {{-- Título interno del modal --}}
                         <div class="p-6 border-b border-daten flex items-center gap-2.5 text-daten-primary flex-shrink-0">
@@ -148,56 +148,13 @@
                             container.innerHTML = `<span class="text-xs text-daten-muted italic flex items-center gap-1"><i class="fa-solid fa-circle-info"></i> Sin etiquetas asignadas</span>`;
                             return;
                         }
-
-                        const colorMap = {
-                            'Idea': { bg: 'bg-tag-idea/10', text: 'text-tag-idea', border: 'border-tag-idea/20' },
-                            'Aplicable': { bg: 'bg-tag-aplicable/10', text: 'text-tag-aplicable', border: 'border-tag-aplicable/20' },
-                            'Pendiente': { bg: 'bg-tag-pendiente/10', text: 'text-tag-pendiente', border: 'border-tag-pendiente/20' },
-                            'Urgente': { bg: 'bg-tag-urgente/10', text: 'text-tag-urgente', border: 'border-tag-urgente/20' },
-                            'Read later': { bg: 'bg-tag-readlater/10', text: 'text-tag-readlater', border: 'border-tag-readlater/20' },
-                            'Comprobar': { bg: 'bg-tag-probar/10', text: 'text-tag-probar', border: 'border-tag-probar/20' },
-                            'Sin categorizar': { bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-600 dark:text-slate-300', border: 'border-slate-200/60 dark:border-slate-700/60' },
-                        };
-                        const defaultColor = { bg: 'bg-brand-glow/10', text: 'text-brand-glow', border: 'border-brand-glow/20' };
-
-                        container.innerHTML = assignedTags.map(tag => {
-                            const color = colorMap[tag.name] || defaultColor;
-                            return `<span class="inline-flex items-center gap-1.5 ${color.bg} ${color.text} px-2.5 py-1 rounded-md text-xs font-medium border ${color.border}">
-                                <i class="fa-solid fa-tag text-[10px] opacity-60"></i> ${tag.name}
-                            </span>`;
-                        }).join('');
+                        container.innerHTML = assignedTags.map(tag => 
+                            `<span class="inline-flex items-center gap-1.5 bg-brand-glow/10 text-brand-glow px-2.5 py-1 rounded-md text-xs font-medium border border-brand-glow/20">
+                                <i class="fa-solid fa-tag text-brand-glow/60 text-[10px]"></i> ${tag.name}
+                            </span>`
+                        ).join('');
                     }
             
-                    // function openAssignTagsModal() {
-                    //     fetch('{{ route("tags.index") }}')
-                    //         .then(response => response.json())
-                    //         .then(tags => {
-                    //             allTags = tags;
-                    //             const container = document.getElementById('allTagsList');
-                    //             if (allTags.length === 0) {
-                    //                 container.innerHTML = `
-                    //                     <div class="text-center py-8 text-daten-muted">
-                    //                         <i class="fa-solid fa-tags text-3xl block mb-3 opacity-30"></i>
-                    //                         <p class="text-sm">No hay etiquetas disponibles</p>
-                    //                         <p class="text-xs mt-1">Crea etiquetas desde el panel principal</p>
-                    //                     </div>
-                    //                 `;
-                    //                 return;
-                    //             }
-                    //             container.innerHTML = allTags.map(tag => `
-                    //                 <label class="flex items-center gap-3 p-2.5 hover:bg-brand-glow/5 rounded-lg cursor-pointer border border-transparent hover:border-brand-glow/15 transition-all group">
-                    //                     <input type="checkbox" value="${tag.id}" 
-                    //                         ${assignedTags.some(t => t.id === tag.id) ? 'checked' : ''}
-                    //                         class="w-4 h-4 rounded border-daten text-brand-glow focus:ring-2 focus:ring-brand-glow/30 transition-all">
-                    //                     <div class="flex items-center gap-2 text-sm font-medium text-daten-secondary group-hover:text-daten-primary">
-                    //                         <i class="fa-solid fa-tag text-daten-muted group-hover:text-brand-glow/60 transition-colors text-xs"></i>
-                    //                         <span>${tag.name}</span>
-                    //                     </div>
-                    //                 </label>
-                    //             `).join('');
-                    //             document.getElementById('assignTagsModal').classList.remove('hidden');
-                    //         });
-                    // }
                     function openAssignTagsModal() {
                         fetch('{{ route("tags.index") }}')
                             .then(response => response.json())
@@ -225,21 +182,13 @@
                                         </div>
                                     </label>
                                 `).join('');
-                                
-                                const modal = document.getElementById('assignTagsModal');
-                                modal.classList.remove('hidden');
-                                modal.classList.add('flex', 'items-center', 'justify-center');
+                                document.getElementById('assignTagsModal').classList.remove('hidden');
                             });
                     }
                     
-                    // function closeAssignTagsModal() {
-                    //     document.getElementById('assignTagsModal').classList.add('hidden');
-                    // }
                     function closeAssignTagsModal() {
-                    const modal = document.getElementById('assignTagsModal');
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex', 'items-center', 'justify-center');
-}
+                        document.getElementById('assignTagsModal').classList.add('hidden');
+                    }
                 
                     function saveAssignedTags() {
                         const selected = Array.from(document.querySelectorAll('#allTagsList input:checked'))

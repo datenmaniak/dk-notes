@@ -108,7 +108,7 @@
                         <span class="text-gray-300">|</span>
                         
                         {{-- Etiquetas --}}
-                        <div class="flex items-center gap-1 flex-wrap">
+                        <!-- <div class="flex items-center gap-1 flex-wrap">
                             <i class="fa-solid fa-tag text-gray-400"></i>
                             <span>Etiquetas:</span>
                             @if($note->tags->count() > 0)
@@ -122,7 +122,21 @@
                             @else
                                 <span class="text-gray-400 italic">Sin etiquetas</span>
                             @endif
-                        </div>
+                        </div> -->
+                        @if($note->tags->count() > 0)
+                            <div class="flex flex-wrap gap-1">
+                            @foreach($note->tags as $tag)
+                                @php
+                                    $color = \App\Helpers\TagColors::getForTag($tag->name);
+                                @endphp
+                                <span class="inline-flex items-center gap-1 {{ $color['bg'] }} {{ $color['text'] }} px-2 py-0.5 rounded text-xs font-medium border {{ $color['border'] }}">
+                                    <i class="fa-solid fa-tag text-[8px] opacity-60"></i>
+                                    {{ $tag->name }}
+                                </span>
+                            @endforeach
+                            </div>
+                        @endif
+
                     </div>
                     
                     {{-- Contenido de la nota --}}

@@ -29,6 +29,25 @@ export default {
                     accent: '#7d2eff',
                     muted: '#a366ff',
                 },
+                // Paleta de Etiquetas (Labels)
+                tag: {
+                    idea: '#7700f0',        //  Creatividad
+                    aplicable: '#00F04F',   // Listo para usar
+                    pendiente: '#C600F0',   //  - En espera
+                    urgente: '#F03428',     //  Prioridad
+                    readlater: '#000BF0',   // Guardar para después
+                    probar: '#2EA300',      // claro - Pruebas
+                    sin_categorizar: '#64748B', // Gris - Neutro 
+                },
+                // Colores Compuestos (paleta extendida)
+                extended: {
+                    green: '#46F000',
+                    yellow: '#EDF000',
+                    blue: '#000BF0',
+                    orange: '#F04C00',
+                    lilac: '#67349B',
+                    teal: '#00F0D7',
+                }
             },
         },
     },

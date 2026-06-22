@@ -31,9 +31,9 @@ export default {
                 },
                 // Paleta de Etiquetas (Labels)
                 tag: {
-                    idea: '#7700f0',        //  Creatividad
+                    idea: '#F49027',        //  Creatividad
                     aplicable: '#00F04F',   // Listo para usar
-                    pendiente: '#C600F0',   //  - En espera
+                    pendiente: '#4F8AA0',   //  - En espera
                     urgente: '#F03428',     //  Prioridad
                     readlater: '#000BF0',   // Guardar para después
                     probar: '#2EA300',      // claro - Pruebas

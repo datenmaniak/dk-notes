@@ -37,7 +37,12 @@ class TagColors
                 'text' => 'text-tag-probar',
                 'border' => 'border-tag-probar/20',
             ],
-            'Sin categorizar' => [
+            'Testing' => [
+                'bg' => 'bg-tag-probar/10',
+                'text' => 'text-tag-probar',
+                'border' => 'border-tag-probar/20',
+            ],
+            'nolabels' => [
                 'bg' => 'bg-slate-100 dark:bg-slate-800',
                 'text' => 'text-slate-600 dark:text-slate-300',
                 'border' => 'border-slate-200/60 dark:border-slate-700/60',

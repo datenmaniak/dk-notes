@@ -135,6 +135,14 @@
                                 </span>
                             @endforeach
                             </div>
+                        @else
+                            @php
+                                $color = \App\Helpers\TagColors::getForTag('nolabels');
+                            @endphp
+                            <span class="inline-flex items-center gap-1 {{ $color['bg'] }} {{ $color['text'] }} px-2 py-0.5 rounded text-xs font-medium border {{ $color['border'] }}">
+                                <i class="fa-solid fa-tag text-[8px] opacity-60"></i>
+                                Sin etiquetas
+                            </span>
                         @endif
 
                     </div>

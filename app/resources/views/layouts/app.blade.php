@@ -207,7 +207,8 @@
 
     <script>
         let currentTags = [];
-        let isAdmin = {{ Auth::user()->is_admin ? 'true' : 'false' }};
+        const isAdmin = {{ Auth::user()->is_admin ? 'true' : 'false' }};
+        const currentUserId = {{ Auth::id() }};
         
         function openTagsModal() {
             document.getElementById('tagsModal').classList.remove('hidden');
@@ -228,9 +229,18 @@
                     tags.forEach(tag => {
                         const div = document.createElement('div');
                         div.className = 'flex items-center justify-between p-2 bg-daten-input rounded-lg transition-colors';
+
+                        // REGLA: El botón eliminar SOLO aparece si la etiqueta tiene un dueño (no es nativa)
+                        // Y ese dueño es exactamente el usuario conectado actualmente.
+                        const canDelete = tag.user_id !== null && tag.user_id === currentUserId;
+                
                         div.innerHTML = `
                             <span class="text-daten-primary"><i class="fas fa-tag"></i> ${tag.name}</span>
-                            ${isAdmin ? `<button onclick="deleteTag(${tag.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>` : ''}
+                            ${canDelete ? `
+                            <button onclick="deleteTag(${tag.id})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                            </button>
+                            ` : ''}
                         `;
                         container.appendChild(div);
                     });

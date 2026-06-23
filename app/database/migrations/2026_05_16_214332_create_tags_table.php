@@ -15,7 +15,19 @@ return new class extends Migration
             $table->id();
             $table->string('name', 50)->unique();
             $table->string('slug', 50)->unique();
+
+            // Relación opcional con el usuario (null significa nativa/global)
+            $table->foreignId('user_id')
+              ->nullable()
+              ->constrained()
+              ->onDelete('cascade');
+
             $table->timestamps();
+
+            // Índice único compuesto: evita que UN MISMO usuario duplique una etiqueta,
+            // pero permite que diferentes usuarios tengan una etiqueta con el mismo nombre.
+            $table->unique(['name', 'user_id']);
+            $table->unique(['slug', 'user_id']);
         });
     }
 

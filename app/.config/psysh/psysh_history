@@ -1,3 +1,19 @@
 include ('./admin/chage-rol.php');
 include ('./admin/change-rol.php');
 exit
+include ('./admin/list-data.php');
+include ('./admin/change-rol.php');
+include ('./admin/admin/reset-database.php');
+exit
+include ('./admin/change-rol.php');
+include ('./admin/list-data.php');
+include ('./admin/change-rol.php');
+include ('./admin/change-rol.php');
+include ('./admin/change-rol.php');
+exit
+include ('./admin/list-data.php');
+include ('./admin/list-data.php');
+include ('./admin/list-data.php');
+include ('./admin/change-rol.php');
+include ('./admin/list-data.php');
+include ('./admin/list-data.php');

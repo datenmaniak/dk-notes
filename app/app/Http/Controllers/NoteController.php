@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Note;
+use App\Models\Tag;
 use App\Models\User;
 use App\Models\UserSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 // use Illuminate\Container\Attributes\Auth;
-// use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -18,45 +18,40 @@ use Parsedown;
 
 class NoteController extends Controller
 {
+    
     /**
      * Lista todas las notas del usuario autenticado
      */
     public function index()
     {
-
-        // paginador  // Ajustar el digito para limitar la cantidad de notas a mostrar
-        // $perPage = request()->input('per_page', 5); // reemplazado por config desde la BD
+        // 1. Obtener la paginación configurada por el usuario desde la base de datos
         $perPage = UserSetting::getValue(Auth::id(), 'notas_por_pagina', 5);
 
-        // Filtrar las notas por rol
-        if (Auth::user()->is_admin) {
-            // Administrador: ve todas las notas
-            $notes = Note::with('category')->paginate($perPage);
-            $totalNotas = Note::count();
-        } else {
-            // Usuario normal: solo sus notas
-            $notes = Note::where('user_id', Auth::id())->with('category')->paginate($perPage);
-            $totalNotas = Note::where('user_id', Auth::id())->count();
-        }
+        // 2. REGLA DE PRIVACIDAD UNIFICADA: Tanto admin como usuarios normales solo ven SUS PROPIAS notas
+        $notes = Note::where('user_id', Auth::id())
+            ->with(['category', 'tags']) // Eager loading optimizado para los badges
+            ->latest()
+            ->paginate($perPage);
+
+        // 3. Totales para las dos primeras tarjetas de estadísticas
+        $totalNotas = Note::where('user_id', Auth::id())->count();
+        $totalCategorias = Category::count();
+
+        // 4. Cargar todas las etiquetas válidas contando solo las notas de este usuario
+        $tagsWithCount = Tag::whereNull('user_id')
+            ->orWhere('user_id', Auth::id())
+            ->withCount(['notes' => function ($query) {
+                $query->where('notes.user_id', Auth::id());
+            }])
+            ->orderBy('name')
+            ->get();
 
         // Guardar la página actual en sesión para volver después de editar/crear
         session(['last_notes_page' => request()->input('page', 1)]);
-        session(['last_notes_filter' => null]);
+        session()->forget('last_notes_filter');
 
-        // total categorias
-        $totalCategorias = Category::count();
-
-        // Forzar la variable aquí
-        $categoriasConNotas = Category::withCount('notes')->get();
-
-        // Detectar estado de cada nota
-        foreach ($notes as $note) {
-            $note->status = $this->getNoteStatus($note);
-        }
-
-        // Retornar vista con las notas
-        // return view('notes.index', compact('notes'));
-        return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias', 'categoriasConNotas'));
+        // 5. Retornar la vista pasando todas las variables limpias
+        return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias', 'tagsWithCount'));
 
     }
 
@@ -301,11 +296,20 @@ class NoteController extends Controller
         $totalCategorias = Category::count();
         $categoriasConNotas = Category::withCount('notes')->get();
 
+        // 🚀 NUEVO: Cargar todas las etiquetas válidas para que la cabecera no se rompa al filtrar categorías
+        $tagsWithCount = Tag::whereNull('user_id')
+            ->orWhere('user_id', Auth::id())
+            ->withCount(['notes' => function ($query) {
+                $query->where('notes.user_id', Auth::id());
+            }])
+            ->orderBy('name')
+            ->get();
+
         // Guardar página y filtro actual en sesión
         session(['last_notes_page' => request()->input('page', 1)]);
         session(['last_notes_filter' => $categorySlug]);
 
-        return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias', 'categoriasConNotas'));
+        return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias', 'categoriasConNotas', 'tagsWithCount'));
     }
 
     public function takeOwnership()
@@ -500,5 +504,88 @@ class NoteController extends Controller
         $message = "Se han eliminado {$count} notas permanentemente.";
 
         return redirect()->route('settings.index')->with('success', $message);
+    }
+
+    // public function filterByTag($tagSlug)
+    // {
+    //     // Buscamos la etiqueta por su slug asegurando la privacidad (Nativa o del usuario)
+    //     $tag =  Tag::where('slug', $tagSlug)
+    //         ->where(function($query) {
+    //             $query->whereNull('user_id')
+    //                 ->orWhere('user_id', Auth::id());
+    //         })->firstOrFail();
+
+    //     // Traemos solo las notas del usuario autenticado que tengan vinculada esa etiqueta
+    //     $notes = Note::where('user_id', Auth::id())
+    //         ->whereHas('tags', function($query) use ($tag) {
+    //             $query->where('tags.id', $tag->id);
+    //         })
+    //         ->with('category', 'tags') // Eager loading para optimizar queries
+    //         ->latest()
+    //         ->paginate(10); // Ajusta según la paginación de tu app
+
+        
+    //     $tagsWithCount = Tag::whereNull('user_id')
+    //         ->orWhere('user_id', Auth::id())
+    //         ->withCount(['notes' => function($query) {
+    //             $query->where('notes.user_id', Auth::id());
+    //         }])
+    //         ->orderBy('name')
+    //         ->get();
+
+    //     // Mantenemos la consistencia con las variables estadísticas de tu index actual
+    //     $totalNotas = Note::where('user_id', Auth::id())->count();
+    //     $totalCategorias = Category::count(); 
+
+    //     return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias','tagsWithCount'));
+    // }
+
+        /**
+     * Filtrar las notas por una etiqueta específica (Nativa o Personal)
+     *
+     * @param  string  $tagSlug
+     * @return \Illuminate\View\View
+     */
+    public function filterByTag($tagSlug)
+    {
+
+        // 🚀 NUEVO: Obtener la paginación configurada por el usuario
+        $perPage = UserSetting::getValue(Auth::id(), 'notas_por_pagina', 5);
+
+        // 1. Buscar la etiqueta por su slug garantizando el aislamiento de privacidad
+        // Un usuario solo puede usar una etiqueta si es nativa (user_id NULL) o si él la creó
+        $tag = Tag::where('slug', $tagSlug)
+            ->where(function ($query) {
+                $query->whereNull('user_id')
+                    ->orWhere('user_id', Auth::id());
+            })->firstOrFail();
+
+        // 2. Traer solo las notas pertenecientes al usuario actual que tengan vinculada esta etiqueta
+        $notes = Note::where('user_id', Auth::id())
+            ->whereHas('tags', function ($query) use ($tag) {
+                $query->where('tags.id', $tag->id);
+            })
+            ->with(['category', 'tags']) // Eager loading para evitar problemas de N+1 queries en los badges
+            ->latest()
+            ->paginate($perPage); // 🚀 CAMBIADO: Usar $perPage en vez de 10 estático
+
+            // ->paginate(10); // Mantén el mismo número de paginación que tu index
+
+        // 3. Recalcular las estadísticas básicas para las dos primeras tarjetas
+        $totalNotas = Note::where('user_id', Auth::id())->count();
+        $totalCategorias = Category::count();
+
+        // 4. Cargar todas las etiquetas visibles para el usuario con el conteo de notas en tiempo real
+        // Filtrado estrictamente para contar solo las notas del usuario autenticado
+        $tagsWithCount = Tag::whereNull('user_id')
+            ->orWhere('user_id', Auth::id())
+            ->withCount(['notes' => function ($query) {
+                $query->where('notes.user_id', Auth::id());
+            }])
+            ->orderBy('name')
+            ->get();
+
+        // 5. Retornar la vista con todas las variables necesarias
+        return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias', 'tagsWithCount'));
     }
 }

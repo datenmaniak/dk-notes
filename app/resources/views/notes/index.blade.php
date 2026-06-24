@@ -297,7 +297,7 @@
                             </div>
                         @endforeach
                     </div>
-                    <div class="pt-4 border-t border-daten text-right">
+                    <div class="pt-4 border-t  text-right">
                         <button onclick="closeModal()" 
                                 class="px-4 py-2 border border-daten text-daten-secondary bg-daten-card hover:bg-brand-glow/10 hover:text-brand-glow rounded-lg text-sm font-medium transition-all duration-200">
                             Cerrar
@@ -320,8 +320,8 @@
                     <div id="modalTagsContainer" class="space-y-1.5 overflow-y-auto max-h-64 pr-1">
                         <div class="p-4 text-center text-daten-muted italic text-sm">Cargando etiquetas...</div>
                     </div>
-                    <div class="pt-4 border-t border-daten text-right">
-                        <button onclick="closeTagsModal()" 
+                    <div class="pt-4 border-t text-right">
+                        <button onclick="closeFilterTagsModal()" 
                                 class="px-4 py-2 border border-daten text-daten-secondary bg-daten-card hover:bg-brand-glow/10 hover:text-brand-glow rounded-lg text-sm font-medium transition-all duration-200">
                             Cerrar
                         </button>
@@ -446,13 +446,13 @@
                     };
                 }
 
-                window.closeTagsModal = function() {
+                window.closeFilterTagsModal = function() {
                     if (filterTagsModal) filterTagsModal.classList.add('hidden');
                 };
 
                 if (filterTagsModal) {
                     filterTagsModal.onclick = function(e) {
-                        if (e.target === filterTagsModal) window.closeTagsModal();
+                        if (e.target === filterTagsModal) window.closeFilterTagsModal();
                     };
                 }
 

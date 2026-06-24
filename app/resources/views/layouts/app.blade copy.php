@@ -196,10 +196,12 @@
                     <!-- Las etiquetas se cargarán aquí -->
                 </div>
                 
-                <div class="mt-4 text-right border-t m-4 ">
+                <div class="mt-4 text-right">
                     <button onclick="closeTagsModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
                         <i class="fas fa-times"></i> Salir
                     </button>
+
+                </div>
                 </div>
             </div>
         </div>

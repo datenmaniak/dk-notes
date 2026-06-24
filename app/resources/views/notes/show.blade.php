@@ -72,7 +72,8 @@
                         
                         <span class="text-gray-300">|</span>
                         
-                        {{-- Etiquetas --}}
+                        
+                        <!-- uncomment this block to show tags with only gray colors -->
                         <!-- <div class="flex items-center gap-1 flex-wrap">
                             <i class="fa-solid fa-tag text-gray-400"></i>
                             <span>Etiquetas:</span>
@@ -88,6 +89,9 @@
                                 <span class="text-gray-400 italic">Sin etiquetas</span>
                             @endif
                         </div> -->
+                        <!-- block all grey color -->
+                        
+                        {{-- Etiquetas con colores --}}
                         @if($note->tags->count() > 0)
                             <div class="flex flex-wrap gap-1">
                             @foreach($note->tags as $tag)

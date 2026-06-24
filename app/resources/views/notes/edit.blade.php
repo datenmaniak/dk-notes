@@ -17,7 +17,7 @@
             </div>
             
             {{-- Cabecera de la sección --}}
-            <div class="flex items-center gap-3 mb-6 pb-4 border-b border-daten">
+            <div class="flex items-center gap-3 mb-6 pb-4">
                 <div class="w-12 h-12 rounded-lg bg-brand-glow/10 flex items-center justify-center text-brand-glow">
                     <i class="fa-solid fa-pen-to-square text-xl"></i>
                 </div>
@@ -78,9 +78,32 @@
                             <span class="text-xs font-semibold text-daten-secondary uppercase tracking-wider flex items-center gap-1.5">
                                 <i class="fa-solid fa-tags text-daten-muted"></i> Etiquetas asignadas
                             </span>
-                            <div id="noteTagsContainer" class="flex flex-wrap gap-1.5 mt-1">
+
+                            <!-- <div id="noteTagsContainer" class="flex flex-wrap gap-1.5 mt-1"> -->
                                 <!-- Las etiquetas se inyectan dinámicamente vía JS -->
-                            </div>
+                            <!-- </div> -->
+                                  @if($note->tags->count() > 0)
+                                        <div class="flex flex-wrap gap-1">
+                                        @foreach($note->tags as $tag)
+                                            @php
+                                                $color = \App\Helpers\TagColors::getForTag($tag->name);
+                                            @endphp
+                                            <span class="inline-flex items-center gap-1 {{ $color['bg'] }} {{ $color['text'] }} px-2 py-0.5 rounded text-xs font-medium border {{ $color['border'] }}">
+                                                <i class="fa-solid fa-tag text-[8px] opacity-60"></i>
+                                                {{ $tag->name }}
+                                            </span>
+                                        @endforeach
+                                        </div>
+                                    @else
+                                        @php
+                                            $color = \App\Helpers\TagColors::getForTag('nolabels');
+                                        @endphp
+                                        <span class="inline-flex items-center gap-1 {{ $color['bg'] }} {{ $color['text'] }} px-2 py-0.5 rounded text-xs font-medium border {{ $color['border'] }}">
+                                            <i class="fa-solid fa-tag text-[8px] opacity-60"></i>
+                                            Sin etiquetas
+                                        </span>
+                                    @endif
+
                         </div>
                         <button type="button" onclick="openAssignTagsModal()"
                                 class="px-3 py-1.5 text-xs text-daten-secondary border border-daten bg-daten-card rounded-lg hover:bg-brand-glow/10 hover:text-brand-glow focus:ring-2 focus:ring-brand-glow/30 transition-all duration-200 font-medium flex items-center gap-1.5">

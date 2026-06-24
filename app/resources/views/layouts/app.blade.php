@@ -89,7 +89,7 @@
                 </nav>
 
                 {{-- Selector de categorías --}}
-                <div class="px-4 pb-4 max-h-48 overflow-y-auto">
+                <!-- <div class="px-4 pb-4 max-h-48 overflow-y-auto">
                     <h3 class="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-2">
                         <i class="fas fa-filter"></i> Filtrar por categoría
                     </h3>
@@ -109,7 +109,11 @@
                             </option>
                         @endforeach
                     </select>
-                </div>
+                </div> -->
+                <!-- Se ha comentado el bloque de selector de categorías para evitar problemas de 
+                 compatibilidad con la nueva estructura de notas y categorías. Puedes descomentar si 
+                 deseas habilitarlo, pero asegúrate de que las rutas y controladores estén
+                 correctamente configurados para manejar el filtrado por categoría.  -->
 
                 <script>
                     document.getElementById('categorySelect')?.addEventListener('change', function() {
@@ -118,7 +122,7 @@
                 </script>
 
                 {{-- Administración (solo para admin) --}}
-                @if(Auth::check() && Auth::user()->is_admin)
+                <!-- @if(Auth::check() && Auth::user()->is_admin)
                     <div class="px-4 pb-4 border-t border-brand-glow/40 mt-2 pt-4">
                         <h3 class="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-2">
                             <i class="fas fa-shield-alt"></i> Administración
@@ -134,7 +138,11 @@
                             </form>
                         </div>
                     </div>
-                @endif
+                @endif 
+                <!-- Este bloque de administración está comentado para evitar que un usuario con el rol
+                de Administrador, obtenga las notas de otros usuarios.
+                pero puedes descomentar si deseas habilitarlo para administradores  -->
+
 
                 {{-- Logout --}}
                 <div class="p-4 border-t border-brand-glow/40">

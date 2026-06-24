@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
 
     // Rutas específicas PRIMERO
     Route::get('/notes/filter/{category?}', [NoteController::class, 'filter'])->name('notes.filter');
+    Route::get('notes/filter-by-tag/{tagSlug}', [NoteController::class, 'filterByTag'])->name('notes.filter.tag');
+    Route::get('notes/tag/{tagSlug}', [NoteController::class, 'filterByTag'])->name('notes.filterByTag');
     Route::post('/notes/sync', [NoteController::class, 'sync'])->name('notes.sync');
     Route::get('/notes/create', [NoteController::class, 'create'])->name('notes.create');
     Route::post('/notes', [NoteController::class, 'store'])->name('notes.store');

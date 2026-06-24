@@ -1,12 +1,9 @@
 <x-app-layout>
-
-    
     <div class="p-6 pt-16 lg:pt-6 max-w-7xl mx-auto space-y-8 page-daten">
         
         {{-- ============================================ --}}
         {{-- TARJETAS DE ESTADÍSTICAS --}}
-        {{-- ============================================ --}}
-        <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {{-- Tarjeta: Total Notas --}}
             <div class="bg-daten-card rounded-xl border border-daten shadow-sm p-6 transition-all duration-300 hover:shadow-md">
                 <div class="flex items-center justify-between">
@@ -31,76 +28,93 @@
                     </div>
                 </div>
             </div>
+        </div>
+         <!--BLOCK Total notas y categorias -->
+         {{-- Tarjeta 3: Distribución por Etiquetas (Píldoras Micro-Compactas) --}}
+        <div class="bg-daten-card rounded-xl border border-daten shadow-sm p-5 transition-all duration-300 hover:shadow-md md:col-span-2 lg:col-span-1 flex flex-col justify-between min-h-[142px]">
+            
+            {{-- Cabecera de la tarjeta --}}
+            <div class="mb-3 flex items-center justify-between">
+                <h4 class="text-[12px] font-bold text-daten-secondary uppercase tracking-wider">Distribución por Etiquetas</h4>
+                <i class="fa-solid fa-tags text-[10px] text-daten-muted/60"></i>
+            </div>
+
+            {{-- Contenedor Responsivo: Grid que se adapta según el tamaño de la tarjeta --}}
+            <!-- <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 gap-2 max-h-[85px] overflow-y-auto pr-1 custom-scrollbar"> -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 max-h-[95px] overflow-y-auto pr-1 custom-scrollbar">
+            @foreach($tagsWithCount as $tagItem)
+                    @php
+                        // Consumo directo de tu helper TagColors
+                        $styles = \App\Helpers\TagColors::getForTag($tagItem->name);
+                        
+                        $icon = match($tagItem->slug) {
+                            'idea'       => 'fa-lightbulb',
+                            'aplicable'  => 'fa-circle-check',
+                            'pendiente'  => 'fa-clock',
+                            'urgente'    => 'fa-triangle-exclamation',
+                            'readlater'  => 'fa-book-open',
+                            'probar',
+                            'testing'    => 'fa-flask',
+                            default      => 'fa-tag', 
+                        };
+                    @endphp
+                    
+                    {{-- Enlace enmarcado con borde redondo fino utilizando las propiedades de tu helper --}}
+                    <a href="{{ route('notes.filterByTag', $tagItem->slug) }}" 
+                    class="flex items-center justify-between p-1.5 rounded-md border border-daten/40 hover:border-brand-glow/30 hover:bg-brand-glow/5 transition-all duration-150 group min-w-0">
+                        
+                        {{-- Icono con mayor tamaño visual y alineación --}}
+                        <div class="flex items-center space-x-2 min-w-0">
+                            <i class="fa-solid {{ $icon }} text-lg {{ $styles['text'] }} shrink-0 transition-transform group-hover:scale-110 px-5 py-2"></i>
+                            <span class="text-[11px] font-medium text-daten-secondary truncate group-hover:text-daten-primary transition-colors">
+                                {{ $tagItem->name }}
+                            </span>
+                        </div>
+                        
+                        {{-- Cantidad --}}
+                        <span class="font-mono text-[13px] font-bold text-daten-primary bg-[--bg-secondary] dark:bg-slate-800/60 px-1.5 py-0.2 rounded border border-daten/10 shrink-0">
+                            {{ $tagItem->notes_count }}
+                        </span>
+                    </a>
+                @endforeach
+            </div>
+
+        </div>
+        <!-- Block etiquetas -->
+
+        
+          
+<!-- 
+        {{-- ============================================ --}}
+        {{-- TARJETAS DE ESTADÍSTICAS --}}
+        {{-- ============================================ --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {{-- Tarjeta: Total Notas --}}
+            <div class="bg-daten-card rounded-xl border border-daten shadow-sm p-6 transition-all duration-300 hover:shadow-md">
+                <div class="flex items-center justify-between">
+                    <div class="space-y-1">
+                        <p class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Total Notas</p>
+                        <p class="text-3xl font-bold text-daten-primary tracking-tight">{{ $totalNotas }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-brand-glow/10 flex items-center justify-center text-brand-glow">
+                        <i class="fa-solid fa-note-sticky text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Tarjeta: Total Categorías --}}
+            <div class="bg-daten-card rounded-xl border border-daten shadow-sm p-6 transition-all duration-300 hover:shadow-md">
+                <div class="flex items-center justify-between">
+                    <div class="space-y-1">
+                        <p class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Total Categorías</p>
+                        <p class="text-3xl font-bold text-daten-primary tracking-tight">{{ $totalCategorias }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-brand-glow/10 flex items-center justify-center text-brand-glow">
+                        <i class="fa-solid fa-folder text-xl"></i>
+                    </div>
+                </div>
+            </div>
         </div> -->
-
-                {{-- ============================================ --}}
-{{-- COMPONENTE SUPERIOR: ESTADÍSTICAS COMPACTAS --}}
-{{-- ============================================ --}}
-<div class="bg-daten-card/50 rounded-xl border border-daten/50 p-3">
-    <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-        
-        {{-- Título --}}
-        <div class="flex items-center gap-2 text-daten-secondary">
-            <i class="fa-regular fa-chart-bar text-sm"></i>
-            <span class="text-xs font-semibold uppercase tracking-wider">Estadísticas</span>
-        </div>
-
-        {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
-
-        {{-- Total Notas --}}
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-                <i class="fa-regular fa-note-sticky text-sm"></i>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-                <span class="text-lg font-bold text-daten-primary">{{ $totalNotas }}</span>
-                <span class="text-[10px] font-medium text-daten-secondary uppercase">Notas</span>
-            </div>
-        </div>
-
-        {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
-
-        {{-- Total Categorías --}}
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
-                <i class="fa-regular fa-folder text-sm"></i>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-                <span class="text-lg font-bold text-daten-primary">{{ $totalCategorias }}</span>
-                <span class="text-[10px] font-medium text-daten-secondary uppercase">Categorías</span>
-            </div>
-        </div>
-
-        {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
-
-        {{-- Total Etiquetas --}}
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                <i class="fa-regular fa-tags text-sm"></i>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-                <span class="text-lg font-bold text-daten-primary">{{ $tagsWithCount->count() }}</span>
-                <span class="text-[10px] font-medium text-daten-secondary uppercase">Etiquetas</span>
-            </div>
-        </div>
-
-        {{-- Spacer para empujar elementos a la derecha si se desea --}}
-        <div class="flex-1"></div>
-
-         {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
-        <span class="md:text-sm text-daten-secondary text-daten-muted flex items-center">
-            <i class=" fa-regular fa-calendar-alt mr-1"></i>
-            {{ now()->format('d/m/Y') }}
-        </span>
-        
-    </div>
-</div>
-
-
 
         {{-- ============================================ --}}
         {{-- BARRA DE ACCIONES Y CONTROLES --}}

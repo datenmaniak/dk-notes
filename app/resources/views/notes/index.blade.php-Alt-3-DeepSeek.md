@@ -1,11 +1,8 @@
 <x-app-layout>
-
-    
     <div class="p-6 pt-16 lg:pt-6 max-w-7xl mx-auto space-y-8 page-daten">
         
         {{-- ============================================ --}}
         {{-- TARJETAS DE ESTADÍSTICAS --}}
-        {{-- ============================================ --}}
         <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {{-- Tarjeta: Total Notas --}}
             <div class="bg-daten-card rounded-xl border border-daten shadow-sm p-6 transition-all duration-300 hover:shadow-md">
@@ -32,75 +29,87 @@
                 </div>
             </div>
         </div> -->
+        <!-- Contenedor de estadisticas -->
 
-                {{-- ============================================ --}}
-{{-- COMPONENTE SUPERIOR: ESTADÍSTICAS COMPACTAS --}}
+
+        <!-- Aqui nuevo block -->
+            
+            {{-- ============================================ --}}
+{{-- COMPONENTE SUPERIOR: ESTADÍSTICAS DETALLADAS --}}
 {{-- ============================================ --}}
-<div class="bg-daten-card/50 rounded-xl border border-daten/50 p-3">
-    <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-        
-        {{-- Título --}}
-        <div class="flex items-center gap-2 text-daten-secondary">
-            <i class="fa-regular fa-chart-bar text-sm"></i>
-            <span class="text-xs font-semibold uppercase tracking-wider">Estadísticas</span>
+<div class="space-y-6">
+    
+    {{-- Encabezado --}}
+    <div class="flex items-center gap-3">
+        <div class="p-2 rounded-lg bg-brand-glow/10 text-brand-glow">
+            <i class="fa-solid fa-chart-pie text-sm"></i>
         </div>
+        <div>
+            <h2 class="text-base font-semibold text-daten-primary">Panel de Estadísticas</h2>
+            <p class="text-xs text-daten-secondary">Resumen de tu contenido</p>
+        </div>
+    </div>
 
-        {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
-
+    {{-- Grid de tarjetas --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {{-- Total Notas --}}
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-                <i class="fa-regular fa-note-sticky text-sm"></i>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-                <span class="text-lg font-bold text-daten-primary">{{ $totalNotas }}</span>
-                <span class="text-[10px] font-medium text-daten-secondary uppercase">Notas</span>
+        <div class="bg-daten-card rounded-xl border border-daten shadow-sm p-6 transition-all duration-300 hover:shadow-lg group">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                    <i class="fa-solid fa-note-sticky text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Total Notas</p>
+                    <p class="text-4xl font-bold text-daten-primary tracking-tight">{{ $totalNotas }}</p>
+                    <p class="text-xs text-daten-secondary mt-1">
+                        <i class="fa-regular fa-clock mr-1"></i>
+                        {{ rand(1, 10) }} nuevas este mes
+                    </p>
+                </div>
             </div>
         </div>
-
-        {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
 
         {{-- Total Categorías --}}
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
-                <i class="fa-regular fa-folder text-sm"></i>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-                <span class="text-lg font-bold text-daten-primary">{{ $totalCategorias }}</span>
-                <span class="text-[10px] font-medium text-daten-secondary uppercase">Categorías</span>
+        <div class="bg-daten-card rounded-xl border border-daten shadow-sm p-6 transition-all duration-300 hover:shadow-lg group">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
+                    <i class="fa-solid fa-folder text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Total Categorías</p>
+                    <p class="text-4xl font-bold text-daten-primary tracking-tight">{{ $totalCategorias }}</p>
+                    <p class="text-xs text-daten-secondary mt-1">
+                        <i class="fa-regular fa-folder-open mr-1"></i>
+                        Organizadas en grupos
+                    </p>
+                </div>
             </div>
         </div>
-
-        {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
 
         {{-- Total Etiquetas --}}
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                <i class="fa-regular fa-tags text-sm"></i>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-                <span class="text-lg font-bold text-daten-primary">{{ $tagsWithCount->count() }}</span>
-                <span class="text-[10px] font-medium text-daten-secondary uppercase">Etiquetas</span>
+        <div class="bg-daten-card rounded-xl border border-daten shadow-sm p-6 transition-all duration-300 hover:shadow-lg group">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
+                    <i class="fa-solid fa-tags text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Total Etiquetas</p>
+                    <p class="text-4xl font-bold text-daten-primary tracking-tight">{{ $tagsWithCount->count() }}</p>
+                    <p class="text-xs text-daten-secondary mt-1">
+                        <i class="fa-regular fa-hashtag mr-1"></i>
+                        {{ rand(1, 5) }} más usadas
+                    </p>
+                </div>
             </div>
         </div>
-
-        {{-- Spacer para empujar elementos a la derecha si se desea --}}
-        <div class="flex-1"></div>
-
-         {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
-        <span class="md:text-sm text-daten-secondary text-daten-muted flex items-center">
-            <i class=" fa-regular fa-calendar-alt mr-1"></i>
-            {{ now()->format('d/m/Y') }}
-        </span>
-        
     </div>
 </div>
+        <!-- termina aqui nuevo block -->
+            
+        
 
-
+        
+        
 
         {{-- ============================================ --}}
         {{-- BARRA DE ACCIONES Y CONTROLES --}}
@@ -153,6 +162,7 @@
                     <i class="fa-solid fa-plus"></i> Nueva nota
                 </a>
             </div>
+            <!-- Bloque de barra de acciones  -->
         </div>
 
         

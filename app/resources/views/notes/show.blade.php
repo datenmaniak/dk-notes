@@ -36,42 +36,7 @@
                             <i class="fa-solid fa-pen text-sm opacity-0 group-hover:opacity-60 transition-opacity text-gray-400" title="Editar nota"></i>
                         </a>
                     </div>
-            {{-- Control del paginacion y categoria filtrada --}}
-            <!-- @php
-                $lastFilter = session('last_notes_filter');
-                $lastPage = session('last_notes_page', 1);
-                $backUrl = $lastFilter ? route('notes.filter', ['category' => $lastFilter, 'page' => $lastPage]) : route('notes.index', ['page' => $lastPage]);
-            @endphp -->
-
-                    {{-- Botón Volver --}}
-                    <!-- <div class="mb-6">
-                        <a href="{{ $backUrl }}"
-                        class="font-bold text-green-600 hover:bg-green-200 focus:outline-2 focus:outline-offset-2 focus:outline-gray-500 px-2 py-1 inline-block transition-colors rounded">
-                            <i class="fa-solid fa-arrow-left"></i> Volver a mis notas
-                        </a>
-                    </div> -->
-                    <!-- <a href="{{ $backUrl }}"
-                         class="font-medium text-gray-600 hover:text-[#7700F0] hover:bg-purple-50 px-2 py-1.5 inline-flex items-center gap-2 transition-all rounded-md text-sm">
-                        <i class="fa-solid fa-chevron-left text-xs"></i> Volver a mis notas
-                    </a> -->
-
-                     {{-- Título alineado a la izquierda, como botón de edición --}}
-                    <!-- <div class="mb-4">
-                        <a href="{{ route('notes.edit', $note) }}" 
-                            class="text-lg mb-2 ml-auto px-3 py-1.5 text-sm text-[#7700F0] border border-[#7700F0] bg-transparent rounded-md hover:bg-[#7700F0] hover:text-white transition-colors duration-200 inline-block">
-                            {{ $note->title }}
-                        </a>
-                    </div> -->
-                    <!-- <div class="mb-4">
-                        <a href="{{ route('notes.edit', $note) }}" 
-                        class="text-2xl font-bold text-[#7700F0] hover:text-[#5b00b8] transition-colors duration-200 inline-flex items-center group">
-                            {{ $note->title }}
-                            <i class="fa-solid fa-pen-to-square text-sm ml-2.5 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-[#7700F0]" title="Editar título"></i>
-                        </a>
-                    </div> -->
-                <!-- BLOCK  -->
-
-
+           
                     
                     {{-- Línea separadora --}}
                     <div class="border-b border-gray-200 mb-6"></div>

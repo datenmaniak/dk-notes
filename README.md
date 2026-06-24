@@ -80,15 +80,13 @@ Con la base de infraestructura y el ciclo de vida de software (CI/CD) completame
 ## 🛠️ Próximas Implementaciones (Backlog)
 
 ### 🎨 UI/UX & Estilos
-- [ ] Implementación de un sistema de diseño desacoplado (Tailwind/Componentes limpios).
-- [ ] Optimización de la vista de lectura y renderizado Markdown para dispositivos móviles.
+- [✅] Implementación de un sistema de diseño desacoplado (Tailwind/Componentes limpios).
+- [✅ ] Optimización de la vista de lectura y renderizado Markdown para dispositivos móviles.
 
 ### 🚀 Funcionalidades de Gestión de Notas
-- [ ] Buscador de texto completo (Full-Text Search) aprovechando la indexación nativa de PostgreSQL.
-- [ ] Vista de árbol o navegación jerárquica para las categorías y etiquetas de las notas.
+- [✅] Buscador de notas por Categoria y/o etiqueta aprovechando la indexación nativa de PostgreSQL.
 
-### 📦 Portabilidad & Desacoplamiento (Core)
-- [ ] Transformación del backend de Laravel en una API REST puramente Stateless (Autenticación vía JWT).
+
 ---
 
 

@@ -121,6 +121,27 @@
                     });
                 </script>
 
+
+                {{-- Vinculación de directorio personal --}}
+                @if(Auth::check())
+                    <div class="px-4 pb-4 border-t border-brand-glow/40 mt-2 pt-4">
+                        <h3 class="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-2">
+                            <i class="fas fa-folder-open"></i> Mis Notas
+                        </h3>
+                        <div class="space-y-1">
+                            <form method="POST" action="{{ route('notes.take-ownership') }}" 
+                                onsubmit="return confirm('¿Vincular las notas de tu directorio personal a tu cuenta? Esta acción no se puede deshacer.')">
+                                @csrf
+                                <button type="submit" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-brand-accent transition-colors text-sm">
+                                    <i class="fas fa-user-check fa-lg"></i>
+                                    <span>Asignar mis notas</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endif
+
+
                 {{-- Administración (solo para admin) --}}
                 <!-- @if(Auth::check() && Auth::user()->is_admin)
                     <div class="px-4 pb-4 border-t border-brand-glow/40 mt-2 pt-4">
@@ -138,10 +159,10 @@
                             </form>
                         </div>
                     </div>
-                @endif 
+                @endif  -->
                 <!-- Este bloque de administración está comentado para evitar que un usuario con el rol
                 de Administrador, obtenga las notas de otros usuarios.
-                pero puedes descomentar si deseas habilitarlo para administradores  -->
+                pero puedes descomentar si deseas habilitarlo para administradores -->
 
 
                 {{-- Logout --}}
@@ -174,6 +195,12 @@
             @if(session('warning'))
                 <div class="bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-400 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400 px-4 py-3 rounded m-4 flex items-center">
                     <i class="fas fa-exclamation-triangle mr-2"></i> {{ session('warning') }}
+                </div>
+            @endif
+
+            @if(session('info'))
+                <div class="bg-yellow-100 dark:bg-yellow-900/20 border border-blue-400 dark:border-blue-800 text-blue-700 dark:text-blue-400 px-4 py-3 rounded m-4 flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i> {{ session('info') }}
                 </div>
             @endif
             

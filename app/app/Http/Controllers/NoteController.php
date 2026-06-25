@@ -312,18 +312,94 @@ class NoteController extends Controller
         return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias', 'categoriasConNotas', 'tagsWithCount'));
     }
 
+    // public function takeOwnership()
+    // {
+    //     // Verificar que es administrador
+    //     // if (! Auth::user()->is_admin) {
+    //     //     abort(403, 'No autorizado');
+    //     // } Todos los usuarios pueden reasignar notas a sí mismos
+
+    //     // Reasignar todas las notas al usuario actual
+    //     $total = Note::query()->update(['user_id' => Auth::id()]);
+
+    //     return redirect()->route('notes.index')->with('success', "Se han reasignado {$total} notas a tu usuario.");
+    // }
+    // public function takeOwnership()
+    // {
+    //     $userId = Auth::id();
+
+    //     if (! $userId) {
+    //         return redirect()->route('login')->with('error', 'Debes iniciar sesión.');
+    //     }
+
+
+    //     // 1. Obtener la ruta personal del usuario desde las configuraciones
+    //     $rutaPersonal = UserSetting::getValue($userId, 'ruta_personal', '');
+
+    //     if (! $rutaPersonal) {
+    //         $mensajeError = 'No tienes una ruta personal configurada para identificar tus notas. Ve a Configuración.';
+    //         return redirect()->route('notes.index')->with('error', $mensajeError);
+    //     }
+
+    //     // 2. Construir el prefijo de la ruta absoluta en el disco
+    //     $directorioBase = base_path('storage/app/public/notes/' . $rutaPersonal);
+    //     if (! $directorioBase) {
+    //         return redirect()->route('notes.index')->with('error', '❌ No ha sido configurada su ruta personal. Vaya a Configuración ⚙️');
+    //     }
+
+    //     // 3. Actualización segura: Solo se reasignan las notas cuyo 'file_path' comience con su directorio
+    //     $total = Note::where('file_path', 'like', $directorioBase . '%')
+    //         ->update(['user_id' => $userId]);
+
+    //     // 4. Retornar con un mensaje de éxito basado en los registros modificados
+    //     if ($total > 0) {
+    //         $mensajeExito = 'Se han reasignado ' . $total . ' notas de tu directorio personal a tu cuenta de usuario.';
+    //         return redirect()->route('notes.index')->with('success', $mensajeExito);
+    //     }
+
+    //     $mensajeInfo = 'No se encontraron notas pendientes de asignación en tu directorio personal.';
+    //     return redirect()->route('notes.index')->with('info', $mensajeInfo);
+    // }
+
     public function takeOwnership()
-    {
-        // Verificar que es administrador
-        if (! Auth::user()->is_admin) {
-            abort(403, 'No autorizado');
+        {
+            $userId = Auth::id();
+
+            if (! $userId) {
+                return redirect()->route('login')->with('error', 'Debes iniciar sesión.');
+            }
+
+            $rutaPersonal = UserSetting::getValue($userId, 'ruta_personal', '');
+
+            $directorioBase = base_path('storage/app/public/notes/' . $rutaPersonal);
+
+            if (! $rutaPersonal) {
+                $mensajeError = 'No tiene un directorio personal configurado. Vaya a Configuración.';
+                return redirect()->route('notes.index')->with('error', $mensajeError);
+            }
+
+
+            // 3. Actualización segura en la Base de Datos usando la ruta absoluta
+            $total = Note::where('file_path', 'like', $directorioBase . '%')
+                ->update(['user_id' => $userId]);
+
+            // 4. Retornar con una respuesta amigable y orientativa
+            if ($total > 0) {
+                $mensajeExito = 'Se han reasignado ' . $total . ' notas a su cuenta de usuario.';
+                return redirect()->route('notes.index')->with('success', $mensajeExito);
+            }
+
+            // ORIENTACIÓN AL USUARIO: Validamos la existencia real usando la ruta absoluta completa
+            if (! \File::exists($directorioBase)) {
+                $mensajeGuia = 'No encontramos notas asignadas. Tu carpeta personal  aún no ha sido creada o está vacía. Te recomendamos Sincronizar para escanear tus archivos primero.';
+                return redirect()->route('notes.index')->with('warning', $mensajeGuia);
+            }
+
+            // Si la carpeta absoluta existe pero realmente no había notas de otros dueños en la BD
+            $mensajeInfo = 'Tu directorio ya está al día. Todas las notas ya pertenecen a tu cuenta.';
+            return redirect()->route('notes.index')->with('info', $mensajeInfo);
         }
 
-        // Reasignar todas las notas al usuario actual
-        $total = Note::query()->update(['user_id' => Auth::id()]);
-
-        return redirect()->route('notes.index')->with('success', "Se han reasignado {$total} notas a tu usuario.");
-    }
 
     public function create()
     {

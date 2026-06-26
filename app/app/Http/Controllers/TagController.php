@@ -33,21 +33,21 @@ class TagController extends Controller
         // (evita que duplique sus propias etiquetas o las nativas)
         $request->validate([
             'name' => [
-                'required', 
-                'string', 
-                'max:30', 
+                'required',
+                'string',
+                'max:30',
                 'min:2',
                 function ($attribute, $value, $fail) {
                     $slug = Str::slug($value);
-                    $exists = Tag::where(function ($query) use ($slug) {
+                    $exists = Tag::where(function ($query) {
                         $query->whereNull('user_id')
-                              ->orWhere('user_id', Auth::id());
+                            ->orWhere('user_id', Auth::id());
                     })->where('slug', $slug)->exists();
 
                     if ($exists) {
                         $fail('Ya tienes una etiqueta con este nombre o es una etiqueta del sistema.');
                     }
-                }
+                },
             ],
         ]);
 
@@ -103,7 +103,7 @@ class TagController extends Controller
             ->toArray();
 
         foreach ($request->tags as $tagId) {
-            if (!in_array($tagId, $allowedTagIds)) {
+            if (! in_array($tagId, $allowedTagIds)) {
                 return response()->json(['error' => 'Una o más etiquetas no son válidas.'], 422);
             }
         }

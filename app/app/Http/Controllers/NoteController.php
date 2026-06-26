@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 use Parsedown;
 
 class NoteController extends Controller
 {
-    
     /**
      * Lista todas las notas del usuario autenticado
      */
@@ -332,7 +332,6 @@ class NoteController extends Controller
     //         return redirect()->route('login')->with('error', 'Debes iniciar sesión.');
     //     }
 
-
     //     // 1. Obtener la ruta personal del usuario desde las configuraciones
     //     $rutaPersonal = UserSetting::getValue($userId, 'ruta_personal', '');
 
@@ -362,44 +361,46 @@ class NoteController extends Controller
     // }
 
     public function takeOwnership()
-        {
-            $userId = Auth::id();
+    {
+        $userId = Auth::id();
 
-            if (! $userId) {
-                return redirect()->route('login')->with('error', 'Debes iniciar sesión.');
-            }
-
-            $rutaPersonal = UserSetting::getValue($userId, 'ruta_personal', '');
-
-            $directorioBase = base_path('storage/app/public/notes/' . $rutaPersonal);
-
-            if (! $rutaPersonal) {
-                $mensajeError = 'No tiene un directorio personal configurado. Vaya a Configuración.';
-                return redirect()->route('notes.index')->with('error', $mensajeError);
-            }
-
-
-            // 3. Actualización segura en la Base de Datos usando la ruta absoluta
-            $total = Note::where('file_path', 'like', $directorioBase . '%')
-                ->update(['user_id' => $userId]);
-
-            // 4. Retornar con una respuesta amigable y orientativa
-            if ($total > 0) {
-                $mensajeExito = 'Se han reasignado ' . $total . ' notas a su cuenta de usuario.';
-                return redirect()->route('notes.index')->with('success', $mensajeExito);
-            }
-
-            // ORIENTACIÓN AL USUARIO: Validamos la existencia real usando la ruta absoluta completa
-            if (! \File::exists($directorioBase)) {
-                $mensajeGuia = 'No encontramos notas asignadas. Tu carpeta personal  aún no ha sido creada o está vacía. Te recomendamos Sincronizar para escanear tus archivos primero.';
-                return redirect()->route('notes.index')->with('warning', $mensajeGuia);
-            }
-
-            // Si la carpeta absoluta existe pero realmente no había notas de otros dueños en la BD
-            $mensajeInfo = 'Tu directorio ya está al día. Todas las notas ya pertenecen a tu cuenta.';
-            return redirect()->route('notes.index')->with('info', $mensajeInfo);
+        if (! $userId) {
+            return redirect()->route('login')->with('error', 'Debes iniciar sesión.');
         }
 
+        $rutaPersonal = UserSetting::getValue($userId, 'ruta_personal', '');
+
+        $directorioBase = base_path('storage/app/public/notes/'.$rutaPersonal);
+
+        if (! $rutaPersonal) {
+            $mensajeError = 'No tiene un directorio personal configurado. Vaya a Configuración.';
+
+            return redirect()->route('notes.index')->with('error', $mensajeError);
+        }
+
+        // 3. Actualización segura en la Base de Datos usando la ruta absoluta
+        $total = Note::where('file_path', 'like', $directorioBase.'%')
+            ->update(['user_id' => $userId]);
+
+        // 4. Retornar con una respuesta amigable y orientativa
+        if ($total > 0) {
+            $mensajeExito = 'Se han reasignado '.$total.' notas a su cuenta de usuario.';
+
+            return redirect()->route('notes.index')->with('success', $mensajeExito);
+        }
+
+        // ORIENTACIÓN AL USUARIO: Validamos la existencia real usando la ruta absoluta completa
+        if (! \File::exists($directorioBase)) {
+            $mensajeGuia = 'No encontramos notas asignadas. Tu carpeta personal  aún no ha sido creada o está vacía. Te recomendamos Sincronizar para escanear tus archivos primero.';
+
+            return redirect()->route('notes.index')->with('warning', $mensajeGuia);
+        }
+
+        // Si la carpeta absoluta existe pero realmente no había notas de otros dueños en la BD
+        $mensajeInfo = 'Tu directorio ya está al día. Todas las notas ya pertenecen a tu cuenta.';
+
+        return redirect()->route('notes.index')->with('info', $mensajeInfo);
+    }
 
     public function create()
     {
@@ -600,7 +601,6 @@ class NoteController extends Controller
     //         ->latest()
     //         ->paginate(10); // Ajusta según la paginación de tu app
 
-        
     //     $tagsWithCount = Tag::whereNull('user_id')
     //         ->orWhere('user_id', Auth::id())
     //         ->withCount(['notes' => function($query) {
@@ -611,16 +611,16 @@ class NoteController extends Controller
 
     //     // Mantenemos la consistencia con las variables estadísticas de tu index actual
     //     $totalNotas = Note::where('user_id', Auth::id())->count();
-    //     $totalCategorias = Category::count(); 
+    //     $totalCategorias = Category::count();
 
     //     return view('notes.index', compact('notes', 'totalNotas', 'totalCategorias','tagsWithCount'));
     // }
 
-        /**
+    /**
      * Filtrar las notas por una etiqueta específica (Nativa o Personal)
      *
      * @param  string  $tagSlug
-     * @return \Illuminate\View\View
+     * @return View
      */
     public function filterByTag($tagSlug)
     {
@@ -645,7 +645,7 @@ class NoteController extends Controller
             ->latest()
             ->paginate($perPage); // 🚀 CAMBIADO: Usar $perPage en vez de 10 estático
 
-            // ->paginate(10); // Mantén el mismo número de paginación que tu index
+        // ->paginate(10); // Mantén el mismo número de paginación que tu index
 
         // 3. Recalcular las estadísticas básicas para las dos primeras tarjetas
         $totalNotas = Note::where('user_id', Auth::id())->count();

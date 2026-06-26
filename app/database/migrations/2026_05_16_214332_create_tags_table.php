@@ -18,9 +18,9 @@ return new class extends Migration
 
             // Relación opcional con el usuario (null significa nativa/global)
             $table->foreignId('user_id')
-              ->nullable()
-              ->constrained()
-              ->onDelete('cascade');
+                ->nullable()
+                ->constrained()
+                ->onDelete('cascade');
 
             $table->timestamps();
 

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 
 class Tag extends Model
 {
@@ -38,7 +38,7 @@ class Tag extends Model
                 if ($value === 'readlater') {
                     return 'Read Later';
                 }
-                
+
                 // Si la etiqueta es 'nolabels', podemos darle un formato limpio también
                 if ($value === 'nolabels') {
                     return 'Sin Etiquetas';

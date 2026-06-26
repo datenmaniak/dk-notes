@@ -62,11 +62,12 @@ class TagColors
 
     public static function getForTag($tagName)
     {
-        // Una pequeña capa de seguridad por si acaso en el frontend 
+        // Una pequeña capa de seguridad por si acaso en el frontend
         // usas mayúsculas al mostrar la etiqueta (ej: "Urgente")
         $normalized = strtolower(trim($tagName));
 
         $map = self::getMap();
+
         return $map[$normalized] ?? self::getDefault();
     }
 }

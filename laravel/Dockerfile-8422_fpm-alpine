@@ -64,6 +64,10 @@ COPY --chown=www-data:www-data ./app /var/www/html
 ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
+
+# RUN composer update guzzlehttp/guzzle --with-dependencies
+# RUN composer update
+
 # 🌟 3. EL FIX DE CACHÉ: Borramos físicamente los archivos fantasmas locales
 # Esto obliga a Laravel a arrancar en un estado 100% puro y virgen
 RUN rm -f /var/www/html/bootstrap/cache/packages.php /var/www/html/bootstrap/cache/services.php

@@ -3,7 +3,7 @@ name: Integración Continua (CI) - dk-notes
 # 1. DISPARADORES: Cuándo se ejecuta esta receta
 on:
   push:
-    branches: [ "laravel-k3s","main", "develop" ]
+    branches: [ "design/fix", "laravel-k3s","main", "develop" ]
   pull_request:
     branches: [ "laravel-k3s", "main" ]
 
@@ -58,4 +58,5 @@ jobs:
       # Revisa que ninguna librería de terceros en tu composer.lock tenga fallos de seguridad conocidos.
       - name: Auditar Seguridad de Dependencias
         working-directory: ./app
-        run: composer audit
+        run: |
+          composer audit

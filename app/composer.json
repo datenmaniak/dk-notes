@@ -13,7 +13,8 @@
         "erusev/parsedown": "^1.8",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.9",
-        "laravel/ui": "^4.5"
+        "laravel/ui": "^4.5",
+        "guzzlehttp/guzzle": "^7.12.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

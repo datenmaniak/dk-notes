@@ -35,7 +35,7 @@ spec:
       # ============================================
       initContainers:
       - name: copy-code
-        image: local-reg.dk.lab:5000/dknotes-laravel:1.56.6 # {"$imagepolicy": "flux-system:dknotes-laravel"}
+        image: local-reg.dk.lab:5000/dknotes-laravel:1.56.7 # {"$imagepolicy": "flux-system:dknotes-laravel"}
         imagePullPolicy: Always
         command:
         - sh
@@ -100,7 +100,7 @@ spec:
         # El marcador # {"$imagepolicy": "flux-system:dknotes-laravel"} le dice a Flux
         #  exactamente qué policy usar para actualizar esta línea.
 
-        image: local-reg.dk.lab:5000/dknotes-laravel:1.56.6 # {"$imagepolicy": "flux-system:dknotes-laravel"}
+        image: local-reg.dk.lab:5000/dknotes-laravel:1.56.7 # {"$imagepolicy": "flux-system:dknotes-laravel"}
         imagePullPolicy: Always
         ports:
         - containerPort: 9000

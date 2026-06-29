@@ -135,8 +135,8 @@ class ImportNotesCommand extends Command
 
                 $categoria = Category::firstOrCreate(
                     ['slug' => $slug,
-                    'name' => $nombreCategoria,
-                    'user_id' => $usuario->id],
+                        'name' => $nombreCategoria,
+                        'user_id' => $usuario->id],
                 );
 
                 $categoriaId = $categoria->id;

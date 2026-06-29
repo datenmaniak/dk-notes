@@ -133,7 +133,7 @@ class ImportNotesCommand extends Command
 
                 $slug = Str::slug($nombreCategoria);
 
-                   // 🔍 AJUSTE CRÍTICO: Buscar o crear la categoría amarrada al usuario actual
+                // 🔍 AJUSTE CRÍTICO: Buscar o crear la categoría amarrada al usuario actual
                 $categoria = Category::firstOrCreate(
                     [
                         'slug' => $slug,
@@ -147,7 +147,7 @@ class ImportNotesCommand extends Command
                 $categoriaId = $categoria->id;
                 $this->line('   📂 Categoría: '.$nombreCategoria.' (ID: '.$categoriaId.')');
             } else {
-                 // Sin categoría -> asignar "General" amarrada al usuario actual
+                // Sin categoría -> asignar "General" amarrada al usuario actual
                 $categoria = Category::firstOrCreate(
                     [
                         'slug' => 'general',
@@ -191,11 +191,12 @@ class ImportNotesCommand extends Command
             // $notaExistente = Note::where('file_path', $archivo)->first();
             // 6. Verificar si la nota ya existe (Aislamiento estricto por ARCHIVO Y USUARIO)
             $notaExistente = Note::where('file_path', $archivo)
-                                 ->where('user_id', $usuario->id) // 🚀 Garantiza el aislamiento
-                                 ->first();
+                ->where('user_id', $usuario->id) // 🚀 Garantiza el aislamiento
+                ->first();
 
             if ($notaExistente && $notaExistente->checksum === $checksum) {
                 $this->line('   ⏭️ Sin cambios, omitida');
+
                 continue;
             }
 
@@ -214,31 +215,30 @@ class ImportNotesCommand extends Command
             //         'updated_at' => now(),
             //     ]
             // );
-            // Modificación: Al pasarle solo la ruta en el primer array, 
-            // si el archivo de un usuario coincide en nombre de ruta 
+            // Modificación: Al pasarle solo la ruta en el primer array,
+            // si el archivo de un usuario coincide en nombre de ruta
             // con el de otro, Eloquent actualizará la nota del usuario
-            //  anterior en vez de crear una nueva. Debes mover el 
-            // campo user_id al primer array (el de condiciones de 
-            // búsqueda) para que la combinación de Ruta + Usuario 
+            //  anterior en vez de crear una nueva. Debes mover el
+            // campo user_id al primer array (el de condiciones de
+            // búsqueda) para que la combinación de Ruta + Usuario
             // actúe como la llave única real de la nota:
             // 7. GUARDAR EN LA BASE DE DATOS de manera completamente aislada
             $nota = Note::updateOrCreate(
                 [
                     'file_path' => $archivo,
-                    'user_id'   => $usuario->id, // 🚀 Ahora la búsqueda es única por usuario
+                    'user_id' => $usuario->id, // 🚀 Ahora la búsqueda es única por usuario
                 ],
                 [
-                    'title'            => $titulo,
-                    'slug'             => Str::slug($titulo).'-'.uniqid(),
+                    'title' => $titulo,
+                    'slug' => Str::slug($titulo).'-'.uniqid(),
                     'content_markdown' => $contenido,
-                    'content_html'     => $html,
-                    'checksum'         => $checksum,
-                    'category_id'      => $categoriaId,
-                    'created_at'       => now(),
-                    'updated_at'       => now(),
+                    'content_html' => $html,
+                    'checksum' => $checksum,
+                    'category_id' => $categoriaId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]
             );
-
 
             $this->line('   ✅ Nota guardada (ID: '.$nota->id.')');
             $this->line('');

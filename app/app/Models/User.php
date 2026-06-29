@@ -30,6 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Note::class);
     }
+
     /**
      * Relación: Un usuario tiene muchas categorías.
      * ¡ESTA ES LA QUE NECESITAS PARA TU FILTRO!
@@ -51,6 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
     /**
      * Los atributos que deben ocultarse para la serialización (JSON).
      */
@@ -58,6 +60,4 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'remember_token',
     ];
-
-
 }

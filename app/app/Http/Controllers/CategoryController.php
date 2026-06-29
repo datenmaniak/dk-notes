@@ -131,7 +131,7 @@ class CategoryController extends Controller
         // Ajuste de Seguridad: Verificar que la categoría le pertenezca al usuario autenticado
         if ($category->user_id !== Auth::id()) {
             // abort(403, 'No autorizado para eliminar esta categoría.');
-             return redirect()->route('notes.index')->with('error', 'No se puede eliminar una categoría genérica o que no te pertenece.');
+            return redirect()->route('notes.index')->with('error', 'No se puede eliminar una categoría genérica o que no te pertenece.');
         }
 
         // Verificar que no tenga notas

@@ -133,22 +133,38 @@ class ImportNotesCommand extends Command
 
                 $slug = Str::slug($nombreCategoria);
 
+                   // 🔍 AJUSTE CRÍTICO: Buscar o crear la categoría amarrada al usuario actual
                 $categoria = Category::firstOrCreate(
-                    ['slug' => $slug],
-                    ['name' => $nombreCategoria]
+                    [
+                        'slug' => $slug,
+                        'user_id' => $usuario->id, // Aislamiento multiusuario
+                    ],
+                    [
+                        'name' => $nombreCategoria,
+                    ]
                 );
 
                 $categoriaId = $categoria->id;
                 $this->line('   📂 Categoría: '.$nombreCategoria.' (ID: '.$categoriaId.')');
             } else {
-                // Sin categoría -> asignar "General"
+                 // Sin categoría -> asignar "General" amarrada al usuario actual
                 $categoria = Category::firstOrCreate(
-                    ['slug' => 'general'],
-                    ['name' => 'General']
+                    [
+                        'slug' => 'general',
+                        'user_id' => $usuario->id, // Aislamiento multiusuario
+                    ],
+                    [
+                        'name' => 'General',
+                    ]
                 );
                 $categoriaId = $categoria->id;
-                $this->line('   📂 Categoría: '.$nombreCategoria.' (ID: '.$categoriaId.')');
+                // $this->line('   📂 Categoría: '.$nombreCategoria.' (ID: '.$categoriaId.')');
+                $this->line('   📂 Categoría: General (ID: '.$categoriaId.')');
             }
+
+            // Dentro del foreach de archivos:
+            $this->asegurarPermisosManejador(dirname($archivo)); // Asegura la carpeta de la categoría
+            $this->asegurarPermisosManejador($archivo);          // Asegura el archivo .md
 
             // 2. Leer el contenido del archivo
             $contenido = File::get($archivo);
@@ -157,7 +173,7 @@ class ImportNotesCommand extends Command
             $html = $parsedown->text($contenido);
 
             // Normalizar rutas de imágenes (AGREGAR ESTAS LÍNEAS)
-            $html = $this->normalizarRutasImagenes($html);
+            // $html = $this->normalizarRutasImagenes($html);
 
             // 4. Extraer título
             $titulo = $this->extraerTitulo($contenido, basename($archivo));
@@ -172,29 +188,57 @@ class ImportNotesCommand extends Command
             $checksum = md5($contenido);
 
             // 6. Verificar si la nota ya existe (por file_path o checksum)
-            $notaExistente = Note::where('file_path', $archivo)->first();
+            // $notaExistente = Note::where('file_path', $archivo)->first();
+            // 6. Verificar si la nota ya existe (Aislamiento estricto por ARCHIVO Y USUARIO)
+            $notaExistente = Note::where('file_path', $archivo)
+                                 ->where('user_id', $usuario->id) // 🚀 Garantiza el aislamiento
+                                 ->first();
 
             if ($notaExistente && $notaExistente->checksum === $checksum) {
                 $this->line('   ⏭️ Sin cambios, omitida');
-
                 continue;
             }
 
-            // 7. Crear o actualizar la nota
+            // 7. GUARDAR EN LA BASE DE DATOS (Crucial para que aparezcan en el index)
+            // $nota = Note::updateOrCreate(
+            //     ['file_path' => $archivo],
+            //     [
+            //         'title' => $titulo,
+            //         'slug' => Str::slug($titulo).'-'.uniqid(), // Asegura slugs únicos
+            //         'content_markdown' => $contenido,
+            //         'content_html' => $html,
+            //         'checksum' => $checksum,
+            //         'category_id' => $categoriaId,
+            //         'user_id' => $usuario->id, // El ID que viene desde NoteController
+            //         'created_at' => now(),
+            //         'updated_at' => now(),
+            //     ]
+            // );
+            // Modificación: Al pasarle solo la ruta en el primer array, 
+            // si el archivo de un usuario coincide en nombre de ruta 
+            // con el de otro, Eloquent actualizará la nota del usuario
+            //  anterior en vez de crear una nueva. Debes mover el 
+            // campo user_id al primer array (el de condiciones de 
+            // búsqueda) para que la combinación de Ruta + Usuario 
+            // actúe como la llave única real de la nota:
+            // 7. GUARDAR EN LA BASE DE DATOS de manera completamente aislada
             $nota = Note::updateOrCreate(
-                ['file_path' => $archivo],
                 [
-                    'title' => $titulo,
-                    'slug' => Str::slug($titulo).'-'.uniqid(), // Asegura slugs únicos
+                    'file_path' => $archivo,
+                    'user_id'   => $usuario->id, // 🚀 Ahora la búsqueda es única por usuario
+                ],
+                [
+                    'title'            => $titulo,
+                    'slug'             => Str::slug($titulo).'-'.uniqid(),
                     'content_markdown' => $contenido,
-                    'content_html' => $html,
-                    'checksum' => $checksum,
-                    'category_id' => $categoriaId,
-                    'user_id' => $usuario->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'content_html'     => $html,
+                    'checksum'         => $checksum,
+                    'category_id'      => $categoriaId,
+                    'created_at'       => now(),
+                    'updated_at'       => now(),
                 ]
             );
+
 
             $this->line('   ✅ Nota guardada (ID: '.$nota->id.')');
             $this->line('');
@@ -263,22 +307,45 @@ class ImportNotesCommand extends Command
     /**
      * Normaliza rutas de imágenes en el HTML generado
      */
-    private function normalizarRutasImagenes(string $html): string
-    {
-        // Patrón 1: Ruta absoluta de Linux en formato Markdown
-        // Busca: ![texto](/home/datenmaniak/notes/images/archivo.png)
-        // Reemplaza: ![texto](/images/archivo.png)
-        $html = preg_replace(
-            '/src="\/home\/datenmaniak\/notes\/images\//',
-            'src="/images/',
-            $html
-        );
+    // private function normalizarRutasImagenes(string $html): string
+    // {
+    //     // Patrón 1: Ruta absoluta de Linux en formato Markdown
+    //     // Busca: ![texto](/home/datenmaniak/notes/images/archivo.png)
+    //     // Reemplaza: ![texto](/images/archivo.png)
+    //     $html = preg_replace(
+    //         '/src="\/home\/datenmaniak\/notes\/images\//',
+    //         'src="/images/',
+    //         $html
+    //     );
 
-        // Retornar el HTML con las rutas normalizadas
-        return $html;
-    }
+    //     // Retornar el HTML con las rutas normalizadas
+    //     return $html;
+    // }
 
     // 5. Mostrar mensajes de progreso en la terminal
     // 6. Al final, mostrar un resumen (cuántas notas se importaron)
 
+    /**
+     * Asegura los permisos correctos (chmod) del directorio y archivos de notas.
+     * Intenta aplicar chown/chgrp solo si el entorno del contenedor lo permite.
+     */
+    private function asegurarPermisosManejador(string $ruta): void
+    {
+        try {
+            if (is_dir($ruta)) {
+                // Asegurar que el directorio sea accesible (Lectura/Escritura/Ejecución)
+                @chmod($ruta, 0755);
+
+                // Opcional: Intentar asignar UID/GID 33 si PHP corre con suficientes privilegios
+                @chown($ruta, 33);
+                @chgrp($ruta, 33);
+            } elseif (is_file($ruta)) {
+                @chmod($ruta, 0644);
+                @chown($ruta, 33);
+                @chgrp($ruta, 33);
+            }
+        } catch (\Exception $e) {
+            // Silenciar errores si el sistema operativo restringe la operación
+        }
+    }
 }

@@ -20,7 +20,7 @@ class TagSeeder extends Seeder
             'urgente',
             'readlater',
             'probar',
-            'testing',
+            'corregir',
         ];
 
         foreach ($defaultTags as $tagName) {

@@ -5,7 +5,7 @@ FROM nginx:alpine
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copiamos tu configuración personalizada (la que tiene la lógica de "fastcgi_pass laravel:9000")
-COPY default.conf /etc/nginx/conf.d/default.conf
+COPY ./default.conf /etc/nginx/conf.d/default.conf
 
 # No es necesario WORKDIR porque Nginx no lo usa para servir archivos
 # La ruta la define 'root' en default.conf

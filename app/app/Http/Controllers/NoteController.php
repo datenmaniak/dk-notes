@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 // use Illuminate\Container\Attributes\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -35,7 +36,8 @@ class NoteController extends Controller
 
         // 3. Totales para las dos primeras tarjetas de estadísticas
         $totalNotas = Note::where('user_id', Auth::id())->count();
-        $totalCategorias = Category::count();
+        // $totalCategorias = Category::count();
+        $totalCategorias = Category::where('user_id', Auth::id())->count();
 
         // 4. Cargar todas las etiquetas válidas contando solo las notas de este usuario
         $tagsWithCount = Tag::whereNull('user_id')
@@ -163,14 +165,23 @@ class NoteController extends Controller
         Log::info('Directorio: '.$directorioConfigurado);
 
         // Ejecutar importación pasando el ID del usuario actual
-        Artisan::call('notes:import', ['--user' => Auth::id()]);
+        // Artisan::call('notes:import', ['--user' => Auth::id()]);
+
+        // Usamos la variable $userId ya definida arriba
+        Artisan::call('notes:import', ['--user' => $userId]);
         $output = Artisan::output();
 
         Log::info('Salida de notes:import:');
         Log::info($output);
 
         // Actualizar checksums de notas que cambiaron en disco
-        $notes = Note::whereNotNull('file_path')->get();
+        // $notes = Note::whereNotNull('file_path')->get();
+
+        // 🔍 AJUSTE CRÍTICO: Filtrar notas SOLO del usuario autenticado
+        $notes = Note::where('user_id', $userId)
+            ->whereNotNull('file_path')
+            ->get();
+
         $updated = 0;
 
         foreach ($notes as $note) {
@@ -563,22 +574,48 @@ class NoteController extends Controller
         return pathinfo($nombreArchivo, PATHINFO_FILENAME);
     }
 
+    // REMOVE
     // Elimina toda las notas
+    // public function deleteAll()
+    // {
+    //     // Verificar que es administrador
+    //     if (! Auth::user()->is_admin) {
+    //         abort(403, 'No autorizado. Solo administradores pueden eliminar todas las notas.');
+    //     }
+
+    //     // Contar notas antes de eliminar
+    //     $count = Note::count();
+
+    //     // Eliminar todas las notas
+    //     Note::truncate();
+
+    //     // Mensaje de éxito
+    //     $message = "Se han eliminado {$count} notas permanentemente.";
+
+    //     return redirect()->route('settings.index')->with('success', $message);
+    // }
+    // REMOVE
+
+    // Elimina todos los registros de un usuario (Notas, Categorías, Etiquetas)
     public function deleteAll()
     {
-        // Verificar que es administrador
-        if (! Auth::user()->is_admin) {
-            abort(403, 'No autorizado. Solo administradores pueden eliminar todas las notas.');
-        }
+        $userId = auth()->id();
 
-        // Contar notas antes de eliminar
-        $count = Note::count();
+        // Ejecutamos en una transacción para asegurar que se borre todo o nada
+        DB::transaction(function () use ($userId, &$count) {
+            // 1. Contar y eliminar Notas del usuario
+            $count = Note::where('user_id', $userId)->count();
+            Note::where('user_id', $userId)->delete();
 
-        // Eliminar todas las notas
-        Note::truncate();
+            // 2. Eliminar Categorías del usuario
+            Category::where('user_id', $userId)->delete();
+
+            // 3. Eliminar Etiquetas del usuario
+            Tag::where('user_id', $userId)->delete();
+        });
 
         // Mensaje de éxito
-        $message = "Se han eliminado {$count} notas permanentemente.";
+        $message = "Se han eliminado permanentemente tus {$count} notas y sus datos asociados.";
 
         return redirect()->route('settings.index')->with('success', $message);
     }
@@ -649,7 +686,8 @@ class NoteController extends Controller
 
         // 3. Recalcular las estadísticas básicas para las dos primeras tarjetas
         $totalNotas = Note::where('user_id', Auth::id())->count();
-        $totalCategorias = Category::count();
+        // $totalCategorias = Category::count();
+        $totalCategorias = Category::where('user_id', Auth::id())->count();
 
         // 4. Cargar todas las etiquetas visibles para el usuario con el conteo de notas en tiempo real
         // Filtrado estrictamente para contar solo las notas del usuario autenticado

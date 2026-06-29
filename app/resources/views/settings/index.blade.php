@@ -185,7 +185,8 @@
                     </form>
 
                     {{-- Zona peligrosa - Solo visible para administrador --}}
-                    @if(Auth::user()->is_admin)
+                    <!-- REMOVE  -->
+                    <!-- @if(Auth::user()->is_admin)
                         <div class="mt-8 p-5 border-2 border-red-500/40 dark:border-red-500/30 bg-red-50 dark:bg-red-950/20 rounded-xl">
                             <h3 class="text-lg font-semibold text-red-700 dark:text-red-400 mb-2 flex items-center gap-2">
                                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -205,7 +206,31 @@
                                 </button>
                             </form>
                         </div>
-                    @endif
+                    @endif -->
+                    <!-- REMOVE  -->
+                    {{-- Zona peligrosa - Solo visible si el usuario está autenticado --}}
+                    @auth
+                        <div class="mt-8 p-5 border-2 border-red-500/40 dark:border-red-500/30 bg-red-50 dark:bg-red-950/20 rounded-xl">
+                            <h3 class="text-lg font-semibold text-red-700 dark:text-red-400 mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                Zona peligrosa
+                            </h3>
+                            <p class="text-sm text-red-600 dark:text-red-300 mb-4">
+                                Esta acción eliminará <strong>TODAS tus notas, categorías y etiquetas</strong> permanentemente.<br>
+                            </p>
+                            <form method="POST" action="{{ route('notes.delete-all') }}" 
+                                onsubmit="return confirm('¿Eliminar todas tus notas, categorías y etiquetas? Esta acción no se puede deshacer.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-all duration-200 flex items-center gap-2 active:scale-[0.98]">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                    Eliminar mis datos permanentemente
+                                </button>
+                            </form>
+                        </div>
+                    @endauth
+
+
         <!-- </div> -->
     <!-- main container -->
     </div>

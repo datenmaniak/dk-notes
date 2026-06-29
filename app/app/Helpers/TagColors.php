@@ -38,7 +38,7 @@ class TagColors
                 'text' => 'text-tag-probar',
                 'border' => 'border-tag-probar/20',
             ],
-            'testing' => [ // 👈 Cambiado de 'Testing' a 'testing'
+            'corregir' => [ // 👈 '
                 'bg' => 'bg-tag-probar/10',
                 'text' => 'text-tag-probar',
                 'border' => 'border-tag-probar/20',
@@ -54,9 +54,9 @@ class TagColors
     public static function getDefault()
     {
         return [
-            'bg' => 'bg-brand-glow/10',
-            'text' => 'text-brand-glow',
-            'border' => 'border-brand-glow/20',
+            'bg' => 'bg-brand-accent/10',
+            'text' => 'text-brand-accent',
+            'border' => 'border-brand-accent/20',
         ];
     }
 

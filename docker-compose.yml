@@ -3,7 +3,7 @@ services:
   postgres:
     build:
       context: ./postgres
-    container_name: dk-db
+    container_name: dkmain-db
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -30,9 +30,9 @@ services:
   laravel:
     build:
       context: .
-      dockerfile: laravel/Dockerfile-8422_fpm-alpine
-      container_name: dknotes-laravel
-    image: local-reg.dk.lab:5000/dknotes-laravel:beta-1.56.6
+      dockerfile: ./laravel/Dockerfile
+    container_name: dknotes-laravel
+    image: dknotes-laravel:1.57.2-beta-main
     security_opt:
       - label:disable
     userns_mode: "keep-id"
@@ -58,7 +58,7 @@ services:
   nginx:
     build:
       context: ./nginx
-    container_name: dk-proxy
+    container_name: dkmain-proxy
     restart: always
     #    security_opt:
     #      - label:disable

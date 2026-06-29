@@ -47,7 +47,7 @@ export default {
                     urgente: '#DC2626', // Rojo Alerta
                     readlater: '#2563EB', // Azul Índigo
                     probar: '#1f8766', // Menta Claro
-                    nolabels: '#4B5563', // Gris Slate
+                    corregir: '#4B5563', // Gris Slate
                 },
                 // Colores Compuestos (paleta extendida)
                 extended: {

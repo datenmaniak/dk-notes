@@ -23,9 +23,20 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
     ];
 
+    /**
+     * Relación: Un usuario tiene muchas notas.
+     */
     public function notes()
     {
         return $this->hasMany(Note::class);
+    }
+    /**
+     * Relación: Un usuario tiene muchas categorías.
+     * ¡ESTA ES LA QUE NECESITAS PARA TU FILTRO!
+     */
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
     }
 
     /**
@@ -40,4 +51,13 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+    /**
+     * Los atributos que deben ocultarse para la serialización (JSON).
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+
 }

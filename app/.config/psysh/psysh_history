@@ -17,3 +17,27 @@ include ('./admin/list-data.php');
 include ('./admin/change-rol.php');
 include ('./admin/list-data.php');
 include ('./admin/list-data.php');
+App\Models\Note::where('user_id', 1)->get();
+App\Models\Note::where('user_id', 2)->get();
+App\Models\Note::where('user_id', 3)->get();
+App\Models\Note::where('user_id', 3)->get()->count();
+App\Models\Note::where('user_id', 2)->get()->count();
+App\Models\Note::where('user_id', 1)->get()->count();
+App\Models\Note::where('user_id', 3)->get()->count();
+App\Models\Note::where('user_id', 1)->get()->count();
+App\Models\Note::where('user_id', 3)->get()->count();
+App\Models\Note::where('user_id', 2)->get()->count();
+App\Models\Category::where('user_id', 2)->get()->count();
+App\Models\Category::where('user_id', 2)->get()->count();
+App\Models\Category::where('user_id', 3)->get()->count();
+App\Models\Category::where('user_id', 3)->get()->count();
+App\Models\Note::where('user_id', 2)->get()->count();
+App\Models\Category::where('user_id', 3)->get()->count();
+App\Models\Note::where('user_id', 2)->get()->count();
+App\Models\Note::where('user_id', 3)->get()->count();
+App\Models\Note::where('user_id', 3)->get()->count();
+App\Models\Note::where('user_id', 2)->get()->count();
+App\Models\tag::where('user_id', 2)->get()->count();
+App\Models\tags::where('user_id', 2)->get()->count();
+php artisan notes:import --user=2
+exit

@@ -12,14 +12,15 @@ class CategoryController extends Controller
 {
     public function recalculate(Request $request)
     {
+        $userId = Auth::id(); // <-- ID del usuario autenticado
         $directorioNotas = $this->getDirectorioNotas();
 
         if (! is_dir($directorioNotas)) {
             return redirect()->route('notes.index')->with('error', 'Directorio de notas no encontrado.');
         }
 
-        // 1. Obtener categorías existentes en BD
-        $categoriasBD = Category::all();
+        // 1. Obtener categorías existentes SOLO del usuario autenticado
+        $categoriasBD = Category::where('user_id', $userId)->get();
 
         // 2. Escanear directorios (primer nivel)
         $directorios = $this->getDirectoriosNivel1($directorioNotas);
@@ -32,13 +33,18 @@ class CategoryController extends Controller
         // 3. Crear/actualizar categorías basadas en directorios
         foreach ($directorios as $nombreDirectorio) {
             $slug = Str::slug($nombreDirectorio);
-            $categoria = Category::where('slug', $slug)->first();
+
+            // Buscar el slug mapeado únicamente para ESTE usuario
+            $categoria = Category::where('slug', $slug)
+                ->where('user_id', $userId)
+                ->first();
 
             if (! $categoria) {
-                // Nueva categoría
+                // Nueva categoría asociada al usuario
                 Category::create([
                     'name' => $nombreDirectorio,
                     'slug' => $slug,
+                    'user_id' => $userId, // <-- Ajuste crítico: Asignación del usuario
                 ]);
                 $nuevas++;
             } else {
@@ -78,21 +84,8 @@ class CategoryController extends Controller
         return redirect()->route('notes.index')->with('success', $message);
     }
 
-    // private function getDirectorioNotas()
-    // {
-    //     // Misma lógica que en ImportNotesCommand
-    //     $directorio = 'notes';
-
-    //     if (str_starts_with($directorio, '~/')) {
-    //         $home = getenv('HOME') ?: $_SERVER['HOME'] ?? '';
-    //         $directorio = $home . substr($directorio, 1);
-    //     }
-
-    //     return base_path('notes');
-    // }
     private function getDirectorioNotas()
     {
-        // $userId = auth()->id();
         $userId = Auth::id();
 
         if (! $userId) {
@@ -103,7 +96,6 @@ class CategoryController extends Controller
 
         if ($rutaPersonal) {
             return base_path('storage/app/public/notes').'/'.$rutaPersonal;
-
         }
 
         return base_path('storage/app/public/notes');
@@ -136,6 +128,12 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        // Ajuste de Seguridad: Verificar que la categoría le pertenezca al usuario autenticado
+        if ($category->user_id !== Auth::id()) {
+            // abort(403, 'No autorizado para eliminar esta categoría.');
+             return redirect()->route('notes.index')->with('error', 'No se puede eliminar una categoría genérica o que no te pertenece.');
+        }
+
         // Verificar que no tenga notas
         if ($category->notes()->count() > 0) {
             return redirect()->route('notes.index')->with('error', 'No se puede eliminar una categoría con notas asociadas.');

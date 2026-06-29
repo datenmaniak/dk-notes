@@ -280,10 +280,26 @@
                            class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-brand-glow/5 text-daten-secondary hover:text-brand-glow font-medium text-sm rounded-lg transition-all border border-transparent hover:border-brand-glow/10">
                             <i class="fa-solid fa-border-all text-xs opacity-60"></i> Todas las notas
                         </a>
-                        @foreach(\App\Models\Category::all() as $category)
+                        <!-- @foreach(\App\Models\Category::all() as $category)
                             <div class="flex items-center justify-between group/row">
                                 <a href="{{ route('notes.filter', $category->slug) }}?page={{ $notes->currentPage() }}" 
                                    class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-brand-glow/5 text-daten-secondary hover:text-brand-glow font-medium text-sm rounded-lg flex-1 transition-all border border-transparent hover:border-brand-glow/10">
+                                    <i class="fa-solid fa-folder text-xs opacity-40 group-hover/row:text-brand-glow group-hover/row:opacity-100 transition-all"></i> {{ $category->name }}
+                                </a>
+                                <form method="POST" action="{{ route('categories.destroy', $category) }}" 
+                                    onsubmit="return confirm('¿Eliminar categoría \"{{ $category->name }}\"?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-daten-muted hover:text-red-600 dark:hover:text-red-400 px-3 py-2 transition-colors" title="Eliminar categoría">
+                                        <i class="fa-solid fa-xmark text-sm"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        @endforeach -->
+                        @foreach(auth()->user()->categories as $category)
+                            <div class="flex items-center justify-between group/row">
+                                <a href="{{ route('notes.filter', $category->slug) }}?page={{ $notes->currentPage() }}" 
+                                class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-brand-glow/5 text-daten-secondary hover:text-brand-glow font-medium text-sm rounded-lg flex-1 transition-all border border-transparent hover:border-brand-glow/10">
                                     <i class="fa-solid fa-folder text-xs opacity-40 group-hover/row:text-brand-glow group-hover/row:opacity-100 transition-all"></i> {{ $category->name }}
                                 </a>
                                 <form method="POST" action="{{ route('categories.destroy', $category) }}" 

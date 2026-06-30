@@ -59,15 +59,15 @@
                     </label>
                     <select name="category_id" 
                             class="w-full input-daten text-sm focus:border-brand-glow focus:ring-2 focus:ring-brand-glow/30 transition-all duration-200 rounded-lg appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2364748b%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpolyline points=%226 9 12 15 18 9%22/%3E%3C/svg%3E')] bg-[length:1.5rem] bg-[right:1rem_center] bg-no-repeat pr-12">
-                        <option value="">Sin categoría</option>
-                        @foreach(\App\Models\Category::all() as $category)
-                            <option value="{{ $category->id }}" {{ $note->category_id == $category->id ? 'selected' : '' }}>
+                        <option value="">-- Ninguna, usar "General" --</option>
+                        @foreach(auth()->user()->categories as $category)
+                            <option value="{{ $category->id }}" @selected($note->category_id == $category->id)>
                                 {{ $category->name }}
                             </option>
                         @endforeach
                     </select>
                     <p class="text-[11px] text-daten-muted flex items-center gap-1">
-                        <i class="fa-solid fa-info-circle"></i> Selecciona una categoría existente para organizar tu nota.
+                        <i class="fa-solid fa-info-circle"></i> Selecciona una categoría existente para clasificar tu nota.
                     </p>
                 </div>
 
@@ -259,10 +259,10 @@
                     //     document.getElementById('assignTagsModal').classList.add('hidden');
                     // }
                     function closeAssignTagsModal() {
-                    const modal = document.getElementById('assignTagsModal');
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex', 'items-center', 'justify-center');
-}
+                        const modal = document.getElementById('assignTagsModal');
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex', 'items-center', 'justify-center');
+                    }
                 
                     function saveAssignedTags() {
                         const selected = Array.from(document.querySelectorAll('#allTagsList input:checked'))

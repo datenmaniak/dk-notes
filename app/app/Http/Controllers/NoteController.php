@@ -238,11 +238,14 @@ class NoteController extends Controller
             abort(403);
         }
 
+        // TODO: Filtrar categorías para que solo se muestren las del usuario autenticado
+        $categories = auth()->user()->categories;
+
         $page = request()->input('page', 1);
 
         $categoriasConNotas = Category::withCount('notes')->get();
 
-        return view('notes.edit', compact('note', 'categoriasConNotas', 'page'));
+        return view('notes.edit', compact('note', 'categoriasConNotas', 'page', 'categories'));
     }
 
     public function update(Request $request, Note $note)
@@ -419,9 +422,11 @@ class NoteController extends Controller
 
     public function create()
     {
-        $categorias = Category::all();
+        $categories = auth()->user()->categories;
+        // TODO: Filtrar categorías para que solo se muestren las del usuario autenticado
 
-        return view('notes.create', compact('categorias'));
+
+        return view('notes.create', compact('categories'));
     }
 
     public function store(Request $request)

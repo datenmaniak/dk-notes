@@ -23,7 +23,7 @@
                         <i class="fa-solid fa-heading text-xs text-daten-muted"></i> Título *
                     </label>
                     <input type="text" name="title" value="{{ old('title') }}" 
-                           class="w-full input-daten placeholder:text-daten-muted focus:border-brand-glow focus:ring-2 focus:ring-brand-glow/30 transition-all duration-200" required>
+                           class="w-full rounded-lg input-daten placeholder:text-daten-muted focus:border-brand-glow focus:ring-2 focus:ring-brand-glow/30 transition-all duration-200" required>
                 </div>
                 
                 {{-- Campo: Categoría --}}
@@ -31,9 +31,10 @@
                     <label class=" text-daten-secondary font-medium mb-2 flex items-center gap-1.5">
                         <i class="fa-solid fa-folder text-xs text-daten-muted"></i> Categoría
                     </label>
-                    <select name="category_id" class="w-full input-daten focus:border-brand-glow focus:ring-2 focus:ring-brand-glow/30 transition-all duration-200">
-                        <option value="">Sin categoría</option>
-                        @foreach($categorias as $category)
+                    <select name="category_id" class="w-full rounded-lg input-daten focus:border-brand-glow focus:ring-2 focus:ring-brand-glow/30 transition-all duration-200">
+                        <!-- <option value="">Sin categoría</option> -->
+                        <option value="">-- Ninguna, usar "General" --</option>
+                        @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
@@ -46,8 +47,8 @@
                     <label class=" text-daten-secondary font-medium mb-2 flex items-center gap-1.5">
                         <i class="fa-solid fa-code text-xs text-daten-muted"></i> Contenido (Markdown) *
                     </label>
-                    <textarea name="content_markdown" rows="15" 
-                              class="w-full input-daten font-mono text-sm placeholder:text-daten-muted focus:border-brand-glow focus:ring-2 focus:ring-brand-glow/30 transition-all duration-200" required>{{ old('content_markdown') }}</textarea>
+                    <textarea name="content_markdown" rows="7" 
+                              class="w-full input-daten rounded-lg font-mono text-sm placeholder:text-daten-muted focus:border-brand-glow focus:ring-2 focus:ring-brand-glow/30 transition-all duration-200" required>{{ old('content_markdown') }}</textarea>
                 </div>
                 
                 {{-- Botones de Acción --}}

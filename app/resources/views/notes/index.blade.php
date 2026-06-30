@@ -343,7 +343,7 @@
                     <div class="space-y-2">
                         <label class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Categoría existente (opcional)</label>
                         <select name="category_id" class="w-full px-4 py-3 rounded-lg border border-daten bg-daten-input text-sm text-daten-primary focus:outline-none focus:border-brand-glow focus:ring-4 focus:ring-brand-glow/15 transition-all duration-200">
-                            <option value="">-- Ninguna, usar "General" o la nueva --</option>
+                            <option value="">-- Ninguna, usar "General" o especifique una nueva --</option>
                             @foreach(auth()->user()->categories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                             @endforeach

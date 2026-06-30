@@ -500,12 +500,12 @@ class NoteController extends Controller
                 $category = Category::firstOrCreate(
                     [
                         'slug' => $slug,
-                        'user_id' => auth()->id() // Evita que colisione si otro usuario usa el mismo nombre
-                        ],
+                        'user_id' => auth()->id(), // Evita que colisione si otro usuario usa el mismo nombre
+                    ],
                     [
-                        'name' => trim($request->new_category)
+                        'name' => trim($request->new_category),
                     ]
-                    );
+                );
                 $categoryId = $category->id;
             }
             // 2. Si se seleccionó una categoría existente (ID numérico)

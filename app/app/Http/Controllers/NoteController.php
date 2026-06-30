@@ -300,9 +300,8 @@ class NoteController extends Controller
         // paginador Configurable desde el setting del usuario
         $perPage = UserSetting::getValue($userId, 'notas_por_pagina', 5);
 
-
         if ($categorySlug) {
-            // 🔒 CORRECCIÓN: Filtrar la categoría por el 
+            // 🔒 CORRECCIÓN: Filtrar la categoría por el
             // slug Y por el user_id del usuario actual
             $category = Category::where('slug', $categorySlug)
                 ->where('user_id', $userId)
@@ -317,15 +316,14 @@ class NoteController extends Controller
 
         $totalCategorias = Category::where('user_id', $userId)->count();
 
-        // 💡 OPTIMIZACIÓN: Filtrar también el listado lateral/conteo de 
+        // 💡 OPTIMIZACIÓN: Filtrar también el listado lateral/conteo de
         // categorías por usuario
         // $categoriasConNotas = Category::withCount('notes')->get();
         $categoriasConNotas = Category::where('user_id', $userId)
             ->withCount(['notes' => function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        }])
-        ->get();
-
+                $query->where('user_id', $userId);
+            }])
+            ->get();
 
         // 🚀 NUEVO: Cargar todas las etiquetas válidas para que la
         //  cabecera no se rompa al filtrar categorías

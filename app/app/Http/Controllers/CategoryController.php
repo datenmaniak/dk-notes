@@ -10,9 +10,6 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-
-
-
     public function recalculate(Request $request)
     {
         $userId = Auth::id(); // <-- ID del usuario autenticado

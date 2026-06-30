@@ -26,22 +26,21 @@ class NoteController extends Controller
     public function index()
     {
 
-        
         // 1. Obtener la paginación configurada por el usuario desde la base de datos
         $perPage = UserSetting::getValue(Auth::id(), 'notas_por_pagina', 5);
-        
+
         // 2. REGLA DE PRIVACIDAD UNIFICADA: Tanto admin como usuarios normales solo ven SUS PROPIAS notas
         $notes = Note::where('user_id', Auth::id())
-        ->with(['category', 'tags']) // Eager loading optimizado para los badges
-        ->latest()
-        ->paginate($perPage);
-        
+            ->with(['category', 'tags']) // Eager loading optimizado para los badges
+            ->latest()
+            ->paginate($perPage);
+
         // 3. Totales para las dos primeras tarjetas de estadísticas
         $totalNotas = Note::where('user_id', Auth::id())->count();
         // $totalCategorias = Category::count();
         $totalCategorias = Category::where('user_id', Auth::id())->count();
         // $totalCategorias = auth()->user()->categories->count(); // ✅ Contar solo las categorías del usuario autenticado
-      $categories = auth()->user()->categories;
+        $categories = auth()->user()->categories;
 
         // 4. Cargar todas las etiquetas válidas contando solo las notas de este usuario
         $tagsWithCount = Tag::whereNull('user_id')

@@ -2,8 +2,8 @@
     <div class="page-daten flex flex-col items-center justify-center">
 
         <!-- LOGIN ORIGINAL - Solo ajuste de ancho -->
-        <!-- <div class="w-full max-w-4xl px-4 sm:px-2 py-4"> -->
-        <div class="w-full max-w-3xl px-4 sm:px-2 py-4">
+        <div class="w-full max-w-4xl px-4 sm:px-2 py-4">
+        <!-- <div class="w-full max-w-3xl px-4 sm:px-2 py-4"> -->
             <div class="w-full sm:max-w-lg mx-auto px-6 py-8 card-daten shadow-xl">
                 
                 <div class="text-center mb-6">
@@ -41,7 +41,7 @@
                     
                     <div class="mb-4">
                         <label for="email" class="block text-sm font-medium text-daten-secondary mb-1">
-                            <i class="fas fa-envelope mr-1 text-brand-glow text-xl"></i> Correo electrónico
+                            <i class="fas fa-envelope mr-1 text-brand-glow text-md"></i> Correo electrónico
                         </label>
                         <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
                                class="w-full px-3 py-2 rounded-lg input-daten placeholder:text-daten-muted focus:border-brand-glow focus:ring-2 focus:ring-brand-glow/30">

@@ -1,10 +1,11 @@
 <x-guest-layout>
-    <div class="page-daten flex flex-col items-center justify-center p-6">
-        
+    <div class="page-daten flex flex-col items-center justify-center ">       
         <!-- ============================================ -->
         <!-- REGISTRO PRINCIPAL                          -->
         <!-- ============================================ -->
-        <div class="w-full sm:max-w-lg card-daten shadow-xl p-6 md:p-8">
+        <!-- <div class="w-full max-w-lg card-daten shadow-xl p-6 md:p-8"> -->
+         <!-- <div class="w-full max-w-3xl px-4 sm:px-2 py-4 card-daten shadow-xl"> -->
+         <div class="w-min-full max-w-5xl card-daten shadow-xl p-6 md:p-8">
             
             <!-- Logo / Icono de la App -->
             <div class="text-center mb-6">
@@ -15,7 +16,7 @@
                     Crear cuenta
                 </h1>
                 <p class="text-daten-secondary text-xs font-light tracking-wide">
-                    <i class="fas fa-edit mr-1"></i> Únete a datenmaniak
+                    <i class="fas fa-edit mr-1"></i> Únete al Gestor de Notas de datenmaniak
                 </p>
             </div>
             
@@ -44,7 +45,7 @@
                 </div>
                 
                 <!-- Email -->
-                <div>
+                <div class="mb-4">
                     <label for="email" class="block text-sm font-medium text-daten-secondary mb-1">
                         <i class="fas fa-envelope mr-1"></i> Correo electrónico
                     </label>
@@ -90,13 +91,13 @@
         </div>
 
         <!-- Footer -->
-        <div class="mt-4 text-center">
+        <!-- <div class="mt-4 text-center">
             <p class="text-xs text-daten-muted tracking-wide">
                 <i class="fas fa-code mr-1"></i> 
                 datenmaniak · 
                 <span class="font-mono font-semibold text-brand-muted/80">v1.56.0-beta</span>
             </p>
-        </div>
+        </div> -->
 
     </div>
 </x-guest-layout>

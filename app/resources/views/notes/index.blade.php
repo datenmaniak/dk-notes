@@ -333,7 +333,7 @@
                     
                     {{-- Selección de archivo --}}
                     <div class="space-y-2">
-                        <label class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Archivo Markdown (.md) *</label>
+                        <label class="text-xs font-semibold text-daten-secondary  tracking-wider">Archivo Markdown (.md) *</label>
                         <input type="file" name="file" accept=".md" required
                             class="w-full text-sm text-daten-secondary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border file:border-daten file:text-xs file:font-semibold file:bg-daten-input file:text-daten-secondary hover:file:bg-brand-glow/10 hover:file:text-brand-glow hover:file:border-brand-glow/30 file:transition-all cursor-pointer">
                         <p class="text-[11px] text-daten-muted">El sistema procesará la metadata y el Front Matter del archivo.</p>
@@ -343,7 +343,7 @@
                     <div class="space-y-2">
                         <label class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Categoría existente (opcional)</label>
                         <select name="category_id" class="w-full px-4 py-3 rounded-lg border border-daten bg-daten-input text-sm text-daten-primary focus:outline-none focus:border-brand-glow focus:ring-4 focus:ring-brand-glow/15 transition-all duration-200">
-                            <option value="">-- Ninguna, usar "General" o especifique una nueva --</option>
+                            <option value="">- Ninguna "General", nueva personalizada o elija de la lista -</option>
                             @foreach(auth()->user()->categories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                             @endforeach
@@ -352,15 +352,15 @@
                     
                     {{-- Nueva categoría --}}
                     <div class="space-y-2">
-                        <label class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Nueva categoría (opcional)</label>
+                        <label class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Nueva categoría personalizada (opcional)</label>
                         <input type="text" name="new_category" class="w-full px-4 py-3 rounded-lg border border-daten bg-daten-input text-sm text-daten-primary focus:outline-none focus:border-brand-glow focus:ring-4 focus:ring-brand-glow/15 transition-all duration-200" 
                             placeholder="Ej: Laravel, Docker, GitOps">
                         <p class="text-[11px] text-daten-muted">Si el campo tiene texto, se priorizará la creación de esta categoría automáticamente.</p>
                     </div>
                     
-                    <div class="flex justify-end gap-3 pt-4 border-t border-daten">
+                    <div class="flex justify-end gap-3 pt-4">
                         <button type="button" onclick="closeUploadModal()" 
-                                class="px-4 py-2 border border-daten text-daten-secondary bg-daten-card hover:bg-brand-glow/10 hover:text-brand-glow rounded-lg text-sm font-medium transition-all duration-200">
+                                class="px-4 py-2  text-daten-secondary bg-daten-card hover:bg-brand-glow/10 hover:text-brand-glow rounded-lg text-sm font-medium transition-all duration-200">
                             Cancelar
                         </button>
                         <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg shadow-md shadow-emerald-600/10 transition-all duration-200">

@@ -496,10 +496,16 @@ class NoteController extends Controller
             // 1. Si se escribió nueva categoría (texto)
             if ($request->new_category && trim($request->new_category) !== '') {
                 $slug = Str::slug($request->new_category);
+
                 $category = Category::firstOrCreate(
-                    ['slug' => $slug],
-                    ['name' => trim($request->new_category)]
-                );
+                    [
+                        'slug' => $slug,
+                        'user_id' => auth()->id() // Evita que colisione si otro usuario usa el mismo nombre
+                        ],
+                    [
+                        'name' => trim($request->new_category)
+                    ]
+                    );
                 $categoryId = $category->id;
             }
             // 2. Si se seleccionó una categoría existente (ID numérico)

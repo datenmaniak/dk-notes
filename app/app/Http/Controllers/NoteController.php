@@ -425,7 +425,6 @@ class NoteController extends Controller
         $categories = auth()->user()->categories;
         // TODO: Filtrar categorías para que solo se muestren las del usuario autenticado
 
-
         return view('notes.create', compact('categories'));
     }
 

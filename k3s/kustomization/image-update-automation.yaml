@@ -14,7 +14,8 @@ spec:
   git:
     checkout:
       ref:
-        branch: laravel-k3s
+        branch: design/fix
+        # branch: laravel-k3s
     commit:
       author:
         name: fluxbot
@@ -29,7 +30,8 @@ spec:
         {{ end -}}
         {{ end -}}
     push:
-      branch: laravel-k3s
+      branch: design/fix
+      # branch: laravel-k3s
   update:
     path: ./k3s/kustomization
     strategy: Setters

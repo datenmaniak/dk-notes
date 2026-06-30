@@ -1,105 +1,74 @@
 <x-app-layout>
-
     
     <div class="p-6 pt-16 lg:pt-6 max-w-7xl mx-auto space-y-8 page-daten">
-        
+      
+
         {{-- ============================================ --}}
-        {{-- TARJETAS DE ESTADÍSTICAS --}}
+        {{-- COMPONENTE SUPERIOR: ESTADÍSTICAS COMPACTAS --}}
         {{-- ============================================ --}}
-        <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {{-- Tarjeta: Total Notas --}}
-            <div class="bg-daten-card rounded-xl border border-daten shadow-sm p-6 transition-all duration-300 hover:shadow-md">
-                <div class="flex items-center justify-between">
-                    <div class="space-y-1">
-                        <p class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Total Notas</p>
-                        <p class="text-3xl font-bold text-daten-primary tracking-tight">{{ $totalNotas }}</p>
+        <div class="bg-daten-card/50 rounded-xl border border-daten/50 p-3">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                
+                {{-- Título --}}
+                <div class="flex items-center gap-2 text-daten-secondary">
+                    <i class="fa-regular fa-chart-bar text-sm"></i>
+                    <span class="text-xs font-semibold uppercase tracking-wider">Estadísticas</span>
+                </div>
+
+                {{-- Separador --}}
+                <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
+
+                {{-- Total Notas --}}
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+                        <i class="fa-regular fa-note-sticky text-sm"></i>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-brand-glow/10 flex items-center justify-center text-brand-glow">
-                        <i class="fa-solid fa-note-sticky text-xl"></i>
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-lg font-bold text-daten-primary">{{ $totalNotas }}</span>
+                        <span class="text-[10px] font-medium text-daten-secondary uppercase">Notas</span>
                     </div>
                 </div>
-            </div>
-            {{-- Tarjeta: Total Categorías --}}
-            <div class="bg-daten-card rounded-xl border border-daten shadow-sm p-6 transition-all duration-300 hover:shadow-md">
-                <div class="flex items-center justify-between">
-                    <div class="space-y-1">
-                        <p class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Total Categorías</p>
-                        <p class="text-3xl font-bold text-daten-primary tracking-tight">{{ $totalCategorias }}</p>
+
+                {{-- Separador --}}
+                <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
+
+                {{-- Total Categorías --}}
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
+                        <i class="fa-regular fa-folder text-sm"></i>
                     </div>
-                    <div class="w-12 h-12 rounded-full bg-brand-glow/10 flex items-center justify-center text-brand-glow">
-                        <i class="fa-solid fa-folder text-xl"></i>
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-lg font-bold text-daten-primary">{{ $totalCategorias }}</span>
+                        <span class="text-[10px] font-medium text-daten-secondary uppercase">Categorías</span>
                     </div>
                 </div>
-            </div>
-        </div> -->
 
-                {{-- ============================================ --}}
-{{-- COMPONENTE SUPERIOR: ESTADÍSTICAS COMPACTAS --}}
-{{-- ============================================ --}}
-<div class="bg-daten-card/50 rounded-xl border border-daten/50 p-3">
-    <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-        
-        {{-- Título --}}
-        <div class="flex items-center gap-2 text-daten-secondary">
-            <i class="fa-regular fa-chart-bar text-sm"></i>
-            <span class="text-xs font-semibold uppercase tracking-wider">Estadísticas</span>
-        </div>
+                {{-- Separador --}}
+                <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
 
-        {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
+                {{-- Total Etiquetas --}}
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+                        <i class="fa-regular fa-tags text-sm"></i>
+                    </div>
+                    <div class="flex items-baseline gap-1.5">
+                        <span class="text-lg font-bold text-daten-primary">{{ $tagsWithCount->count() }}</span>
+                        <span class="text-[10px] font-medium text-daten-secondary uppercase">Etiquetas</span>
+                    </div>
+                </div>
 
-        {{-- Total Notas --}}
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-                <i class="fa-regular fa-note-sticky text-sm"></i>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-                <span class="text-lg font-bold text-daten-primary">{{ $totalNotas }}</span>
-                <span class="text-[10px] font-medium text-daten-secondary uppercase">Notas</span>
-            </div>
-        </div>
+                {{-- Spacer para empujar elementos a la derecha si se desea --}}
+                <div class="flex-1"></div>
 
-        {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
-
-        {{-- Total Categorías --}}
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
-                <i class="fa-regular fa-folder text-sm"></i>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-                <span class="text-lg font-bold text-daten-primary">{{ $totalCategorias }}</span>
-                <span class="text-[10px] font-medium text-daten-secondary uppercase">Categorías</span>
+                {{-- Separador --}}
+                <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
+                <span class="md:text-sm text-daten-secondary text-daten-muted flex items-center">
+                    <i class=" fa-regular fa-calendar-alt mr-1"></i>
+                    {{ now()->format('d/m/Y') }}
+                </span>
+                
             </div>
         </div>
-
-        {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
-
-        {{-- Total Etiquetas --}}
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                <i class="fa-regular fa-tags text-sm"></i>
-            </div>
-            <div class="flex items-baseline gap-1.5">
-                <span class="text-lg font-bold text-daten-primary">{{ $tagsWithCount->count() }}</span>
-                <span class="text-[10px] font-medium text-daten-secondary uppercase">Etiquetas</span>
-            </div>
-        </div>
-
-        {{-- Spacer para empujar elementos a la derecha si se desea --}}
-        <div class="flex-1"></div>
-
-         {{-- Separador --}}
-        <div class="hidden sm:block w-px h-6 bg-daten-border/30"></div>
-        <span class="md:text-sm text-daten-secondary text-daten-muted flex items-center">
-            <i class=" fa-regular fa-calendar-alt mr-1"></i>
-            {{ now()->format('d/m/Y') }}
-        </span>
-        
-    </div>
-</div>
-
 
 
         {{-- ============================================ --}}
@@ -296,7 +265,9 @@
                                 </form>
                             </div>
                         @endforeach -->
+                        <!-- List all categories that belong to the authenticated user -->
                         @foreach(auth()->user()->categories as $category)
+                        
                             <div class="flex items-center justify-between group/row">
                                 <a href="{{ route('notes.filter', $category->slug) }}?page={{ $notes->currentPage() }}" 
                                 class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-brand-glow/5 text-daten-secondary hover:text-brand-glow font-medium text-sm rounded-lg flex-1 transition-all border border-transparent hover:border-brand-glow/10">
@@ -307,7 +278,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-daten-muted hover:text-red-600 dark:hover:text-red-400 px-3 py-2 transition-colors" title="Eliminar categoría">
-                                        <i class="fa-solid fa-xmark text-sm"></i>
+                                        <i class="fa-solid fa-trash text-sm"></i>
                                     </button>
                                 </form>
                             </div>
@@ -349,7 +320,8 @@
         {{-- ============================================ --}}
         {{-- MODAL: SUBIR NOTA --}}
         {{-- ============================================ --}}
-        <div id="uploadModal" style="display: none;" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center transition-all">
+        <div id="uploadModal" style="display: none;" 
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center transition-all">
             <div class="bg-daten-card rounded-xl border border-daten shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
                 <div class="p-6 border-b border-daten flex items-center gap-2.5 text-daten-primary">
                     <i class="fa-solid fa-cloud-arrow-up text-emerald-600 text-lg"></i>
@@ -372,7 +344,7 @@
                         <label class="text-xs font-semibold text-daten-secondary uppercase tracking-wider">Categoría existente (opcional)</label>
                         <select name="category_id" class="w-full px-4 py-3 rounded-lg border border-daten bg-daten-input text-sm text-daten-primary focus:outline-none focus:border-brand-glow focus:ring-4 focus:ring-brand-glow/15 transition-all duration-200">
                             <option value="">-- Ninguna, usar "General" o la nueva --</option>
-                            @foreach(\App\Models\Category::all() as $cat)
+                            @foreach(auth()->user()->categories as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                             @endforeach
                         </select>
@@ -398,6 +370,8 @@
                 </form>
             </div>
         </div>
+
+    <!-- main container      -->
     </div>
 
     {{-- ============================================ --}}
@@ -511,4 +485,5 @@
             });
         })();
     </script>
+
 </x-app-layout>

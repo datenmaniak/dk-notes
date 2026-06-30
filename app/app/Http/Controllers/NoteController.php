@@ -293,32 +293,46 @@ class NoteController extends Controller
     public function filter($categorySlug = null)
     {
 
-        // paginador
-        // $perPage = request()->input('per_page', 5); // Configurable desde la BD
-        $perPage = UserSetting::getValue(Auth::id(), 'notas_por_pagina', 5);
+        // Obtener el ID y el objeto del usuario autenticado de forma eficiente
+        $userId = Auth::id();
+        $user = Auth::user(); // Evita hacer un User::find(Auth::id()) extra
 
-        $user = User::find(Auth::id());
+        // paginador Configurable desde el setting del usuario
+        $perPage = UserSetting::getValue($userId, 'notas_por_pagina', 5);
+
 
         if ($categorySlug) {
-            $category = Category::where('slug', $categorySlug)->firstOrFail();
+            // 🔒 CORRECCIÓN: Filtrar la categoría por el 
+            // slug Y por el user_id del usuario actual
+            $category = Category::where('slug', $categorySlug)
+                ->where('user_id', $userId)
+                ->firstOrFail();
+
             $totalNotas = $user->notes()->where('category_id', $category->id)->count();
-            // $notes = $user->notes()->where('category_id', $category->id)->with('category')->get();
             $notes = $user->notes()->where('category_id', $category->id)->with('category')->paginate($perPage);  // ✅ Correcto
         } else {
             $totalNotas = $user->notes()->count();
-            // $notes = $user->notes()->with('category')->get();
             $notes = $user->notes()->with('category')->paginate($perPage);
         }
 
-        // $totalCategorias = Category::count();
-        $totalCategorias = Category::where('user_id', Auth::id())->count();
-        $categoriasConNotas = Category::withCount('notes')->get();
+        $totalCategorias = Category::where('user_id', $userId)->count();
 
-        // 🚀 NUEVO: Cargar todas las etiquetas válidas para que la cabecera no se rompa al filtrar categorías
+        // 💡 OPTIMIZACIÓN: Filtrar también el listado lateral/conteo de 
+        // categorías por usuario
+        // $categoriasConNotas = Category::withCount('notes')->get();
+        $categoriasConNotas = Category::where('user_id', $userId)
+            ->withCount(['notes' => function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        }])
+        ->get();
+
+
+        // 🚀 NUEVO: Cargar todas las etiquetas válidas para que la
+        //  cabecera no se rompa al filtrar categorías
         $tagsWithCount = Tag::whereNull('user_id')
-            ->orWhere('user_id', Auth::id())
-            ->withCount(['notes' => function ($query) {
-                $query->where('notes.user_id', Auth::id());
+            ->orWhere('user_id', $userId)
+            ->withCount(['notes' => function ($query) use ($userId) {
+                $query->where('notes.user_id', $userId);
             }])
             ->orderBy('name')
             ->get();

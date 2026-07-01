@@ -273,9 +273,12 @@ class NoteController extends Controller
         ]);
 
         // Si la nota tiene file_path, actualizar el archivo original (opcional)
-        if ($note->file_path && file_exists(dirname($note->file_path))) {
-            file_put_contents($note->file_path, $request->content_markdown);
-        }
+        // if ($note->file_path && file_exists(dirname($note->file_path))) {
+        //     file_put_contents($note->file_path, $request->content_markdown);
+        // }
+        // LEARN: actualizar el .md en la fuente, causa este error:
+        //        Failed to open stream: Permission denied
+
 
         // Obtener la página guardada (o 1 si no existe)
         $page = session('last_notes_page', 1);

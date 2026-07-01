@@ -279,7 +279,6 @@ class NoteController extends Controller
         // LEARN: actualizar el .md en la fuente, causa este error:
         //        Failed to open stream: Permission denied
 
-
         // Obtener la página guardada (o 1 si no existe)
         $page = session('last_notes_page', 1);
         $filter = session('last_notes_filter');

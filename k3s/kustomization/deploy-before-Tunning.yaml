@@ -82,13 +82,17 @@ spec:
           subPath: default.conf
         # Health check
         livenessProbe:
-          httpGet: { path: /health, port: 80 }
-          initialDelaySeconds: 20
-          periodSeconds: 20
-        readinessProbe:
-          httpGet: { path: /health, port: 80 }
+          httpGet:
+            path: /health
+            port: 80
           initialDelaySeconds: 10
-          periodSeconds: 15
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
       # ----------------------------------------------------
       # 2. CONTENEDOR PHP-FPM (Laravel)
       # ----------------------------------------------------
@@ -153,10 +157,12 @@ spec:
           mountPath: /var/www/html/storage
         # Health check para PHP-FPM
         livenessProbe:
-          tcpSocket: { port: 9000 }
-          initialDelaySeconds: 40 # Aumentado para evitar reinicios en frío
-          periodSeconds: 20       # Menos chequeos al socket
+          tcpSocket:
+            port: 9000
+          initialDelaySeconds: 30
+          periodSeconds: 10
         readinessProbe:
-          tcpSocket: { port: 9000 }
-          initialDelaySeconds: 15
-          periodSeconds: 15       # Menos chequeos al socket
+          tcpSocket:
+            port: 9000
+          initialDelaySeconds: 10
+          periodSeconds: 5

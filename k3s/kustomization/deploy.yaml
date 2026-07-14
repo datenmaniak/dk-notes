@@ -142,10 +142,10 @@ spec:
         # Recursos
         resources:
           limits:
-            cpu: "1000m"
-            memory: "1Gi"
+            cpu: "500m"
+            memory: "640Mi"
           requests:
-            cpu: "400m"
+            cpu: "300m"
             memory: "512Mi"
         # Volúmenes
         volumeMounts:

@@ -13,20 +13,20 @@ class TagColors
                 'text' => 'text-tag-idea',
                 'border' => 'border-tag-idea/20',
             ],
-            'verificado' => [ // 👈 Cambiado de 'Aplicable' a 'aplicable'
-                'bg' => 'bg-tag-aplicable/10',
-                'text' => 'text-tag-aplicable',
-                'border' => 'border-tag-aplicable/20',
+            'verificado' => [ // 👈 Cambiado de 'Aplicable' a 'verificado'
+                'bg' => 'bg-tag-verificado/10',
+                'text' => 'text-tag-verificado',
+                'border' => 'border-tag-verificado/20',
             ],
-            'porhacer' => [ // 👈 Cambiado de 'Pendiente' a 'pendiente'
-                'bg' => 'bg-tag-pendiente/10',
-                'text' => 'text-tag-pendiente',
-                'border' => 'border-tag-pendiente/20',
+            'porhacer' => [ // 👈 Cambiado de 'Pendiente' a 'porhacer'
+                'bg' => 'bg-tag-porhacer/10',
+                'text' => 'text-tag-porhacer',
+                'border' => 'border-tag-porhacer/20',
             ],
-            'enprueba' => [
-                'bg' => 'bg-tag-urgente/10',
-                'text' => 'text-tag-urgente',
-                'border' => 'border-tag-urgente/20',
+            'enprueba' => [   // 👈 Cambiado de 'Testing' a 'enprueba'
+                'bg' => 'bg-tag-enprueba/10',
+                'text' => 'text-tag-enprueba',
+                'border' => 'border-tag-enprueba/20',
             ],
             'readlater' => [ // 👈 Cambiado de 'Read later' a 'readlater'
                 'bg' => 'bg-tag-readlater/10',
@@ -38,10 +38,10 @@ class TagColors
                 'text' => 'text-tag-probar',
                 'border' => 'border-tag-probar/20',
             ],
-            'corregir' => [ // 👈 '
-                'bg' => 'bg-tag-probar/10',
-                'text' => 'text-tag-probar',
-                'border' => 'border-tag-probar/20',
+            'eliminar' => [ // 👈 '
+                'bg' => 'bg-tag-eliminar/10',
+                'text' => 'text-tag-eliminar',
+                'border' => 'border-tag-eliminar/20',
             ],
             'nolabels' => [
                 'bg' => 'bg-slate-100 dark:bg-slate-800',

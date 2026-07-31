@@ -47,7 +47,7 @@ export default {
                     enprueba: '#D97706', // Ámbar / Oro
                     porhacer: '#DC2626', // Rojo Alerta
                     // urgente: '#DC2626', // Rojo Alerta
-                    // readlater: '#2563EB', // Azul Índigo
+                    eliminar: '#2563EB', // Azul Índigo
                     // probar: '#1f8766', // Menta Claro
                     // corregir: '#4B5563', // Gris Slate
                 },

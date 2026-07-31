@@ -35,7 +35,7 @@ spec:
       # ============================================
       initContainers:
       - name: copy-code
-        image: local-reg.dk.lab:5000/dknotes-laravel:1.58.4 # {"$imagepolicy": "flux-system:dknotes-laravel"}
+        image: local-reg.dk.lab:5000/dknotes-laravel:1.58.5 # {"$imagepolicy": "flux-system:dknotes-laravel"}
         imagePullPolicy: Always
         command:
         - sh
@@ -82,11 +82,11 @@ spec:
           subPath: default.conf
         # Health check
         livenessProbe:
-          httpGet: { path: /health, port: 80 }
+          httpGet: {path: /health, port: 80}
           initialDelaySeconds: 20
           periodSeconds: 20
         readinessProbe:
-          httpGet: { path: /health, port: 80 }
+          httpGet: {path: /health, port: 80}
           initialDelaySeconds: 10
           periodSeconds: 15
       # ----------------------------------------------------
@@ -96,7 +96,7 @@ spec:
         # El marcador # {"$imagepolicy": "flux-system:dknotes-laravel"} le dice a Flux
         #  exactamente qué policy usar para actualizar esta línea.
 
-        image: local-reg.dk.lab:5000/dknotes-laravel:1.58.4 # {"$imagepolicy": "flux-system:dknotes-laravel"}
+        image: local-reg.dk.lab:5000/dknotes-laravel:1.58.5 # {"$imagepolicy": "flux-system:dknotes-laravel"}
         imagePullPolicy: Always
         ports:
         - containerPort: 9000
@@ -153,10 +153,10 @@ spec:
           mountPath: /var/www/html/storage
         # Health check para PHP-FPM
         livenessProbe:
-          tcpSocket: { port: 9000 }
+          tcpSocket: {port: 9000}
           initialDelaySeconds: 40 # Aumentado para evitar reinicios en frío
-          periodSeconds: 20       # Menos chequeos al socket
+          periodSeconds: 20 # Menos chequeos al socket
         readinessProbe:
-          tcpSocket: { port: 9000 }
+          tcpSocket: {port: 9000}
           initialDelaySeconds: 15
-          periodSeconds: 15       # Menos chequeos al socket
+          periodSeconds: 15 # Menos chequeos al socket

@@ -15,12 +15,9 @@ class TagSeeder extends Seeder
     {
         $defaultTags = [
             'idea',
-            'aplicable',
-            'pendiente',
-            'urgente',
-            'readlater',
-            'probar',
-            'corregir',
+            'porhacer',
+            'enprueba',
+            'verificado',
         ];
 
         foreach ($defaultTags as $tagName) {

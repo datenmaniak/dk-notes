@@ -42,12 +42,14 @@ export default {
                 // },
                 tag: {
                     idea: '#7C3AED', // Lila Profundo
-                    aplicable: '#059669', // Esmeralda
-                    pendiente: '#D97706', // Ámbar / Oro
-                    urgente: '#DC2626', // Rojo Alerta
-                    readlater: '#2563EB', // Azul Índigo
-                    probar: '#1f8766', // Menta Claro
-                    corregir: '#4B5563', // Gris Slate
+                    verificado: '#059669', // Esmeralda
+                    // aplicable: '#059669', // Esmeralda
+                    enprueba: '#D97706', // Ámbar / Oro
+                    porhacer: '#DC2626', // Rojo Alerta
+                    // urgente: '#DC2626', // Rojo Alerta
+                    // readlater: '#2563EB', // Azul Índigo
+                    // probar: '#1f8766', // Menta Claro
+                    // corregir: '#4B5563', // Gris Slate
                 },
                 // Colores Compuestos (paleta extendida)
                 extended: {

@@ -38,10 +38,10 @@ class Tag extends Model
                 if ($value === 'readlater') {
                     return 'Read Later';
                 }
-                 if ($value === 'enprueba') {
+                if ($value === 'enprueba') {
                     return 'En prueba';
                 }
-                 if ($value === 'porhacer') {
+                if ($value === 'porhacer') {
                     return 'Por hacer';
                 }
 

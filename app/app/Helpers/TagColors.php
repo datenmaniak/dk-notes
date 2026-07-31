@@ -13,17 +13,17 @@ class TagColors
                 'text' => 'text-tag-idea',
                 'border' => 'border-tag-idea/20',
             ],
-            'aplicable' => [ // 👈 Cambiado de 'Aplicable' a 'aplicable'
+            'verificado' => [ // 👈 Cambiado de 'Aplicable' a 'aplicable'
                 'bg' => 'bg-tag-aplicable/10',
                 'text' => 'text-tag-aplicable',
                 'border' => 'border-tag-aplicable/20',
             ],
-            'pendiente' => [ // 👈 Cambiado de 'Pendiente' a 'pendiente'
+            'porhacer' => [ // 👈 Cambiado de 'Pendiente' a 'pendiente'
                 'bg' => 'bg-tag-pendiente/10',
                 'text' => 'text-tag-pendiente',
                 'border' => 'border-tag-pendiente/20',
             ],
-            'urgente' => [
+            'enprueba' => [
                 'bg' => 'bg-tag-urgente/10',
                 'text' => 'text-tag-urgente',
                 'border' => 'border-tag-urgente/20',

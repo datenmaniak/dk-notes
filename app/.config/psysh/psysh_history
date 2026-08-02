@@ -41,3 +41,8 @@ App\Models\tag::where('user_id', 2)->get()->count();
 App\Models\tags::where('user_id', 2)->get()->count();
 php artisan notes:import --user=2
 exit
+include ('./admin/list-data.php');
+q
+include ('./admin/list-data.php');
+include ('./admin/list-data.php');
+include('admin/list-data.php');

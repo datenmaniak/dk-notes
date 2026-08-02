@@ -53,6 +53,10 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    environment:
+      - APP_ENV=production  # o local
+      - APP_DEBUG=true      # Ponlo en true para ver el error en el navegador
+      - APP_KEY="base64:vya9Qyy5kxjVbwfJXyPw7PvJLec8QH1JYVq7BW3KjT0="
 
   # El Servidor Web (Nginx)
   nginx:
